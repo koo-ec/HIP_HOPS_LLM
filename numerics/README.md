@@ -1,0 +1,47 @@
+# Numerics used in all figures
+
+This folder holds the machine-readable inputs that parameterize the **imprecise hierarchical Bayes** simulations in the paper. **All figures** use these numerics unless otherwise noted.
+
+## Files
+
+### `data/models_accuracies.csv`
+**Schema:** `model,domain,subdomain,theta_hat`
+
+- **Domains:** `D1` = Coding, `D2` = Reasoning  
+- **Subdomains:** D1 → `MBPP`, `DS-1000`; D2 → `BoolQ`, `RACE-H`  
+- `theta_hat ∈ [0,1]` is the point accuracy used to form counts  
+  \( C_{ij} = \mathrm{round}(\hat{\theta}_{ij} \times N_{ij}) \) with \( N_{ij} = 80 \).
+
+### `settings.yaml`
+Shared numeric settings for **all figures**:
+
+```yaml
+weights:
+  omega:
+    D1: [0.204, 0.796]   # MBPP, DS-1000
+    D2: [0.483, 0.517]   # BoolQ, RACE-H
+  W: [0.149, 0.851]      # D1, D2 at LLM level
+
+samples:
+  N_per_subdomain: 80
+
+hyperpriors:
+  a_range: [1, 12]       # Beta(a,b) for μ
+  b_range: [1, 12]
+  c_range: [1, 25]       # Gamma(shape=c, rate=d) for ν
+  d_range: [1, 25]
+
+grids:
+  mu_points: 40
+  nu_points: 50
+
+sampling:
+  S: 3000
+  N_CONFIGS: 160
+  MAX_LLMPAIRS: 512
+  PERTURBATION: 0.07
+
+seeds:
+  global: 7
+  configs: 123
+  pairs: 999

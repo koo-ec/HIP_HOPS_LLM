@@ -1,0 +1,79 @@
+cff-version: 1.2.0
+message: >-
+  If you use this software, please cite both this repository and the HIP-LLM
+  paper whose reliability model it builds on.
+title: >-
+  HIP-HOPS-LLM: hierarchical imprecise reliability assessment and failure
+  propagation for LLM-based agentic systems
+abstract: >-
+  A Python package that joins HiP-HOPS compositional safety analysis to the
+  HIP-LLM hierarchical imprecise-probability reliability model. It extracts an
+  architecture from a LangGraph application, synthesises static fault trees with
+  minimal cut sets and a generated FMEA, calibrates their basic events from
+  observed benchmark outcomes under an explicit operational profile, and converts
+  the result into a Bayesian network for exact inference, diagnosis and
+  visualisation.
+type: software
+authors:
+  - family-names: Aslansefat
+    given-names: Koorosh
+    orcid: "https://orcid.org/0000-0001-7691-1206"
+repository-code: "https://github.com/koo-ec/HIP_HOPS_LLM"
+url: "https://github.com/koo-ec/HIP_HOPS_LLM"
+license: MIT
+version: 0.1.0
+keywords:
+  - reliability engineering
+  - safety analysis
+  - fault tree analysis
+  - HiP-HOPS
+  - FMEA
+  - Bayesian network
+  - imprecise probability
+  - operational profile
+  - large language models
+  - agentic AI
+  - multi-agent systems
+  - LangGraph
+references:
+  - type: article
+    title: >-
+      A hierarchical imprecise probability approach to reliability assessment of
+      large language models
+    authors:
+      - family-names: Aghazadeh-Chakherlou
+        given-names: Robab
+      - family-names: Guo
+        given-names: Qing
+      - family-names: Khastgir
+        given-names: Siddartha
+      - family-names: Popov
+        given-names: Peter
+      - family-names: Zhang
+        given-names: Xiaoge
+      - family-names: Zhao
+        given-names: Xingyu
+    journal: Reliability Engineering & System Safety
+    volume: 272
+    year: 2026
+    start: 112615
+    doi: 10.1016/j.ress.2026.112615
+    notes: >-
+      The reliability model implemented by the vendored HIP-LLM sources under
+      src/HIPLLM/ and src/hip_llm/.
+  - type: conference-paper
+    title: >-
+      Hierarchically Performed Hazard Origin and Propagation Studies
+    authors:
+      - family-names: Papadopoulos
+        given-names: Yiannis
+      - family-names: McDermid
+        given-names: John A.
+    collection-title: >-
+      Computer Safety, Reliability and Security (SAFECOMP 1999)
+    volume: 1698
+    year: 1999
+    start: 139
+    end: 152
+    doi: 10.1007/3-540-48249-0_13
+    notes: The compositional safety-analysis method this package applies.

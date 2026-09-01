@@ -1,0 +1,9 @@
+aspect,Miller [32],HiBayES [31],HIP-LLM
+Statistical framework,Frequentist,Bayesian,Bayesian
+Primary goal,Uncertainty-aware benchmark reporting,"Uncertainty-aware, hierarchical accuracy estimation",Uncertainty-aware reliability assessment under OP with embedded priors
+Metric under estimation,Failure probability (per task),Failure probability (per task),Reliability (probability of failure-free future tasks)
+OP,Implicit (dataset assumed representative),Implicit (dataset assumed representative),"Explicit, multi-level OPs"
+Hierarchical structure,None,"LLM, domains, subdomains","LLM, domains, subdomains"
+Dependence handling,Clustered standard errors,Partial pooling,Partial pooling
+Prior specification,None,Uniform precise priors,Informative imprecise priors (credal sets)
+Output,Confidence intervals,Single posterior distribution,Posterior envelopes

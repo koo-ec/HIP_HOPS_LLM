@@ -1,0 +1,63 @@
+# =============================================================================
+# RQ8: scalability. Table 6 and Fig. 11 are reproduced from REAL measurements
+# taken on the machine running the notebook. The paper's own numbers are kept as
+# reference values only (data/reference/paper_table6_printed.csv and
+# paper_fig11_printed_exponents.csv) and are never emitted as measurements.
+#
+# The paper's measurements were taken on Google Colab (Intel Xeon @ 2.20 GHz,
+# ~13 GB RAM, single process, no parallelisation). Absolute timings on any other
+# machine will differ; the reproducible claim is about the SCALING EXPONENTS and
+# the stage breakdown, not the absolute seconds.
+# =============================================================================
+
+mode: scalability
+
+baseline:
+  m: 2
+  n_bar: 2
+  K: 160
+  S: 3000
+  G: 2000
+  T: 201
+  K_total_cap: 512
+
+# Endpoints match the paper's stated ranges exactly; intermediate points are
+# chosen to be log-spaced enough to fit a power law.
+sweeps:
+  m:     [1, 2, 4, 8, 12]
+  n_bar: [2, 5, 10, 20, 40]
+  S:     [500, 1000, 2000, 3000, 6000]
+  K:     [40, 80, 160, 240, 320]
+  G:     [1000, 2000, 2500, 3000, 4500]
+
+profiles:
+  full:
+    repeats: 3
+    sweeps: [m, n_bar, S, K, G]
+  quick:
+    repeats: 1
+    sweeps: [m, K, G]
+    note: >-
+      The n_bar sweep dominates total runtime (the paper measured ~500 s at
+      n_bar = 40 on Colab). The quick profile omits it; anything omitted is
+      logged explicitly in the results rather than silently dropped.
+
+active_profile: full
+
+measurement:
+  wall_clock: perf_counter
+  repeats_confidence: 0.95
+  peak_memory: tracemalloc
+  peak_memory_note: >-
+    tracemalloc tracks Python-level allocations. The paper's Table 6 values
+    (7.6 MB at S = 500) are of that magnitude, whereas process RSS would be an
+    order of magnitude larger because of the interpreter and BLAS working set.
+    Process RSS delta is additionally recorded when psutil is available.
+  stage_breakdown: [Subdomain posteriors, Domain/LLM envelopes]
+
+power_law:
+  model: "time = c * x**alpha"
+  fit: least_squares_in_log_log
+  also_fit_memory: true
+
+single_process: true    # match the paper's stated execution mode for comparability

@@ -1,0 +1,17 @@
+model,domain,subdomain,theta_hat
+GPT-4o,D1,MBPP,0.479
+GPT-4o,D1,DS-1000,0.490
+GPT-4o,D2,BoolQ,0.910
+GPT-4o,D2,RACE-H,0.920
+GPT-4o-mini,D1,MBPP,0.447
+GPT-4o-mini,D1,DS-1000,0.440
+GPT-4o-mini,D2,BoolQ,0.892
+GPT-4o-mini,D2,RACE-H,0.873
+Sonnet 4.5,D1,MBPP,0.486
+Sonnet 4.5,D1,DS-1000,0.495
+Sonnet 4.5,D2,BoolQ,0.915
+Sonnet 4.5,D2,RACE-H,0.946
+Haiku 3.5,D1,MBPP,0.447
+Haiku 3.5,D1,DS-1000,0.483
+Haiku 3.5,D2,BoolQ,0.883
+Haiku 3.5,D2,RACE-H,0.859

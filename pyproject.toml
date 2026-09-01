@@ -1,0 +1,134 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "HIP-HOPS-LLM"
+version = "0.1.0"
+description = "Hierarchical imprecise reliability assessment and failure propagation for LLM-based agentic systems: LangGraph to fault trees to Bayesian networks"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE", "LICENSE.HIPLLM"]
+authors = [
+  { name = "Koorosh Aslansefat" },
+]
+maintainers = [
+  { name = "Koorosh Aslansefat" },
+]
+keywords = [
+  "reliability",
+  "safety analysis",
+  "fault tree",
+  "HiP-HOPS",
+  "FMEA",
+  "Bayesian network",
+  "imprecise probability",
+  "operational profile",
+  "LLM",
+  "agentic AI",
+  "LangGraph",
+  "multi-agent systems",
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Science/Research",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Scientific/Engineering :: Mathematics",
+]
+dependencies = [
+  "numpy>=1.24",
+  "pandas>=2.0",
+  "matplotlib>=3.7",
+  "scipy>=1.11",
+  "PyYAML>=6.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/koo-ec/HIP_HOPS_LLM"
+Repository = "https://github.com/koo-ec/HIP_HOPS_LLM"
+Issues = "https://github.com/koo-ec/HIP_HOPS_LLM/issues"
+Documentation = "https://hip-hops-llm.readthedocs.io"
+"HIP-LLM" = "https://github.com/koo-ec/HIP_LLM"
+Publication = "https://doi.org/10.1016/j.ress.2026.112615"
+
+[project.optional-dependencies]
+bayes = ["pyagrum>=1.13"]
+graph = ["langgraph>=0.2", "langchain-core>=0.3"]
+test = [
+  "pytest>=8.0",
+  "pytest-timeout>=2.3",
+  "pyagrum>=1.13",
+  "nbformat>=5.10",
+]
+live = ["openai>=1.40", "anthropic>=0.40", "datasets>=2.20"]
+docs = [
+  "sphinx>=7.4,<9",
+  "furo>=2024.8.6",
+  "sphinx-autodoc-typehints>=2.3",
+  "myst-parser>=3.0",
+  "sphinx-copybutton>=0.5",
+]
+dev = ["ruff>=0.6", "build>=1.2", "twine>=5.1"]
+all = [
+  "pyagrum>=1.13",
+  "langgraph>=0.2",
+  "langchain-core>=0.3",
+  "pytest>=8.0",
+  "pytest-timeout>=2.3",
+  "nbformat>=5.10",
+  "openai>=1.40",
+  "anthropic>=0.40",
+  "datasets>=2.20",
+  "sphinx>=7.4,<9",
+  "furo>=2024.8.6",
+  "sphinx-autodoc-typehints>=2.3",
+  "myst-parser>=3.0",
+  "sphinx-copybutton>=0.5",
+  "ruff>=0.6",
+  "build>=1.2",
+  "twine>=5.1",
+]
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+# The PEP 8 alias module; see src/hip_hops_llm.py.
+py-modules = ["hip_hops_llm"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["HIP_HOPS_LLM*", "HIPLLM*", "hip_llm*"]
+
+[tool.setuptools.package-data]
+"HIP_HOPS_LLM.data" = ["*.json", "*.csv"]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+addopts = "-q --strict-markers"
+markers = [
+  "slow: long-running numerical convergence checks",
+  "pyagrum: needs pyAgrum installed",
+  "langgraph: needs langgraph installed",
+  "live: hits real provider APIs and costs money",
+  "notebook: executes a notebook end to end",
+]
+filterwarnings = [
+  "ignore::DeprecationWarning",
+  "ignore::PendingDeprecationWarning",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+# The vendored HIP-LLM sources are kept byte-identical to upstream.
+extend-exclude = ["src/HIPLLM", "src/hip_llm", "notebooks"]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F"]

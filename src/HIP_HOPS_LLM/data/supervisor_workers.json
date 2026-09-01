@@ -1,0 +1,47 @@
+{
+  "name": "supervisor + workers + verifier",
+  "description": "A supervisor routes to one of three specialist workers, whose answer a verifier checks before delivery. Two workers share a model snapshot and the third does not, which makes the common-cause grouping visible in the cut sets.",
+  "provenance": "A synthetic architecture written for this package's tutorials; not taken from a measured system.",
+  "nodes": {
+    "__start__": {"role": "source", "label": "__start__"},
+    "supervisor": {
+      "role": "llm_agent", "label": "supervisor",
+      "resources": {"llm": "gpt-4o-mini", "runtime": "api"},
+      "source_code": "def supervisor(state):\n    \"\"\"Decide which specialist should handle the request.\"\"\"\n    return {\"plan\": llm.invoke(state['question'])}\n"
+    },
+    "supervisor::router": {
+      "role": "router", "label": "router",
+      "source_code": "def route(state):\n    if 'calculate' in state['plan']:\n        return 'math_worker'\n    if 'look up' in state['plan']:\n        return 'search_worker'\n    return 'writer'\n"
+    },
+    "math_worker": {
+      "role": "llm_agent", "label": "math_worker",
+      "resources": {"llm": "gpt-4o-mini", "runtime": "api"},
+      "source_code": "def math_worker(state):\n    return {\"draft\": llm.invoke('solve: ' + state['question'])}\n"
+    },
+    "search_worker": {
+      "role": "tool", "label": "search_worker",
+      "source_code": "def search_worker(state):\n    return {\"draft\": search_api(state['question'])}\n"
+    },
+    "writer": {
+      "role": "llm_agent", "label": "writer",
+      "resources": {"llm": "claude-sonnet-4-5", "runtime": "api"},
+      "source_code": "def writer(state):\n    return {\"draft\": other_llm.invoke(state['question'])}\n"
+    },
+    "verifier": {
+      "role": "aggregator", "label": "verifier",
+      "resources": {"llm": "gpt-4o-mini", "runtime": "api"},
+      "source_code": "def verifier(state):\n    \"\"\"Check the draft before it reaches the user.\"\"\"\n    return {\"final\": llm.invoke('check: ' + state['draft'])}\n"
+    },
+    "__end__": {"role": "sink", "label": "__end__"}
+  },
+  "edges": [
+    ["__start__", "supervisor"],
+    ["supervisor", "math_worker", "math_worker", true],
+    ["supervisor", "search_worker", "search_worker", true],
+    ["supervisor", "writer", "writer", true],
+    ["math_worker", "verifier"],
+    ["search_worker", "verifier"],
+    ["writer", "verifier"],
+    ["verifier", "__end__"]
+  ]
+}

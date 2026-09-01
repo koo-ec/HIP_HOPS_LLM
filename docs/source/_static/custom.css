@@ -1,0 +1,24 @@
+/* Small readability tweaks over furo's defaults. */
+:root {
+  --hh-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+}
+
+article table.docutils {
+  font-size: 0.92rem;
+}
+
+article table.docutils td,
+article table.docutils th {
+  vertical-align: top;
+}
+
+/* Deviation notation and event ids read better in a monospace face. */
+code.literal {
+  font-family: var(--hh-mono);
+  font-size: 0.88em;
+}
+
+/* Admonitions carrying a warning about silent behaviour. */
+.admonition.silent-failure > .admonition-title::before {
+  content: "⚠ ";
+}

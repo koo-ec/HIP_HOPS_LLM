@@ -1,0 +1,377 @@
+# =============================================================================
+# Provenance manifest for the HIP-LLM replication.
+#
+# Every input is listed with its SHA-256, retrieval date, location and its exact
+# role under the source hierarchy mandated by the specification:
+#
+#   1  paper_mathematics       paper definitions, theorems, appendices, globals
+#   2  official_repo_numerics  machine-readable figure numerics from the repo
+#   3  figure_caption          figure-specific captions and labels
+#   4  printed_table           printed tables and surrounding narrative
+#   5  reconstruction          labelled assumption; disabled in strict mode
+#
+# Conflicting sources are NEVER merged. Each is retained as its own dataset.
+# =============================================================================
+
+manifest_version: 1
+generated_utc: "2026-07-28T00:00:00+00:00"
+regenerate_with: python scripts/build_provenance.py
+
+sources:
+
+  - source_id: paper_pdf
+    role: paper_mathematics
+    priority: 1
+    location: "Reliability Engineering & System Safety 272 (2026) 112615"
+    doi: 10.1016/j.ress.2026.112615
+    local_copy: "1-s2.0-S0951832026004242-main.pdf"
+    sha256: 28a6ac520eade33e9783a19036538b6ff0ee2ee904479f0fcbcf8866a99ff28f
+    retrieved: "2026-07-28"
+    pages: 29
+    note: >-
+      Authoritative for the model (Section 3, Theorems 1-6, Appendix A), the
+      global numerical settings (Section 4.2, Appendix B) and the printed
+      Tables 1-6.
+
+  - source_id: official_repo_accuracies
+    role: official_repo_numerics
+    priority: 2
+    location: "https://github.com/aghazadehchakherlou-web/llm-imprecise-bayes -> numerics/data/models_accuracies.csv"
+    local_copy: data/reference/official_figure_numerics.csv
+    sha256: ccbabdf8fe4d0a83f53f0d1ad88a74256a0b49af3b0854f35431bad73001085f
+    retrieved: "2026-07-28"
+    note: >-
+      Byte-identical copy of the repository file (identical SHA-256). The
+      repository's numerics/README.md states these numerics parameterise "all
+      figures". Verified to drive Figs. 3, 4, 5, 6, 8 and 10 -- but NOT Fig. 7,
+      which matches paper Table 3 instead (see discrepancy D4).
+
+  - source_id: official_repo_settings
+    role: official_repo_numerics
+    priority: 2
+    location: "https://github.com/aghazadehchakherlou-web/llm-imprecise-bayes -> numerics/settings.yaml"
+    sha256: 8494f87534ea0000a110b875b70faed3813f927de50997305cf6990b51630311
+    retrieved: "2026-07-28"
+    note: >-
+      Supplies omega, W, N_per_subdomain, hyperprior ranges, grid sizes, S,
+      N_CONFIGS, MAX_LLMPAIRS, PERTURBATION and the three seeds. Every value
+      except PERTURBATION agrees with paper Appendix B.
+
+  - source_id: official_repo_readme
+    role: official_repo_numerics
+    priority: 2
+    location: "https://github.com/aghazadehchakherlou-web/llm-imprecise-bayes -> README.md"
+    sha256: 2cc3e42ef5c3382692da8a01737c8680efdaff613770898eec7d9834a9a6503c
+    retrieved: "2026-07-28"
+    note: Narrative description of the figures plus embedded images of Tables 4, 5 and 6.
+
+  - source_id: official_repo_history
+    role: official_repo_numerics
+    priority: 2
+    location: "https://api.github.com/repos/aghazadehchakherlou-web/llm-imprecise-bayes"
+    retrieved: "2026-07-28"
+    sha256: null
+    note: >-
+      EXHAUSTIVE SEARCH RESULT. HEAD = 7be1a269f8487062f6efe40558e35099dc755014
+      (2026-02-02). 22 commits total, every message is either "Update README.md"
+      or "Add files via upload". One branch (`main`); no tags; no releases. The
+      complete file tree is 27 entries: 19 images, README.md, requirements.txt,
+      .gitignore, examples/load_numerics.py (a 27-line CSV/YAML loader),
+      numerics/README.md, numerics/settings.yaml and
+      numerics/data/models_accuracies.csv. THERE IS NO IMPLEMENTATION SOURCE CODE
+      IN ANY COMMIT, BRANCH OR TAG. Consequently the nu-grid construction, the
+      K-configuration sampling rule, the LLM pairing rule, the meaning of
+      PERTURBATION, the RQ5 ground truth, and all API/prompt settings are
+      unrecoverable from official sources.
+
+  - source_id: paper_table3
+    role: printed_table
+    priority: 4
+    location: "paper PDF, Table 3 (p. 11)"
+    local_copy: data/reference/paper_table3.csv
+    sha256: 81ef350a29615b36983375eca18f17de460a1d53d8860aea0a0194f3faef0888
+    retrieved: "2026-07-28"
+    note: >-
+      Transcribed verbatim from the printed table. Retained as its own dataset
+      for literal Table 3 reproduction. CONFLICTS with official_repo_accuracies
+      on 12 of 16 cells (see discrepancy D1). Never merged with it.
+
+  - source_id: paper_table3_printed_means
+    role: printed_table
+    priority: 4
+    location: "paper PDF, Table 3 mean rows/columns"
+    local_copy: data/reference/paper_table3_printed_means.csv
+    retrieved: "2026-07-28"
+    sha256: null
+    note: Printed marginal means, retained to check them against the printed cells (discrepancy D5).
+
+  - source_id: fig9_caption
+    role: figure_caption
+    priority: 3
+    location: "paper PDF, Fig. 9 caption (p. 16)"
+    local_copy: data/reference/fig9_caption_numerics.csv
+    sha256: 052fae55c45809f69bd490df8c2558d3b24397f33b9196e894bd03fc10a430b2
+    retrieved: "2026-07-28"
+    note: >-
+      Claude Sonnet 4.5 on MBPP, N = 257, Pass@1 C/N = 0.471, Pass@3 C/N = 0.494.
+      Conflicts with BOTH accuracy sources (discrepancy D2). Used for Fig. 9 only.
+
+  - source_id: paper_table4
+    role: printed_table
+    priority: 4
+    location: "paper PDF, Table 4 (p. 16)"
+    local_copy: data/reference/paper_table4_printed.csv
+    sha256: 719981377e32771de28234cf18df29b8e3f43bd8e36e78904de845155ac1388c
+    retrieved: "2026-07-28"
+    note: Small-N RQ5 results. Internally consistent (all medians lie inside their own intervals).
+
+  - source_id: paper_table5
+    role: printed_table
+    priority: 4
+    location: "paper PDF, Table 5 (p. 16); also README images table_5.PNG and table_5.jpg"
+    local_copy: data/reference/paper_table5_printed.csv
+    sha256: 706693f2fc806c8a85e3931decc0aec9f442daa9c6812c19b98dd8065c4e9a27
+    retrieved: "2026-07-28"
+    note: >-
+      Large-N RQ5 results. Two HIP-LLM rows are mathematically inconsistent
+      (discrepancy D3). Both repository images carry identical values to the PDF,
+      so this is not a typesetting artifact of one rendering.
+
+  - source_id: paper_table6
+    role: printed_table
+    priority: 4
+    location: "paper PDF, Table 6 (p. 18); also README image 'Table 6_RQ8.png'"
+    local_copy: data/reference/paper_table6_printed.csv
+    sha256: fff97db819df635a4febf3aa95964598c48fa573a8fca09f8dc97cc40cd8f49d
+    retrieved: "2026-07-28"
+    note: Peak-memory reference values, kept as reference only; never emitted as a measurement.
+
+  - source_id: reconstruction_nu_grid
+    role: reconstruction
+    priority: 5
+    location: "hip_llm/grids.py :: build_nu_axis"
+    sha256: null
+    retrieved: "2026-07-28"
+    note: >-
+      Not present in any official source. Three schemes implemented (log, linear,
+      gamma_quantile) and compared. Disabled entirely by strict_exact mode.
+
+  - source_id: reconstruction_config_sampling
+    role: reconstruction
+    priority: 5
+    location: "hip_llm/grids.py :: sample_configurations"
+    sha256: null
+    retrieved: "2026-07-28"
+    note: >-
+      Not present in any official source. Four schemes implemented
+      (uniform_random, latin_hypercube, sobol, interval_corners_plus_interior).
+      Disabled entirely by strict_exact mode.
+
+  - source_id: reconstruction_llm_pairing
+    role: reconstruction
+    priority: 5
+    location: "hip_llm/grids.py :: pair_llm_configurations"
+    sha256: null
+    retrieved: "2026-07-28"
+    note: >-
+      Section 4.2 caps K_total at 512 while Theorem 3 defines the full Cartesian
+      product; the subsampling rule is unstated. Two modes implemented.
+
+# ---------------------------------------------------------------------------
+# Catalogued source conflicts. None is resolved by overwriting a source.
+# ---------------------------------------------------------------------------
+discrepancies:
+
+  - id: D1
+    title: "Paper Table 3 vs official repository figure numerics"
+    severity: high
+    sources: [paper_table3, official_repo_accuracies]
+    summary: >-
+      12 of 16 accuracy cells differ. Only the Haiku 3.5 column agrees exactly
+      on all four subdomains. The largest gap is GPT-4o on RACE-H (0.552 printed
+      vs 0.920 in the repository, |diff| = 0.368).
+    evidence: >-
+      The repository values reproduce the plotted panels; Table 3 does not. With
+      the repository CSV, GPT-4o-mini and Haiku 3.5 have identical MBPP accuracy
+      (0.447), matching the paper's own narrative that their MBPP envelopes are
+      "nearly indistinguishable"; Table 3 gives 0.440 vs 0.447. On RACE-H the
+      repository ordering Haiku(0.859) < mini(0.873) < 4o(0.920) < Sonnet(0.946)
+      matches the paper's stated ordering and the panel's 0.75-1.00 axis, whereas
+      Table 3's GPT-4o value of 0.552 would fall off that axis entirely.
+    resolution: >-
+      Keep both datasets. Figures use official_repo_accuracies; the literal
+      Table 3 reproduction uses paper_table3. Never merged, never auto-swapped.
+
+  - id: D2
+    title: "Fig. 9 caption values conflict with both accuracy sources"
+    severity: medium
+    sources: [fig9_caption, paper_table3, official_repo_accuracies]
+    summary: >-
+      Fig. 9 reports Claude Sonnet 4.5 on MBPP with N = 257 and Pass@1
+      C/N = 0.471. The repository gives Sonnet/MBPP = 0.486 and Table 3 gives
+      0.450. Curiously 0.471 is exactly Table 3's GPT-4o MBPP entry. The baseline
+      figures use N = 80, not 257.
+    resolution: >-
+      Treat Fig. 9 as a figure-specific experiment and use its captioned values
+      for Fig. 9 only. Its partner subdomain (DS-1000) data is not stated by the
+      caption; the reconstruction used is recorded in the config and labelled.
+
+  - id: D3
+    title: "Table 5 HIP-LLM rows are mathematically inconsistent"
+    severity: high
+    sources: [paper_table5]
+    summary: >-
+      Under OP^approx the printed median envelope [0.5752, 0.5764] lies entirely
+      BELOW the printed 90% interval [0.5794, 0.5978]; under OP^GT the median
+      envelope [0.5784, 0.5797] lies entirely below [0.5832, 0.6024]. A posterior
+      median cannot fall outside that posterior's own 5%-95% interval, and a
+      min/max envelope over a family of posteriors cannot either, because
+      min_h Q05 <= min_h Q50 by monotonicity of quantiles within each posterior.
+    resolution: >-
+      Reproduce the printed table verbatim as a reference artifact, flag the two
+      rows with an automated invariant test, and never treat those numbers as a
+      numerical target for a correct implementation.
+
+  - id: D4
+    title: "Fig. 7 uses Table 3 values, contradicting the repository's 'all figures' claim"
+    severity: high
+    sources: [paper_table3, official_repo_accuracies, paper_pdf]
+    summary: >-
+      numerics/README.md states "All figures use these numerics unless otherwise
+      noted", yet Fig. 7 is driven by Table 3, not by the repository CSV.
+    evidence: >-
+      The paper's own Fig. 7 discussion quotes theta_BoolQ ~ 0.90 vs
+      theta_RACE-H ~ 0.84 for Sonnet 4.5 and 0.91 vs 0.55 for GPT-4o -- these are
+      Table 3 values (0.900/0.840 and 0.909/0.552), not repository values
+      (0.915/0.946 and 0.910/0.920). Reproducing Fig. 7b from Table 3 gives band
+      centres of 0.873 / 0.724 / 0.588 for Omega_RACE = 0.10 / 0.517 / 0.90,
+      matching the published panel's 0.4-0.9 axis; the repository values would
+      place all three bands above 0.91 and would shift the envelope RIGHT with
+      increasing Omega_RACE, the opposite of what the panel shows.
+    resolution: >-
+      Fig. 7 is reproduced from paper_table3 and Figs. 3-6, 8, 10 from
+      official_repo_accuracies. The per-figure assignment is explicit in
+      configs/paper_published_numerics.yaml :: figure_source_assignment.
+
+  - id: D5
+    title: "Table 3 printed LLM mean for GPT-4o disagrees with its own printed cells"
+    severity: low
+    sources: [paper_table3, paper_table3_printed_means]
+    summary: >-
+      The printed GPT-4o "LLM Mean" is 0.585, but the unweighted mean of that
+      column's four printed subdomain accuracies is
+      (0.471 + 0.420 + 0.909 + 0.552)/4 = 0.588. The other three columns are
+      self-consistent to three decimals.
+    resolution: Reported as an internal inconsistency of the printed table; not used as an input.
+
+  - id: D6
+    title: "PERTURBATION 0.07 in settings.yaml vs +/-20% in the paper"
+    severity: medium
+    sources: [official_repo_settings, paper_pdf]
+    summary: >-
+      settings.yaml declares sampling.PERTURBATION = 0.07 among settings said to
+      apply to all figures; the paper's only perturbation is RQ5's OP^approx at
+      +/-20%. No repository code consumes PERTURBATION, so its semantics cannot
+      be verified.
+    resolution: >-
+      Recorded, and deliberately unused. hip_llm.operational_profile.
+      perturb_and_renormalise takes the magnitude as an explicit argument and has
+      no default.
+
+  - id: D7
+    title: "Editorial: 'five research questions' followed by RQ1-RQ8"
+    severity: informational
+    sources: [paper_pdf]
+    summary: >-
+      Section 4 opens with "we empirically investigate five research questions
+      (RQs)" (p. 10) and then enumerates and answers eight (RQ1-RQ8, Sections
+      4.3.1-4.3.8). Also on p. 20: "the 5 gaps identified in the introduction",
+      consistent with Gap-1..Gap-5.
+    resolution: Recorded; no numerical impact.
+
+  - id: D8
+    title: "SciPy is required by this reproduction but is not a reported dependency"
+    severity: informational
+    sources: [paper_pdf]
+    summary: >-
+      The paper reports Python 3.12.12, NumPy 2.0.2, pandas 2.2.2 and matplotlib
+      3.10.0 only. Stable evaluation of betaln/gammaln/logsumexp and the Gamma /
+      Beta quantile functions needs SciPy.
+    resolution: >-
+      SciPy is pinned in requirements-lock.txt and declared an implementation
+      dependency of the reproduction, not of the original experiment.
+
+  - id: D9
+    title: "Table 2's imprecise posterior-mean interval does not follow from its own credal set"
+    severity: medium
+    sources: [paper_pdf]
+    summary: >-
+      Table 2 states prior Beta(alpha, beta) with alpha, beta in [1, 3], data
+      n = 10 / k = 3, posterior Beta(3+alpha, 7+beta), and reports
+      E[theta | D] in [0.31, 0.38]. The posterior mean is (3+alpha)/(10+alpha+beta),
+      whose extrema over the printed rectangle are attained at the corners
+      (alpha, beta) = (1, 3) and (3, 1), giving [4/14, 6/14] = [0.2857, 0.4286],
+      i.e. [0.29, 0.43] to two decimals -- not [0.31, 0.38].
+    evidence: >-
+      The printed interval is reproduced EXACTLY by the additional constraint
+      alpha + beta = 3 with alpha in [1, 2]: [4/13, 5/13] = [0.3077, 0.3846] =
+      [0.31, 0.38]. The precise-Bayesian column is correct: Beta(5, 9) has mean
+      5/14 = 0.357 -> 0.36 as printed.
+    resolution: >-
+      Section 4 of the notebook computes the interval analytically from the
+      printed credal set, reports [0.29, 0.43], and flags the printed [0.31, 0.38]
+      as an inconsistent source artifact. The printed values are never used as a
+      numerical target.
+
+  - id: D10
+    title: "Partial pooling is numerically inert under the paper's own baseline hyperprior box"
+    severity: medium
+    sources: [paper_pdf, official_repo_settings]
+    summary: >-
+      With N = 80 per subdomain and hyper-hyper-parameters drawn uniformly from
+      a, b in [1, 12] and c, d in [1, 25], the hyperposterior for the pooling
+      strength nu concentrates near 1 (E[nu | data] ~= 1.0-1.7 for typical
+      configurations), because E[nu] = c/d and the ratio of two independent
+      Uniform[1, 25] draws has median ~ 1. A prior strength of nu ~ 1 against
+      N = 80 observations produces essentially no shrinkage.
+    evidence: >-
+      Measured on the reproduced model: within-domain posterior correlation
+      between subdomain reliabilities is ~ +0.01, and adding a partner subdomain
+      at 0.95 accuracy moves a 0.50-accuracy subdomain's posterior mean by only
+      ~ +0.001. The mechanism itself is correct and demonstrably strong when nu is
+      large: fixing c = 25, d = 1 (E[nu] = 25) raises the correlation to ~ +0.13
+      at N = 80 and the partner shift to ~ +0.055, and to ~ +0.57 / ~ +0.17 at
+      N = 8. See tests/test_partial_pooling.py.
+    resolution: >-
+      Reported as a finding about the paper's chosen configuration, not as an
+      implementation defect. The dependence structure is preserved exactly (shared
+      latent draws) and is verified by tests in both regimes.
+
+  - id: D11
+    title: "Random hyper-hyper-parameter sampling under-states the imprecise envelope"
+    severity: high
+    sources: [paper_pdf, official_repo_settings]
+    summary: >-
+      Paper Appendix A.2, Step 3, states that the posterior envelopes "are
+      obtained by evaluating the closed-form posterior at the extremal corners of
+      H_i or through numerical optimization if the extrema occur in the interior".
+      The repository's settings.yaml instead specifies N_CONFIGS = 160 together
+      with a dedicated sampling seed (seeds.configs = 123), which describes a
+      random design. The two prescriptions are not equivalent, and the difference
+      is not a rounding effect.
+    evidence: >-
+      Measured on GPT-4o at the LLM level: the 16 corners of the admissible box
+      alone produce a wider CDF envelope than 160 uniform interior draws (area
+      ratio reported in results/tables/table_D11_corner_vs_random_envelope.csv,
+      approximately 1.4x), and a 160-point corners-plus-interior design widens it
+      further still. Uniform draws in a 4-dimensional box essentially never land
+      near a corner, so they systematically miss the extrema that define the
+      envelope. Posterior medians move by up to ~0.010 and the CDF sup-norm by up
+      to ~0.18 between designs -- both beyond this replication's pre-declared
+      tolerances of 0.005 and 0.02.
+    resolution: >-
+      All four candidate designs are implemented and compared in Section 6 of the
+      notebook; none is presented as the authors' rule. The consequence is stated
+      explicitly: reported envelope WIDTHS should be read as a lower bound on the
+      imprecision, whereas reported LOCATIONS (medians, orderings, OP and
+      hyperparameter effects) are robust across every design tested.

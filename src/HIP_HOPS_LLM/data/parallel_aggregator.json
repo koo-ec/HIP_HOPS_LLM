@@ -1,0 +1,34 @@
+{
+  "name": "parallel agents + aggregator",
+  "description": "Two agents answer the same problem in parallel and an aggregator picks between them. The redundancy is architectural only: both agents run the same model snapshot, so the shared-snapshot common-cause event is an order-1 cut set for the wrong-answer hazard.",
+  "provenance": "Approach 2 of the Kaggle notebook 'HiP-HOPS for Agentic AI' (kooaslansefat), recorded as a graph specification so the example runs without langgraph.",
+  "nodes": {
+    "__start__": {"role": "source", "label": "__start__"},
+    "react_agent": {
+      "role": "llm_agent",
+      "label": "react_agent",
+      "resources": {"llm": "Qwen/Qwen2.5-Math-1.5B-Instruct", "runtime": "cuda:0"},
+      "source_code": "def react_agent(state):\n    messages = [{\"role\": \"user\", \"content\": state.get(\"prompt\", \"\") + state.get(\"problem\", \"\")}]\n    outputs = model.generate(**inputs, max_new_tokens=1200, do_sample=True, temperature=0.3)\n    return {\"output_1\": tokenizer.decode(outputs[0])}\n"
+    },
+    "cot_agent": {
+      "role": "llm_agent",
+      "label": "cot_agent",
+      "resources": {"llm": "Qwen/Qwen2.5-Math-1.5B-Instruct", "runtime": "cuda:0"},
+      "source_code": "def cot_agent(state):\n    # MODEL_DEEP is the same snapshot as MODEL_FAST\n    messages = [{\"role\": \"user\", \"content\": \"solve step by step: \" + state.get(\"problem\", \"\")}]\n    outputs = model_deep.generate(**inputs, max_new_tokens=2000, do_sample=True, temperature=0.6)\n    return {\"output_2\": tokenizer_deep.decode(outputs[0])}\n"
+    },
+    "aggregator": {
+      "role": "aggregator",
+      "label": "aggregator",
+      "resources": {"llm": "Qwen/Qwen2.5-Math-1.5B-Instruct", "runtime": "cuda:0"},
+      "source_code": "def aggregator(state):\n    \"\"\"Judge: select the better of the two candidate answers.\"\"\"\n    prompt = \"Select the better answer:\n\" + state[\"output_1\"] + \"\n\" + state[\"output_2\"]\n    return {\"combined_output\": decode(judge.generate(prompt))}\n"
+    },
+    "__end__": {"role": "sink", "label": "__end__"}
+  },
+  "edges": [
+    ["__start__", "react_agent"],
+    ["__start__", "cot_agent"],
+    ["react_agent", "aggregator"],
+    ["cot_agent", "aggregator"],
+    ["aggregator", "__end__"]
+  ]
+}

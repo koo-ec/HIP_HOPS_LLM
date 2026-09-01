@@ -1,0 +1,3 @@
+figure,model,subdomain,success_definition,N,accuracy,successes
+Fig9,Sonnet 4.5,MBPP,pass@1,257,0.471,121
+Fig9,Sonnet 4.5,MBPP,pass@3,257,0.494,127

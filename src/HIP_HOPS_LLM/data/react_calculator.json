@@ -1,0 +1,32 @@
+{
+  "name": "ReAct + calculator",
+  "description": "A single ReAct agent with a calculator tool and a conditional router. The generator->coder->generator feedback loop makes this the canonical loop-unrolling example.",
+  "provenance": "Approach 1 of the Kaggle notebook 'HiP-HOPS for Agentic AI' (kooaslansefat), recorded as a graph specification so the example runs without langgraph.",
+  "nodes": {
+    "__start__": {"role": "source", "label": "__start__"},
+    "generator": {
+      "role": "llm_agent",
+      "label": "generator",
+      "resources": {"llm": "Qwen/Qwen2.5-Math-1.5B-Instruct", "runtime": "cuda:0"},
+      "source_code": "def generator(state):\n    \"\"\"ReAct step: generate up to 'Observation'.\"\"\"\n    messages = [{\"role\": \"user\", \"content\": state[\"prompt\"]}]\n    outputs = model.generate(**inputs, max_new_tokens=1000, do_sample=True,\n                             temperature=0.3, stop_strings=\"Observation\")\n    return {\"output\": tokenizer.decode(outputs[0]), \"prompt\": state[\"prompt\"]}\n"
+    },
+    "generator::router": {
+      "role": "router",
+      "label": "router",
+      "source_code": "def router(state):\n    tool_match = re.search(r\"Action: (.*?)(?=Action Input)\", state[\"output\"], re.DOTALL)\n    final_answer_match = re.search(r\"Final Answer\", state[\"output\"], re.DOTALL)\n    tool = tool_match.group(1).strip() if tool_match else \"no_tool\"\n    if \"calculator\" in tool:\n        return \"coder\"\n    elif final_answer_match:\n        return \"end\"\n    return \"error\"\n"
+    },
+    "coder": {
+      "role": "tool",
+      "label": "coder",
+      "source_code": "def coder(state):\n    \"\"\"Calculator tool: evaluate the extracted expression.\"\"\"\n    match = re.search(r\"Action Input: (.*?)(?=Observation)\", state[\"output\"], re.DOTALL)\n    action_input_text = match.group(1).strip().strip('\"') if match else \"FAILED\"\n    try:\n        coder_output = eval(action_input_text)\n    except Exception:\n        coder_output = \"This is not something that could be executed by a simple calculator!\"\n    return {\"tool_output\": str(coder_output)}\n"
+    },
+    "__end__": {"role": "sink", "label": "__end__"}
+  },
+  "edges": [
+    ["__start__", "generator"],
+    ["coder", "generator"],
+    ["generator", "coder", "coder", true],
+    ["generator", "__end__", "error", true],
+    ["generator", "__end__", "end", true]
+  ]
+}

@@ -1,0 +1,125 @@
+# =============================================================================
+# Mode B design specification (NOT IMPLEMENTED in this release).
+#
+# This template records the settings a future end-to-end benchmark runner must
+# require before making real provider API calls. No repository command currently
+# executes this configuration or incurs provider costs.
+#
+# The paper discloses none of the following: model snapshot identifiers, system
+# prompt, benchmark prompt templates, temperature, top-p, max output tokens,
+# seeds, number of generations, retry policy, timeouts, SDK versions, dataset
+# splits or item id subsets. The official repository contains no code. None of
+# these is therefore recoverable, so any run configured from this file MUST be
+# labelled `contemporary_faithful_rerun`, never `historical_exact`.
+#
+# Every value below marked `REQUIRED_FROM_USER: null` must be filled in before
+# the run starts; the code raises MissingSettingError rather than defaulting.
+# =============================================================================
+
+mode: live_api
+
+run_label: contemporary_faithful_rerun     # historical_exact is refused unless
+                                           # every setting is recovered from an
+                                           # official source (it cannot be).
+strict_snapshots: true                     # reject moving aliases
+
+# ---------------------------------------------------------------------------
+# Target models. Immutable, dated snapshots ONLY. If a snapshot is unavailable
+# to the calling account the run stops with a precise error; no substitution.
+# ---------------------------------------------------------------------------
+models:
+  GPT-4o:
+    provider: openai
+    snapshot: null            # e.g. gpt-4o-2024-08-06  -- REQUIRED_FROM_USER
+  GPT-4o-mini:
+    provider: openai
+    snapshot: null            # e.g. gpt-4o-mini-2024-07-18 -- REQUIRED_FROM_USER
+  Sonnet 4.5:
+    provider: anthropic
+    snapshot: null            # e.g. claude-sonnet-4-5-20250929 -- REQUIRED_FROM_USER
+  Haiku 3.5:
+    provider: anthropic
+    snapshot: null            # e.g. claude-3-5-haiku-20241022 -- REQUIRED_FROM_USER
+
+# ---------------------------------------------------------------------------
+# Generation settings. All keys are mandatory; there are no library defaults.
+# ---------------------------------------------------------------------------
+generation:
+  system_prompt: null                # REQUIRED_FROM_USER
+  temperature: null                  # REQUIRED_FROM_USER
+  top_p: null                        # REQUIRED_FROM_USER
+  max_output_tokens: null            # REQUIRED_FROM_USER
+  n_generations: 1                   # 3 for the Pass@3 experiment (RQ6)
+  seed: null                         # OpenAI supports `seed`; Anthropic does not
+  timeout_seconds: 120
+  max_retries: 4
+  stop_sequences: []
+  prompt_template: null              # REQUIRED_FROM_USER, per benchmark below
+
+benchmarks:
+  MBPP:
+    split: null                      # REQUIRED_FROM_USER (paper does not state it)
+    item_ids: null                   # null = whole split; the paper's subset is unknown
+    revision: null
+    prompt_template: null            # REQUIRED_FROM_USER, must contain {prompt} and {tests}
+    evaluator: official_assert_tests
+  DS-1000:
+    split: null                      # REQUIRED_FROM_USER
+    item_ids: null
+    revision: null
+    prompt_template: null            # REQUIRED_FROM_USER
+    evaluator: official_ds1000_harness
+  BoolQ:
+    split: null                      # REQUIRED_FROM_USER
+    item_ids: null
+    revision: null
+    prompt_template: null            # REQUIRED_FROM_USER
+    evaluator: deterministic_boolean_parse   # never an LLM judge
+  RACE-H:
+    split: null                      # REQUIRED_FROM_USER
+    item_ids: null
+    revision: null
+    prompt_template: null            # REQUIRED_FROM_USER
+    evaluator: deterministic_option_parse    # never an LLM judge
+
+# ---------------------------------------------------------------------------
+# Sandbox for generated code (MBPP, DS-1000).
+# ---------------------------------------------------------------------------
+sandbox:
+  backend: docker                    # docker | subprocess
+  docker_image: python:3.12-slim
+  wall_time_s: 15.0
+  memory_mb: 512
+  cpus: 1.0
+  allow_unsafe_subprocess: false     # subprocess backend is refused unless true
+
+# ---------------------------------------------------------------------------
+# i.i.d. protocol (paper Section 4.2): every main-experiment task is an
+# independent call with cleared context. Verified by test_api_contracts.py.
+# ---------------------------------------------------------------------------
+protocol:
+  clear_context_between_tasks: true
+  record_raw_requests: true
+  record_raw_responses: true
+  record_token_usage: true
+  record_errors: true
+  # API errors are recorded as errors and NEVER converted into task outcomes.
+  api_error_policy: record_separately
+  report_service_level_reliability: true
+
+cache:
+  root: data/raw/api_cache
+  # Only completed provider responses may be written here.
+
+# RQ7 memory experiment: the sole path that retains conversational context.
+memory_experiment:
+  model: Sonnet 4.5
+  benchmark: BoolQ
+  n_tasks: 300
+  retain_context: true
+  log_provider_input_tokens: true
+  log_serialized_request_bytes: true
+
+cost_controls:
+  max_requests: 20000
+  abort_on_consecutive_failures: 25

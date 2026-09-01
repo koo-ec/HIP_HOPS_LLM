@@ -1,0 +1,8 @@
+# Normalise line endings in the repository, so a Windows checkout does not
+# rewrite every file. The vendored HIP-LLM sources are covered too, which keeps
+# their diff against upstream empty.
+* text=auto eol=lf
+
+*.png binary
+*.pdf binary
+*.ipynb text eol=lf

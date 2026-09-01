@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+docs/_build/
+
+# Environments and editors
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+.ipynb_checkpoints/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Credentials and provider caches
+*.key
+*.pem
+data/raw/api_cache/
+
+# Large deterministic intermediates. Figures, tables and the reproduction
+# report remain tracked as research deliverables.
+results/posterior_samples/*.npz
+results/diagnostics/executed_notebook*.ipynb
+results/diagnostics/strict_mode_attempt.ipynb
+
+# Analysis artefacts written by the examples and the notebooks
+artifacts/
+fault_trees/
+*.png
+!docs/source/_static/*.png
+!docs/figures/*.png
+
+# Sphinx
+docs/build/

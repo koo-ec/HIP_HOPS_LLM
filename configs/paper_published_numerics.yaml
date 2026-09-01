@@ -1,0 +1,172 @@
+# =============================================================================
+# Mode A: published_numerics
+#
+# Deterministic reproduction of HIP-LLM's statistical inference from the real
+# measurements published by the authors. This is NOT a mock: every accuracy
+# below is a published experimental result.
+#
+# Sources, in the priority order mandated by the specification:
+#   1. Paper mathematical definitions, theorems, appendices, global settings
+#      (Section 4.2, Appendix B) -- authoritative.
+#   2. Machine-readable numerics in the official repository
+#      (numerics/settings.yaml, numerics/data/models_accuracies.csv), which the
+#      repository states parameterise "all figures".
+#   3. Figure captions/labels.
+#   4. Printed tables and narrative.
+#   5. Reconstruction assumptions -- isolated below and rejected in strict mode.
+# =============================================================================
+
+mode: published_numerics
+
+hierarchy:
+  domains:
+    D1:
+      label: Coding
+      subdomains: [MBPP, DS-1000]
+    D2:
+      label: Reasoning
+      subdomains: [BoolQ, RACE-H]
+
+# Appendix B + numerics/settings.yaml (identical in both sources).
+weights:
+  omega:
+    D1: [0.204, 0.796]     # MBPP, DS-1000
+    D2: [0.483, 0.517]     # BoolQ, RACE-H
+  W: [0.149, 0.851]        # D1, D2
+
+effective_sample_size:
+  N_per_subdomain: 80
+  # numerics/README.md: C_ij = round(theta_hat_ij * N_ij), N_ij = 80.
+  count_rule: round
+
+hyperpriors:
+  a_range: [1, 12]
+  b_range: [1, 12]
+  c_range: [1, 25]
+  d_range: [1, 25]
+
+grids:
+  mu_points: 40
+  nu_points: 50
+  total_G: 2000
+  cdf_points_T: 201
+
+sampling:
+  S: 3000
+  K_per_domain: 160
+  max_llm_configuration_pairs: 512
+  # numerics/settings.yaml carries `sampling.PERTURBATION: 0.07`. Its meaning is
+  # NOT verified from any official source (the repository contains no code that
+  # consumes it) and it conflicts with the paper's +/-20% for RQ5's OP^approx.
+  # It is recorded here and deliberately left unused.
+  perturbation_setting_from_repository: 0.07
+  perturbation_semantics: UNVERIFIED
+
+seeds:
+  global: 7
+  configurations: 123
+  llm_pairs: 999
+
+# ---------------------------------------------------------------------------
+# RECONSTRUCTION ASSUMPTIONS
+# Every entry below is absent from the paper AND from the official repository
+# (verified: 22 commits, single `main` branch, no tags/releases, no source code
+# of any kind). With strict_exact: true the run aborts instead of guessing.
+# ---------------------------------------------------------------------------
+strict_exact: false
+
+reconstruction:
+  mu_grid_scheme: midpoint          # midpoint | beta_quantile
+  nu_grid_scheme: log               # log | linear | gamma_quantile
+  nu_grid_params:
+    nu_lo: 0.001
+    nu_hi: 250.0
+  config_sampling: uniform_random   # uniform_random | latin_hypercube | sobol | interval_corners_plus_interior
+  llm_pairing_mode: capped_random   # capped_random | exact_cartesian
+  justification:
+    nu_grid_scheme: >-
+      The paper fixes n_nu = 50 but never says how (0, inf) is truncated. All
+      three implemented schemes are compared in the notebook's grid-sensitivity
+      section; they agree on every posterior median to < 0.002, so the plotted
+      results are insensitive to this unresolved choice.
+    config_sampling: >-
+      settings.yaml names the count `N_CONFIGS` and gives a dedicated
+      `seeds.configs`, which is most consistent with plain independent uniform
+      draws; the alternatives are implemented and compared.
+    llm_pairing_mode: >-
+      Section 4.2 caps LLM-level pairings at K_total <= 512 while Theorem 3
+      defines the full Cartesian product (160^2 = 25600 for m = 2), so the
+      realised set must be a subsample; the rule is unstated.
+
+data_sources:
+  official_figure_numerics: data/reference/official_figure_numerics.csv
+  paper_table3: data/reference/paper_table3.csv
+  fig9_caption: data/reference/fig9_caption_numerics.csv
+  # These two are NEVER merged and NEVER swapped automatically.
+  default_for_figures: official_figure_numerics
+  default_for_table3_reproduction: paper_table3
+
+# Which source each figure is actually driven by, established by checking the
+# published panels' axis ranges and stated model orderings against both sources
+# (see the notebook's "Source discrepancies" section).
+figure_source_assignment:
+  Fig3: official_figure_numerics
+  Fig4: official_figure_numerics
+  Fig5: official_figure_numerics
+  Fig6: official_figure_numerics
+  Fig7: paper_table3          # <-- contradicts the repository's "all figures" claim
+  Fig8: official_figure_numerics
+  Fig9: fig9_caption
+  Fig10: official_figure_numerics
+
+rq2:
+  model: GPT-4o
+  varied_domain: D2
+  intervals:
+    a2: [[1, 12], [4, 12], [8, 12]]
+    b2: [[1, 12], [4, 12], [8, 12]]
+    c2: [[1, 25], [9, 25], [18, 25]]
+    d2: [[1, 25], [9, 25], [18, 25]]
+
+rq3:
+  models: [Sonnet 4.5, GPT-4o]
+  domain: D2
+  omega_race_h: [0.10, 0.517, 0.90]
+
+rq4:
+  horizons: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20, 25, 30, 35, 40, 50, 60]
+  report_at: [1, 2, 5, 10, 20, 60]
+
+rq6:
+  model: Sonnet 4.5
+  subdomain: MBPP
+  N: 257
+  pass1_accuracy: 0.471
+  pass3_accuracy: 0.494
+  # Fig. 9's partner subdomain (DS-1000) data is not stated by the caption.
+  partner_subdomain_source: official_figure_numerics
+  partner_subdomain_N: 80
+  partner_assumption_is_reconstruction: true
+
+rq7:
+  model: Sonnet 4.5
+  subdomain: BoolQ
+  theta_settings: [0.915, 0.940, 0.945]
+  iid_baseline: 0.915
+  n_tasks_same_session: 300
+
+rq8:
+  baseline: {m: 2, n_bar: 2, K: 160, S: 3000, G: 2000, T: 201, K_total_cap: 512}
+  sweeps:
+    m: [1, 2, 4, 8, 12]
+    n_bar: [2, 5, 10, 20, 40]
+    S: [500, 1000, 2000, 3000, 6000]
+    K: [40, 80, 160, 240, 320]
+    G: [1000, 2000, 2500, 3000, 4500]
+  repeats: 3
+
+tolerances:
+  posterior_median_abs: 0.005
+  quantile_abs: 0.010
+  cdf_sup_norm: 0.020
+  expected_reliability_abs: 0.010

@@ -1,0 +1,88 @@
+# =============================================================================
+# RQ5: comparison against BB-UnInf, BB-Inf, HiBayES.
+#
+# STATUS: BLOCKED for exact numerical reproduction.
+#
+# The paper publishes only the aggregate ground truth p_L^GT = 0.5860 together
+# with the sample-size regimes and the three OP scenarios. It does NOT publish
+# the ground-truth subdomain reliability vector, the ground-truth OP vector, the
+# BB-Inf prior strength, the HiBayES prior specification, or the random seeds.
+#
+# `sum_ij OP_ij * theta_ij = 0.5860` is ONE equation in SEVEN free unknowns
+# (four reliabilities plus four weights minus the simplex constraint). Infinitely
+# many parameter sets reproduce 0.5860, so inferring one would be fabrication,
+# not reproduction. The official repository contains no code and no synthetic
+# experiment data; its entire history is README edits and image uploads.
+#
+# Everything below is therefore `null`. hip_llm.baselines.rq5_blocking_checklist
+# turns these nulls into an explicit blocking table that the notebook prints in
+# place of results. Fill them in ONLY with values recovered from an official
+# source, or set `allow_illustrative_run: true` to exercise the machinery on
+# values that are explicitly NOT the paper's.
+# =============================================================================
+
+mode: synthetic_rq5
+status: blocked_by_missing_source_information
+
+p_L_ground_truth: 0.5860        # the ONE published quantity
+
+ground_truth:
+  theta_gt: null                # REQUIRED: 4-vector of subdomain reliabilities
+  op_gt: null                   # REQUIRED: 4-vector, sums to 1
+
+operational_profiles:
+  op_data: null                 # REQUIRED: dataset-proportional OP (which sizes?)
+  perturbation_magnitude: null  # paper Section 4.3.5 says +/-20%;
+                                # repo settings.yaml says PERTURBATION = 0.07.
+                                # UNRECONCILED -- do not pick one silently.
+  scenarios: [OPdata, OPapprox, OPGT]
+
+sample_sizes:
+  small_N: [100, 500, 1000, 300]      # paper Section 4.3.5 -- published
+  large_N: [1000, 5000, 10000, 3000]  # paper Section 4.3.5 -- published
+
+baselines:
+  bb_uninf:
+    prior: [1.0, 1.0]           # published: Beta(1,1)
+  bb_inf:
+    centred_on: ground_truth    # published: "centered on the GT reliabilities"
+    prior_strength: null        # REQUIRED: the strength is never stated
+  hibayes:
+    family: hierarchical_binomial_glm_random_intercept
+    alpha_prior_sd: null        # REQUIRED: not stated in the paper
+    sigma_prior_scale: null     # REQUIRED: not stated in the paper
+  hip_llm:
+    # HIP-LLM's own settings ARE published and are inherited from
+    # configs/paper_published_numerics.yaml.
+    inherit_from: paper_published_numerics
+
+seeds:
+  synthetic: null               # REQUIRED: RQ5 tables are single realisations
+
+metrics:
+  median: envelope_of_per_configuration_medians    # paper Section 4.3.5
+  error: absolute_deviation_from_p_L_ground_truth
+  credible_interval: [0.05, 0.95]
+  hip_llm_ci_rule: widest        # [min_h Q05, max_h Q95] -- paper Section 4.3.5
+
+reference_artifacts:
+  table4_printed: data/reference/paper_table4_printed.csv
+  table5_printed: data/reference/paper_table5_printed.csv
+
+# Set true ONLY to exercise the estimators. Any output is labelled
+# `illustrative_not_paper` and may never be presented as a reproduction.
+allow_illustrative_run: false
+illustrative:
+  theta_gt: [0.45, 0.50, 0.90, 0.85]
+  op_gt: [0.10, 0.20, 0.30, 0.40]
+  op_data: [0.204, 0.796, 0.483, 0.517]   # NOT normalised as a joint OP on purpose:
+                                          # the code renormalises and flags it
+  perturbation_magnitude: 0.20
+  bb_inf_prior_strength: 50.0
+  hibayes_alpha_prior_sd: 2.5
+  hibayes_sigma_prior_scale: 1.0
+  seed: 20260728
+  warning: >-
+    These values are invented for the sole purpose of exercising the estimators
+    and unit tests. They do NOT reproduce p_L^GT = 0.5860 and are NOT the paper's
+    ground truth. Any table produced from them is labelled illustrative_not_paper.

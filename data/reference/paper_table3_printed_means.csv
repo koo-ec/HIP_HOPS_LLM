@@ -1,0 +1,14 @@
+# Row/column means exactly as PRINTED in paper Table 3.
+# Retained verbatim as a reference artifact so that the notebook can check them
+# against the means recomputed from the printed cells (see Section 3 of the
+# notebook). Note the GPT-4o "LLM Mean" cell: the printed value is 0.585 whereas
+# the unweighted mean of that column's four printed subdomain accuracies is
+# (0.471+0.420+0.909+0.552)/4 = 0.588.
+statistic,scope,GPT-4o-mini,GPT-4o,Sonnet 4.5,Haiku 3.5
+domain_mean,Dom1,0.465,0.446,0.472,0.465
+domain_mean,Dom2,0.855,0.731,0.870,0.871
+llm_mean,LLM,0.661,0.585,0.671,0.668
+row_mean,MBPP,0.452,0.452,0.452,0.452
+row_mean,DS-1000,0.472,0.472,0.472,0.472
+row_mean,BoolQ,0.896,0.896,0.896,0.896
+row_mean,RACE-H,0.768,0.768,0.768,0.768

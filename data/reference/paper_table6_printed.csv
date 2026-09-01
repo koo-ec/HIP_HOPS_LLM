@@ -1,0 +1,6 @@
+swept_parameter,symbol,range_low,range_high,paper_peak_memory_mb_low,paper_peak_memory_mb_high,paper_note
+Number of domains,m,1,12,24.6,146.7,approximately linear
+Subdomains per domain,n_bar,2,40,35.8,314.2,approximately linear
+Monte Carlo samples,S,500,6000,7.6,69.4,approximately linear
+Hyperparameter configurations,K,40,320,19.1,57.8,approximately linear
+Integration grid size,G,1000,4500,35.7,35.7,effectively constant (grid reused across configurations)
