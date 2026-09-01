@@ -1,5 +1,12 @@
 # HIP-HOPS-LLM
 
+[![CI](https://github.com/koo-ec/HIP_HOPS_LLM/actions/workflows/ci.yml/badge.svg)](https://github.com/koo-ec/HIP_HOPS_LLM/actions/workflows/ci.yml)
+[![Docs](https://github.com/koo-ec/HIP_HOPS_LLM/actions/workflows/docs.yml/badge.svg)](http://koorosh-aslansefat.com/HIP_HOPS_LLM/)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue)](https://www.python.org/)
+[![Licence: MIT](https://img.shields.io/badge/licence-MIT-green)](LICENSE)
+[![DOI](https://img.shields.io/badge/HIP--LLM-10.1016%2Fj.ress.2026.112615-b31b1b)](https://doi.org/10.1016/j.ress.2026.112615)
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/koo-ec/HIP_HOPS_LLM/blob/main/notebooks/HIP_HOPS_LLM_Colab.ipynb)
+
 **Hierarchical imprecise reliability assessment and failure propagation for LLM-based agentic systems.**
 
 Give it a LangGraph application and observed benchmark outcomes. Get back
@@ -133,6 +140,9 @@ A test asserts that *every* public symbol of `HIPLLM` and `hip_llm` is reachable
 this way, so the promise stays true.
 
 ## Documentation
+
+Rendered at **<http://koorosh-aslansefat.com/HIP_HOPS_LLM/>**, and in the
+repository:
 
 | | |
 |---|---|

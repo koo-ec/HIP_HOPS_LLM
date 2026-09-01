@@ -54,7 +54,7 @@ dependencies = [
 Homepage = "https://github.com/koo-ec/HIP_HOPS_LLM"
 Repository = "https://github.com/koo-ec/HIP_HOPS_LLM"
 Issues = "https://github.com/koo-ec/HIP_HOPS_LLM/issues"
-Documentation = "https://hip-hops-llm.readthedocs.io"
+Documentation = "http://koorosh-aslansefat.com/HIP_HOPS_LLM/"
 "HIP-LLM" = "https://github.com/koo-ec/HIP_LLM"
 Publication = "https://doi.org/10.1016/j.ress.2026.112615"
 
