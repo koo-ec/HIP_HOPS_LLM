@@ -59,8 +59,12 @@ The suite includes HIP-LLM's own tests, run against the vendored copy — see
 
 ```text
 !git clone --depth=1 https://github.com/koo-ec/HIP_HOPS_LLM.git
-%pip install -q -e HIP_HOPS_LLM[all]
+%pip install -q -e "HIP_HOPS_LLM[bayes,graph]"
 ```
+
+`[all]` also works, but it pulls the docs and release toolchains into the
+runtime, and on Colab that upgrades `rich` past what some preinstalled packages
+pin. `[bayes,graph]` is everything the notebook actually uses.
 
 `notebooks/HIP_HOPS_LLM_Colab.ipynb` in the repository does this and runs the
 whole pipeline; open it directly from GitHub in Colab.

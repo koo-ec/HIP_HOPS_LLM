@@ -95,7 +95,7 @@ Repository: {REPO.removesuffix('.git')}
     code(
         f"""
 !git clone --depth=1 {REPO} 2>&1 | tail -2
-%pip install -q -e HIP_HOPS_LLM[all] 2>&1 | tail -3
+%pip install -q -e "HIP_HOPS_LLM[bayes,graph]" 2>&1 | tail -3
 print("installed")
 """
     ),
@@ -411,7 +411,7 @@ What it does, in the HiP-HOPS phases:
     code(
         f"""
 !git clone --depth=1 {REPO} 2>&1 | tail -2
-%pip install -q -e HIP_HOPS_LLM[all] 2>&1 | tail -3
+%pip install -q -e "HIP_HOPS_LLM[bayes,graph]" 2>&1 | tail -3
 
 import importlib, os, platform, sys
 
