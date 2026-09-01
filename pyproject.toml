@@ -74,6 +74,8 @@ docs = [
   "sphinx-autodoc-typehints>=2.3",
   "myst-parser>=3.0",
   "sphinx-copybutton>=0.5",
+  # myst_enable_extensions includes "linkify", which needs this at build time.
+  "linkify-it-py>=2.0",
 ]
 dev = ["ruff>=0.6", "build>=1.2", "twine>=5.1"]
 all = [
@@ -91,6 +93,7 @@ all = [
   "sphinx-autodoc-typehints>=2.3",
   "myst-parser>=3.0",
   "sphinx-copybutton>=0.5",
+  "linkify-it-py>=2.0",
   "ruff>=0.6",
   "build>=1.2",
   "twine>=5.1",
