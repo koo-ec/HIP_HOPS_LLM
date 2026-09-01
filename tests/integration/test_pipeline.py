@@ -193,10 +193,26 @@ class TestEveryExample:
         assert study.hazards_found()
         for hazard in study.hazards_found():
             network = study.bayesnet(hazard)
+
             check = network.cross_check()
-            assert check["agree"] == 1.0, (
-                f"{key}/{hazard}: exact and pyAgrum disagree — "
-                f"{check['exact']!r} vs {check['pyagrum']!r}"
-            )
+            assert set(check) == {
+                "exact",
+                "pyagrum",
+                "difference",
+                "relative_difference",
+                "agree",
+                "compared",
+            }, "cross_check must return the same keys whether or not pyAgrum is here"
+            if check["compared"]:
+                assert check["agree"] == 1.0, (
+                    f"{key}/{hazard}: exact and pyAgrum disagree — "
+                    f"{check['exact']!r} vs {check['pyagrum']!r}"
+                )
+            else:
+                # Without pyAgrum the comparison cannot run; saying so is not the
+                # same as saying the engines disagree.
+                assert check["agree"] != check["agree"], "agree should be NaN"
+                assert 0.0 <= check["exact"] <= 1.0
+
             comparison = network.compare_with_cutsets(study.report.analysis(hazard))
             assert comparison["bound_overestimate"] >= -1e-9

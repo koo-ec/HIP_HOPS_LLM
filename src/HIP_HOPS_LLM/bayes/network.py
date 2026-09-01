@@ -409,7 +409,18 @@ class BayesianNetwork:
         try:
             agrum = self.p_fail(engine="pyagrum")
         except PyAgrumUnavailable:
-            return {"exact": exact, "pyagrum": float("nan"), "difference": float("nan")}
+            # The shape stays the same so callers never have to branch on it.
+            # ``compared`` is 0 and ``agree`` is NaN, not 0: "the check did not
+            # run" and "the two engines disagree" are different claims, and
+            # reporting the second for the first would be a lie.
+            return {
+                "exact": exact,
+                "pyagrum": float("nan"),
+                "difference": float("nan"),
+                "relative_difference": float("nan"),
+                "agree": float("nan"),
+                "compared": 0.0,
+            }
         diff = abs(exact - agrum)
         scale = max(abs(exact), abs(agrum), 1e-300)
         return {
@@ -418,6 +429,7 @@ class BayesianNetwork:
             "difference": diff,
             "relative_difference": diff / scale,
             "agree": float(diff <= max(abs_tol, rel_tol * scale)),
+            "compared": 1.0,
         }
 
     def compare_with_cutsets(self, analysis: TreeAnalysis) -> Dict[str, float]:

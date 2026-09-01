@@ -41,6 +41,7 @@ class TestConstruction:
 class TestInference:
     def test_exact_and_pyagrum_agree(self, net):
         check = net.cross_check()
+        assert check["compared"] == 1.0, "pyAgrum is installed, so it must be used"
         assert check["agree"] == 1.0, (
             "the two construction paths disagree; one of them is wrong"
         )

@@ -142,7 +142,8 @@ network.cross_check()
 
 ```text
 {'exact': 0.226231129671561, 'pyagrum': 0.22623112967156112,
- 'difference': 1.11e-16, 'relative_difference': 4.9e-16, 'agree': 1.0}
+ 'difference': 1.11e-16, 'relative_difference': 4.9e-16, 'agree': 1.0,
+ 'compared': 1.0}
 ```
 
 This also means **pyAgrum is optional**. Without it, `engine="exact"` answers

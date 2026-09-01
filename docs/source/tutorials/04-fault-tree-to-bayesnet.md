@@ -76,7 +76,8 @@ network.cross_check()
 
 ```text
 {'exact': 0.2276430…, 'pyagrum': 0.2276430…,
- 'difference': 1.1e-16, 'relative_difference': 4.9e-16, 'agree': 1.0}
+ 'difference': 1.1e-16, 'relative_difference': 4.9e-16,
+ 'agree': 1.0, 'compared': 1.0}
 ```
 
 Two engines that share no code — pyAgrum's junction tree, and exact enumeration

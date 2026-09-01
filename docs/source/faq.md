@@ -13,7 +13,7 @@ The two engines are cross-checked against each other precisely so that the NumPy
 one can be trusted:
 
 ```python
-network.cross_check()    # {'agree': 1.0, 'relative_difference': 4.9e-16, …}
+network.cross_check()    # {'agree': 1.0, 'compared': 1.0, …}
 ```
 
 pyAgrum scales further — exact enumeration refuses above 24 basic events per tree
