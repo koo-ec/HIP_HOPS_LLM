@@ -42,6 +42,7 @@ from .hipllm import (  # noqa: F401
 )
 from .profile import (
     OperationalProfile,
+    dataset_proportional_profile,
     empirical_profile,
     stratify,
     uniform_profile,
@@ -50,6 +51,7 @@ from .profile import (
 __all__ = [
     # profiles
     "OperationalProfile",
+    "dataset_proportional_profile",
     "empirical_profile",
     "stratify",
     "uniform_profile",

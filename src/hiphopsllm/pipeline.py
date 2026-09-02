@@ -45,7 +45,10 @@ from .reliability.calibration import (
     ComponentEvidence,
     EvidenceCalibrator,
 )
-from .reliability.profile import OperationalProfile, empirical_profile
+from .reliability.profile import (
+    OperationalProfile,
+    dataset_proportional_profile,
+)
 from .report import SafetyReport, analyse_langgraph
 
 __all__ = ["AgenticReliabilityStudy", "StudyNotReady"]
@@ -203,7 +206,7 @@ class AgenticReliabilityStudy:
                 "strata=[...] or a table with a stratum column"
             )
         if self.profile is None:
-            self.profile = empirical_profile(strata)
+            self.profile = dataset_proportional_profile(strata)
         if component is None:
             self._fit_system(outcomes, strata)
         else:
@@ -249,7 +252,14 @@ class AgenticReliabilityStudy:
             )
         strata = [str(s) for s in working[stratum_column]]
         if self.profile is None:
-            self.profile = empirical_profile(strata)
+            self.profile = dataset_proportional_profile(strata)
+            print(
+                "NO OPERATIONAL PROFILE GIVEN. Falling back to the benchmark's\n"
+                "own mix of strata, which asserts that your deployed workload\n"
+                "looks like your test set. That assumption is the thing HIP-LLM\n"
+                "exists to remove, and every probability below is conditional on\n"
+                "it. Pass profile={...} with the mix you actually expect."
+            )
         for column in columns:
             # A blank cell means "this node was not exercised on that item" —
             # a router sent the run to END before reaching it, say. That is a
@@ -644,14 +654,88 @@ class AgenticReliabilityStudy:
         """Draw the Bayesian network for a hazard."""
         return self.bayesnet(hazard).show(**kwargs)
 
+    def operational_reliability(self, n_tasks: int = 1) -> str:
+        """The measured claim, stated the way HIP-LLM defines it.
+
+        This is the *measurement*: for each component, the probability that it
+        fails on one task drawn from the stated operational profile, and the
+        probability of failure-free operation over ``n_tasks``.
+
+        It is deliberately separate from the fault tree. The tree decomposes
+        each of these numbers over a component's internal failure modes so that
+        it can be *propagated* through the architecture; that decomposition is a
+        modelling step, not something that was observed. What was observed is
+        here: a task either succeeded or it did not, whatever the reason.
+        """
+        if not self.evidence:
+            raise StudyNotReady(
+                "nothing has been measured yet; call observe() or "
+                "run_and_observe() first"
+            )
+        assert self.profile is not None
+
+        def fmt(value: float) -> str:
+            """Four decimals normally; scientific once that would round to zero."""
+            if value == 0.0 or value >= 1e-4:
+                return f"{value:8.4f}"
+            return f"{value:8.2e}"
+
+        horizon = f"R({n_tasks} task{'s' if n_tasks != 1 else ''})"
+        header = f"{'component':<20}{'P(fail per task)':>22}"
+        if n_tasks > 1:
+            header += f"{horizon:>22}"
+        header += f"{'n':>7}"
+
+        lines = [
+            "Measured reliability under the operational profile",
+            "=" * 50,
+            "",
+            self.profile.summary(),
+            "",
+            header,
+            "-" * len(header),
+        ]
+        for name, evidence in self.evidence.items():
+            low, high = evidence.interval
+            row = f"{name:<20}[{fmt(low)},{fmt(high)}]"
+            if n_tasks > 1:
+                r_low, r_high = evidence.reliability(n_tasks)
+                row += f" [{fmt(r_low)},{fmt(r_high)}]"
+            lines.append(f"{row}  {evidence.n_trials:>5}")
+        lines.append("")
+        note = (
+            "Each interval is a posterior envelope, not a confidence interval: it\n"
+            "spans the admissible hyperparameter set as well as the sampling\n"
+            "uncertainty."
+        )
+        if n_tasks > 1:
+            note += (
+                "\nR(n) is the probability of failure-free operation over n future\n"
+                "tasks — HIP-LLM's definition of reliability — computed as E[p^n]\n"
+                "per configuration and then enveloped, never as E[p]^n."
+            )
+        lines.append(note)
+        method = next(iter(self.evidence.values())).method
+        lines.append(f"\nmethod: {method}")
+        return "\n".join(lines)
+
     def summary(self) -> str:
         """Everything the study currently knows, in one printable block."""
         report = self._require_report()
         lines = [report.summary()]
-        if self.profile is not None:
+        if self.profile is not None and self.calibration is None:
             lines.append("")
             lines.append(self.profile.summary())
         if self.calibration is not None:
+            lines.append("")
+            lines.append(self.operational_reliability(n_tasks=10))
+            lines.append("")
+            lines.append(
+                "The fault tree below decomposes each measured probability over\n"
+                "that component's failure modes so it can be propagated through\n"
+                "the architecture. That split is a modelling step; the\n"
+                "measurement is the table above."
+            )
             lines.append("")
             lines.append(self.calibration.summary())
         else:

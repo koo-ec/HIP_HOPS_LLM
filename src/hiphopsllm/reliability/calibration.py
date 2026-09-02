@@ -133,6 +133,56 @@ class ComponentEvidence:
     def width(self) -> float:
         return self.interval[1] - self.interval[0]
 
+    @property
+    def success_interval(self) -> Tuple[float, float]:
+        """``[1 - upper, 1 - lower]``: the per-task probability of *not* failing."""
+        return (1.0 - self.interval[1], 1.0 - self.interval[0])
+
+    def reliability(self, n_tasks: int = 1) -> Tuple[float, float]:
+        r"""``R(n)`` — the probability of failure-free operation over ``n`` tasks.
+
+        This is HIP-LLM's definition of reliability (paper Section 3, Theorems
+        4-6): *the probability of failure-free operation over a specified number
+        of future tasks under a given operational profile*, not a benchmark
+        accuracy. Returned as an envelope, because the underlying failure
+        probability is itself an interval.
+
+        Computed as :math:`\mathbb{E}[p^{n}]` per hyperparameter configuration
+        and then enveloped, never as :math:`\mathbb{E}[p]^{n}` — by Jensen's
+        inequality those differ, and the second understates reliability.
+        """
+        if n_tasks < 1:
+            raise ValueError("n_tasks must be at least 1")
+        if self.posterior is not None:
+            from hip_llm.reliability import expected_reliability_envelope
+
+            envelope = expected_reliability_envelope(
+                1.0 - np.asarray(self.posterior.failure_samples, dtype=float),
+                horizons=np.array([float(n_tasks)]),
+            )
+            return (float(envelope.lower[0]), float(envelope.upper[0]))
+        # The approximation path has no posterior sample family, so the best
+        # available statement is the interval endpoints raised to the power.
+        low, high = self.success_interval
+        return (low ** n_tasks, high ** n_tasks)
+
+    def statement(self, n_tasks: int = 1) -> str:
+        """The claim this evidence supports, in the form HIP-LLM defines it."""
+        weights = ", ".join(f"{k} {v:.0%}" for k, v in self.profile.items())
+        low, high = self.interval
+        line = (
+            f"{self.component} fails on a task with probability "
+            f"[{low:.4f}, {high:.4f}] under the operational profile ({weights}), "
+            f"from {self.n_failures}/{self.n_trials} observed failures"
+        )
+        if n_tasks > 1:
+            r_low, r_high = self.reliability(n_tasks)
+            line += (
+                f"; failure-free over {n_tasks} tasks with probability "
+                f"[{r_low:.4f}, {r_high:.4f}]"
+            )
+        return line
+
     def evidence_string(self) -> str:
         return (
             f"{self.method}: {self.n_failures}/{self.n_trials} observed failures "

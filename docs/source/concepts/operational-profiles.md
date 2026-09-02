@@ -44,6 +44,53 @@ That line is not decoration. "Declared by the analyst" and "observed frequencies
 over 12,480 logged items" support very different claims, and a reader six months
 later cannot tell them apart from the numbers alone.
 
+## How this maps onto HIP-LLM's hierarchy
+
+HIP-LLM's operational profile is hierarchical (paper Definition 2, Section 3.2.1):
+
+```text
+subdomain -> domain :  p_i   = sum_j  Omega_ij * theta_ij     (sum_j Omega_ij = 1)
+domain    -> LLM    :  p_L   = sum_i  W_i * p_i               (sum_i W_i     = 1)
+```
+
+`theta_ij` is the failure probability in subdomain *j* of domain *i*; `Omega_ij`
+and `W_i` are the profile weights. The paper also gives the algebraically
+identical flat form `OP_ij = W_i * Omega_ij`.
+
+**A stratum here is a HIP-LLM subdomain**, and this package uses the flat,
+single-domain case: your `{label: weight}` mapping is `Omega`, and there is one
+domain, so `p_L` is the profile-weighted average of the per-stratum failure
+probabilities. That is what
+`hiphopsllm.reliability.hipllm.OperationalFailureProb` is given, at
+`level="benchmark_stratum"`.
+
+If you need several domains, use the engine directly:
+`hiphopsllm.reliability.hipllm.posterior.run_domain` with `DomainData` and
+`SubdomainData` from the same module.
+
+## What is actually reported
+
+The measurement is **the probability that a component fails on one task drawn
+from the profile**, and the reliability
+**R(n) = P(failure-free over n future tasks)**, which is HIP-LLM's definition of
+reliability. Neither is about any particular failure mode:
+
+```python
+study.operational_reliability(n_tasks=10)
+study.evidence["react_agent"].statement(n_tasks=10)
+study.evidence["react_agent"].reliability(100)
+```
+
+```text
+react_agent fails on a task with probability [0.1542, 0.2977] under the
+operational profile (short 30%, medium 50%, long 20%), from 33/160 observed
+failures; failure-free over 10 tasks with probability [0.0736, 0.1003]
+```
+
+The fault tree then *decomposes* each of those numbers over the component's
+failure modes so it can be propagated through the architecture. That split is a
+modelling step; the measurement is the statement above.
+
 ## Choosing the strata
 
 The strata must partition the input space, and they should be chosen so that
@@ -123,6 +170,23 @@ OperationalProfile.coerce(engine_profile)          # -> back again
 
 Anything in this package that takes a `profile=` argument accepts either, or a
 plain `dict`.
+
+## Never let the benchmark be the profile by default
+
+`dataset_proportional_profile` exists so that using the dataset's own mix as the
+workload is a *named choice* rather than something that happens quietly. HIP-LLM
+names it too (paper Section 4.2, Remark 7).
+
+```python
+from hiphopsllm import dataset_proportional_profile, empirical_profile
+
+dataset_proportional_profile(strata)   # "my test set looks like production"
+empirical_profile(production_labels)   # production traffic, actually measured
+```
+
+The arithmetic is identical. The claim is not, which is why they are separate
+functions and why their `provenance` strings differ. If you call `observe()`
+without a profile you get the first one, and a warning saying so.
 
 ## Why it is never inferred
 

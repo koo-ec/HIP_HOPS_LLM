@@ -66,7 +66,7 @@ def cells(md, code):
   <div style="color:#cfe3d8;font-family:Helvetica,Arial,sans-serif;font-size:15px;
               max-width:760px;margin:0 auto;line-height:1.6;">
     From a LangGraph application to synthesised fault trees, minimal cut sets,
-    a generated FMEA and a calibrated Bayesian network — ending in a defensible
+    a generated FMEA and a calibrated Bayesian network, ending in a defensible
     <b>interval</b> for the probability of failure, not a number nobody can check.
   </div>
   <div style="margin-top:20px;">
@@ -106,22 +106,32 @@ def cells(md, code):
               color:{INK};margin-bottom:8px;">Abstract</div>
   <div style="font-family:Helvetica,Arial,sans-serif;font-size:14.5px;
               line-height:1.75;color:#20303a;text-align:justify;">
-    <b>HIP-HOPS-LLM brings established system-safety engineering to agentic AI.</b>
-    A multi-agent LLM workflow is assembled from components — planners, tools,
-    routers, judges — whose individual reliability can be measured, but whose
-    <i>system</i> reliability is not the product of those measurements.
-    <b>HIP-HOPS</b> supplies the structure: annotate each component with its local
-    failure logic, then synthesise system-level fault trees, minimal cut sets and
-    an FMEA from the architecture itself, so the analysis cannot drift away from
-    the code it describes. <b>HIP-LLM</b> supplies the numbers: a hierarchical
-    imprecise-Bayesian posterior for the probability that a model fails on the next
-    input drawn from an explicit <b>operational profile</b>, returned as an interval
-    because a few hundred benchmark items do not identify a point. This package
-    joins them — reading a LangGraph application, calibrating its fault trees from
-    measured per-node outcomes, and converting the result into a Bayesian network
-    for exact inference, diagnosis and visualisation. An architecture diagram
-    becomes a reliability claim you can defend.
+    <b>HIP-HOPS-LLM applies established system-safety engineering to agentic AI.</b>
+    A multi-agent LLM application is built from components whose failure rates can
+    be measured, but whose <i>system</i> reliability is not their product.
+    <b>HIP-HOPS</b> supplies the structure: each component carries its local failure
+    logic, and system fault trees, minimal cut sets and an FMEA are synthesised
+    automatically from the architecture, so the analysis cannot drift from the code
+    it describes. <b>HIP-LLM</b> supplies the numbers, defining reliability as the
+    probability of failure-free operation over a stated number of future tasks under
+    a given <b>operational profile</b>, and returning posterior <i>envelopes</i>
+    rather than point estimates from hierarchical imprecise-Bayesian inference
+    across a subdomain, domain and model hierarchy. This package joins them: it
+    reads a LangGraph application, measures every component under an explicit
+    profile, calibrates each basic event with those intervals, and converts the
+    result into a Bayesian network for exact inference, diagnosis and visualisation.
+    The quantity measured is task failure, whatever its mode.
   </div>
+</div>
+
+<div style="border-left:5px solid {ACCENT};background:#f9fbfa;
+            border-radius:0 8px 8px 0;padding:11px 24px;margin:0 0 12px 0;
+            font-family:Helvetica,Arial,sans-serif;font-size:14px;
+            line-height:1.7;color:#20303a;">
+  <b style="color:{INK};">Keywords:</b>
+  reliability engineering, safety analysis, fault tree synthesis, HiP-HOPS, FMEA,
+  Bayesian networks, imprecise probability, operational profile, agentic AI,
+  multi-agent systems, LangGraph, large language models
 </div>
 """
         ),
@@ -135,7 +145,7 @@ def cells(md, code):
 
 **What this notebook is.** You already have a multi-agent LangGraph notebook that
 works. This shows how to get a quantified reliability analysis of it by appending
-**two cells** — [Step 6](#step6) and [Step 7](#step7). Everything before them
+**two cells**: [Step 6](#step6) and [Step 7](#step7). Everything before them
 stands in for *your* notebook.
 
 | | Section | What happens |
@@ -146,8 +156,8 @@ stands in for *your* notebook.
 | 3 | [Your three agents](#step3) | Research → capture → classify |
 | 4 | [Your graph](#step4) | The compiled LangGraph, with conditional edges |
 | 5 | [Your inputs](#step5) | A stratified set of molecules |
-| **6** | [**Cell A — the operational profile**](#step6) | **Run, score every node, calibrate — one call** |
-| **7** | [**Cell B — the Bayesian network**](#step7) | **Generate and visualise it** |
+| **6** | [**Cell A: the operational profile**](#step6) | **Run, score every node and calibrate, in one call** |
+| **7** | [**Cell B: the Bayesian network**](#step7) | **Generate and visualise it** |
 | 8 | [What the network adds](#step8) | Exact inference, diagnosis, pyAgrum |
 | 9 | [Keep the measurement](#step9) | Save the artefacts |
 | | [Applying this to your notebook](#yours) | The three things you change |
@@ -156,7 +166,7 @@ stands in for *your* notebook.
             border-radius:0 6px 6px 0;font-family:Helvetica,Arial,sans-serif;
             font-size:14px;line-height:1.6;">
   <b>Runtime:</b> about a minute, most of it the install. No GPU, no API key and
-  no data of your own — the stand-in agents are deterministic.
+  no data of your own; the stand-in agents are deterministic.
 </div>
 """
         ),
@@ -192,7 +202,7 @@ for name, dist in (("numpy", "numpy"), ("pandas", "pandas"),
 
 import hiphopsllm as H
 
-print(f"\\nHIP-HOPS-LLM {H.__version__} — {len(H.__all__)} public names")
+print(f"\\nHIP-HOPS-LLM {H.__version__}: {len(H.__all__)} public names")
 print("Graphviz available:", H.graphviz_available())
 """
         ),
@@ -227,7 +237,7 @@ class AgentState(typing.TypedDict, total=False):
                 "Your three agents",
                 "A research agent resolves the molecule and opens the ECHA page, a "
                 "capture agent reads the hazard table from it, and a safety agent "
-                "classifies the hazard with an LLM. Each fails in its own way — "
+                "classifies the hazard with an LLM. Each fails in its own way, "
                 "which is what the analysis is about.",
                 "step3",
             )
@@ -341,7 +351,7 @@ except ImportError:
                 state.update(safety_agent(state))
         return state
 
-    print("langgraph not installed — using the recorded architecture and a "
+    print("langgraph not installed; using the recorded architecture and a "
           "plain-Python runner. The analysis below is unchanged.")
 """
         ),
@@ -351,7 +361,7 @@ except ImportError:
                 "Your inputs",
                 "A reliability claim is conditional on the mix of work the system "
                 "will meet, so the inputs are bucketed into strata whose difficulty "
-                "genuinely differs — here, structural complexity.",
+                "genuinely differs (here, structural complexity).",
                 "step5",
             )
         ),
@@ -374,15 +384,15 @@ print(len(SMILES), "inputs")
         md(
             _banner(
                 "6",
-                "Cell A — the operational profile, in one call",
+                "Cell A: the operational profile, in one call",
                 """`run_and_observe` invokes the graph once per input, scores **each
 node** separately, builds the operational profile, and calibrates the fault trees
 from what it measured.
 
 Two things it needs from you, because it cannot invent them:
 
-* **`stratum`** — how to bucket an input.
-* **`success`** — how to tell, from the final state, whether each node did its
+* **`stratum`**: how to bucket an input.
+* **`success`**: how to tell, from the final state, whether each node did its
   job. Return `None` when a node was **not exercised**, because a router sent the
   run to `END` first. That is recorded as a *missing observation*, not a failure:
   scoring an unreached node as failed would blame it for an upstream fault.""",
@@ -435,7 +445,7 @@ study.calibration.evidence_frame()
         ),
         code(
             """
-print("per-stratum failure rates — why the profile matters:\\n")
+print("per-stratum failure rates, and why the profile matters:\\n")
 for name, evidence in study.evidence.items():
     rates = ",  ".join(f"{k}={v:.3f}" for k, v in evidence.by_stratum.items())
     print(f"  {name:<16} {rates}")
@@ -449,7 +459,7 @@ for cut in sorted(study.cut_sets("H2"), key=lambda c: (len(c), c)):
         md(
             _banner(
                 "7",
-                "Cell B — generate and visualise the Bayesian network",
+                "Cell B: generate and visualise the Bayesian network",
                 "The network is generated *from* the fault tree, so the two cannot "
                 "disagree. Each node shows its posterior as a labelled bar per "
                 "state, and the caption reports the inference time.",
@@ -519,7 +529,7 @@ if graphviz_available():
 
     gnb.showInference(network.net, size="12")
 else:
-    print("Graphviz not on PATH — the rendering above is the same network. "
+    print("Graphviz not on PATH; the rendering above is the same network. "
           "Run `!apt-get -qq install graphviz` to use pyAgrum's.")
 """
         ),
@@ -552,27 +562,41 @@ for path in study.save("artifacts"):
 Copy the two cells from [Step 6](#step6) and [Step 7](#step7), and change three
 things:
 
-1. **`inputs`** — your own list of graph inputs.
-2. **`stratum`** — how you bucket them into strata whose difficulty differs.
-3. **`success`** — how each node's outcome is read from the final state,
+1. **`inputs`**: your own list of graph inputs.
+2. **`stratum`**: how you bucket them into strata whose difficulty differs.
+3. **`success`**: how each node's outcome is read from the final state,
    returning `None` where a node was not exercised.
 
 Everything else follows: the architecture is read from your compiled graph, the
 fault trees are synthesised from it, and the Bayesian network is generated from
 those.
 
-<table>
-<tr><td><b>Documentation</b></td>
-    <td><a href="http://koorosh-aslansefat.com/HIP_HOPS_LLM/">koorosh-aslansefat.com/HIP_HOPS_LLM</a></td></tr>
-<tr><td><b>Repository</b></td>
-    <td><a href="{REPO.removesuffix('.git')}">{REPO.removesuffix('.git')}</a></td></tr>
-<tr><td><b>Reliability model</b></td>
-    <td>Aghazadeh-Chakherlou et al., <i>Reliability Engineering &amp; System Safety</i>
-        <b>272</b> (2026) 112615 —
-        <a href="https://doi.org/10.1016/j.ress.2026.112615">doi:10.1016/j.ress.2026.112615</a></td></tr>
-<tr><td><b>Method</b></td>
-    <td>Papadopoulos &amp; McDermid, <i>HiP-HOPS</i>, SAFECOMP 1999, LNCS 1698, 139–152</td></tr>
-</table>
+* **Documentation:** [koorosh-aslansefat.com/HIP_HOPS_LLM](http://koorosh-aslansefat.com/HIP_HOPS_LLM/)
+* **Repository:** [{REPO.removesuffix('.git')}]({REPO.removesuffix('.git')})
+
+<div style="background:{INK};border-radius:8px;padding:11px 20px;margin:16px 0 10px 0;">
+  <span style="color:#ffffff;font-family:Georgia,serif;font-size:21px;
+               font-weight:bold;">References</span>
+</div>
+
+* Aghazadeh-Chakherlou, R., Guo, Q., Khastgir, S., Popov, P., Zhang, X., &
+  Zhao, X. (2026). A hierarchical imprecise probability approach to reliability
+  assessment of large language models. *Reliability Engineering & System
+  Safety*, *272*, 112615. https://doi.org/10.1016/j.ress.2026.112615
+* Custers, B., & Aslansefat, K. (2026). Runtime uncertainty monitoring for
+  LLM-based multi-agent systems using Bayesian networks. In *Computer Safety,
+  Reliability, and Security: SAFECOMP 2026 Workshops, 9th International Workshop
+  on Artificial Intelligence Safety Engineering (WAISE 2026)*, Valencia, Spain.
+  Springer. (in press)
+* Donaldson, L., Walker, C., Aslansefat, K., & Papadopoulos, Y. (2026). Bayesian
+  uncertainty propagation for agentic RAG pipelines: A proof-of-concept study on
+  multi-hop question answering. In *Proceedings of the 7th International
+  Conference on Maintenance and Intelligent Asset Management (ICMIAM 2026)*,
+  Huddersfield, UK, 1-3 September 2026. Springer Nature.
+* Papadopoulos, Y., & McDermid, J. A. (1999). Hierarchically performed hazard
+  origin and propagation studies. In *Computer Safety, Reliability and Security
+  (SAFECOMP 1999)* (Lecture Notes in Computer Science, Vol. 1698, pp. 139-152).
+  Springer. https://doi.org/10.1007/3-540-48249-0_13
 
 If you use this, please cite both the HIP-LLM paper and the repository;
 `CITATION.cff` has both.

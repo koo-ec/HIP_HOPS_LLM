@@ -109,15 +109,16 @@ so every class here is tested, documented and importable in your own code.
 
 What it does, in the HiP-HOPS phases:
 
-1. **Model** the architecture — read components, ports and connections out of
+1. **Model** the architecture: read components, ports and connections out of
    `graph.get_graph()`, materialising conditional edges as router components.
-2. **Eliminate loops** — agent graphs have feedback, fault trees cannot; loops are
-   unrolled and closed with a feedback-cut component rather than deleted.
+2. **Eliminate loops**, because agent graphs have feedback and fault trees
+   cannot; loops are unrolled and closed with a feedback-cut component rather
+   than deleted.
 3. **Annotate** every component with local failure logic from an archetype
    library.
 4. **Synthesise** fault trees by backward traversal, never by hand.
-5. **Analyse** — minimal cut sets, importance, single points of failure, FMEA.
-6. **Convert** to a Bayesian network — exact probability, and diagnosis.
+5. **Analyse**: minimal cut sets, importance, single points of failure, FMEA.
+6. **Convert** to a Bayesian network, for exact probability and diagnosis.
 """
     ),
     md("---\n## 0. Install"),
@@ -172,7 +173,7 @@ print("HIP-HOPS-LLM", hh.__version__)
 ---
 ## 1. The two architectures
 
-The node bodies below are never called — only their **source** is read, to
+The node bodies below are never called; only their **source** is read, to
 classify roles and detect shared model snapshots. That is the whole input to the
 analysis, along with the graph topology.
 """
@@ -342,7 +343,7 @@ for (kind, value), members in arch_2.common_cause_groups().items():
     md(
         """
 `MODEL_FAST` and `MODEL_DEEP` are the same snapshot. The two agents therefore
-share a common cause, and the "redundancy" of Approach 2 is architectural only —
+share a common cause, and the "redundancy" of Approach 2 is architectural only,
 which the cut sets will show in a moment.
 """
     ),
@@ -437,8 +438,8 @@ plt.show()
     ),
     md(
         """
-The vote does work: most cut sets for H2 are of order 2 — **both** agents must be
-wrong. But the shared model snapshot is still an order-1 cut set, so the
+The vote does work: most cut sets for H2 are of order 2, so **both** agents must
+be wrong. But the shared model snapshot is still an order-1 cut set, so the
 redundancy does not deliver the independence the diagram appears to promise.
 """
     ),
@@ -482,7 +483,7 @@ network.show()
         """
 The original notebook hand-wired this network beside the fault tree, and nothing
 kept the two consistent when the graph changed. Generating it from the tree
-removes that failure mode — and buys an **exact** top-event probability, where
+removes that failure mode, and buys an **exact** top-event probability, where
 the cut-set bound over-estimates because those cut sets share basic events.
 """
     ),
@@ -518,9 +519,9 @@ print(f"P(H2) calibrated  = {study_2c.hazard_probability('H2')}")
     ),
     md(
         """
-The entropy path, for comparison — note that a `uncertainty_summary` of the wrong
-shape silently yields default priors, which is why the calibration report names
-every component it could not reach:
+The entropy path, for comparison. Note that an `uncertainty_summary` of the
+wrong shape silently yields default priors, which is why the calibration report
+names every component it could not reach:
 """
     ),
     code(
@@ -582,7 +583,7 @@ print("\\nfault tree images written")
 | Graphviz required to draw the network | matplotlib fallback, so a picture always appears |
 
 Everything here is in
-[koo-ec/HIP_HOPS_LLM](https://github.com/koo-ec/HIP_HOPS_LLM) — seven tutorials,
+[koo-ec/HIP_HOPS_LLM](https://github.com/koo-ec/HIP_HOPS_LLM): seven tutorials,
 a full API reference, and a test suite that checks the exact and pyAgrum
 inference paths agree to nine significant figures.
 """

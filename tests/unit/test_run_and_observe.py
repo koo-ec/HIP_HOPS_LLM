@@ -262,8 +262,9 @@ class TestStrata:
         )
         assert len(study.profile) == 1
 
-    def test_the_profile_defaults_to_the_observed_frequencies(self, study):
-        """Of the *calibration* rows: the profile describes what was measured."""
+    def test_a_missing_profile_falls_back_to_the_input_mix_and_says_so(self, study):
+        """The weights match the inputs, but the provenance records that this is
+        an assumption about the workload, not a measurement of one."""
         study.run_and_observe(
             inputs=[{}] * 4, success=SUCCESS, stratum=["a", "a", "a", "b"],
             invoke=make_runner([{"first_ok": True, "second_ok": True}] * 4),
@@ -271,7 +272,7 @@ class TestStrata:
         )
         assert isinstance(study.profile, OperationalProfile)
         assert study.profile["a"] == pytest.approx(0.75)
-        assert "observed frequencies" in study.profile.provenance
+        assert "ASSERTS" in study.profile.provenance
 
 
 class TestSplit:

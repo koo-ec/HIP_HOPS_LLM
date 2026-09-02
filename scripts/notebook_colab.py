@@ -91,7 +91,7 @@ for name, dist in (
 
 import hiphopsllm as H
 
-print(f"\\nHIP-HOPS-LLM {H.__version__} — {len(H.__all__)} public names")
+print(f"\\nHIP-HOPS-LLM {H.__version__}: {len(H.__all__)} public names")
 print("Graphviz available:", H.graphviz_available())
 print("module file:", H.__file__)
 """
@@ -99,7 +99,7 @@ print("module file:", H.__file__)
         md(
             """
 `Graphviz available: True` means pyAgrum will render the Bayesian network at the
-end. If it says `False`, nothing breaks — the package draws the same network with
+end. If it says `False`, nothing breaks: the package draws the same network with
 matplotlib and says so in the caption.
 
 `module file` should point inside `site-packages` or the clone's `src/`. If it
@@ -135,7 +135,7 @@ MODEL_ID = "gpt-4o-mini"
 
 print("live LLM calls:", LIVE)
 if not LIVE:
-    print("no key — the graph is still built and analysed, using bundled outcomes")
+    print("no key; the graph is still built and analysed, using bundled outcomes")
 """
         ),
         md(
@@ -162,7 +162,7 @@ if LIVE:
         # A key without a working client is not a live setup. Say so and carry
         # on with the bundled outcomes rather than failing several cells later.
         LIVE = False
-        print(f"cannot build the LLM client ({type(exc).__name__}: {exc}) — "
+        print(f"cannot build the LLM client ({type(exc).__name__}: {exc}); "
               "falling back to the bundled outcomes")
 
 
@@ -178,7 +178,7 @@ def react_agent(state):
 
 def cot_agent(state):
     """Answer the same question with explicit step-by-step reasoning."""
-    model_id = "gpt-4o-mini"                      # MODEL_DEEP — the SAME snapshot
+    model_id = "gpt-4o-mini"                      # MODEL_DEEP, the SAME snapshot
     prompt = (
         "Solve step by step, then end with a line 'ANSWER: <number>'.\\n\\n"
         + state["question"]
@@ -230,7 +230,7 @@ except Exception as exc:
     graph = load_example("parallel_aggregator")
     HAVE_LANGGRAPH = False
     LIVE = False
-    print(f"langgraph unavailable ({type(exc).__name__}) — using the recorded "
+    print(f"langgraph unavailable ({type(exc).__name__}); using the recorded "
           "architecture, and the bundled outcomes below")
 '''
         ),
@@ -245,7 +245,7 @@ try:
         raise RuntimeError("no live graph to render")
     display(Image(graph.get_graph().draw_mermaid_png()))
 except Exception as exc:
-    print(f"mermaid.ink unreachable ({type(exc).__name__}) — drawing locally")
+    print(f"mermaid.ink unreachable ({type(exc).__name__}); drawing locally")
     import matplotlib.pyplot as plt
 
     from hiphopsllm import extract_architecture, plot_architecture
@@ -259,8 +259,8 @@ except Exception as exc:
 ---
 ## 4. Run it, and score every node
 
-A reliability claim needs an **operational profile** — the mix of work the system
-will meet — so the benchmark is stratified by how many reasoning steps a question
+A reliability claim needs an **operational profile**, the mix of work the system
+will meet, so the benchmark is stratified by how many reasoning steps a question
 needs. Each node is scored separately: per-node outcomes are what make the fault
 tree quantitative rather than illustrative.
 """
@@ -315,8 +315,8 @@ print(f"{len(BENCHMARK)} questions; target workload {PROFILE}")
 def extract_number(text):
     """Pull the answer out of a free-text response.
 
-    Prefer an explicit 'ANSWER: n' line, else take the last number mentioned —
-    models tend to state the result last.
+    Prefer an explicit 'ANSWER: n' line, else take the last number mentioned,
+    since models tend to state the result last.
     """
     if not text:
         return None
@@ -400,10 +400,10 @@ print(study.summary())
         ),
         md(
             """
-Read the single points of failure. Most cut sets for `H2` are order 2 — the vote
-works, both agents must be wrong. But `CCF-LLM-gpt-4o-mini` is **order 1**: a
-fault the two agents share defeats the redundancy on its own, and the judge
-shares it too.
+Read the single points of failure. Most cut sets for `H2` are order 2, so the
+vote works and both agents must be wrong. But `CCF-LLM-gpt-4o-mini` is
+**order 1**: a fault the two agents share defeats the redundancy on its own, and
+the judge shares it too.
 """
         ),
         code(
@@ -429,7 +429,7 @@ study.calibration.evidence_frame()
         ),
         code(
             """
-print("per-stratum failure rates — why a pooled accuracy is not enough:\\n")
+print("per-stratum failure rates, and why a pooled accuracy is not enough:\\n")
 for name, evidence in study.evidence.items():
     rates = ",  ".join(f"{k}={v:.3f}" for k, v in evidence.by_stratum.items())
     print(f"  {name:<14} {rates}")
@@ -467,11 +467,11 @@ try:
 
     bn = network.net                  # a real pyagrum.BayesNet
     HAVE_PYAGRUM = True
-    print(f"pyagrum {pyagrum.__version__} — {bn.size()} variables, "
+    print(f"pyagrum {pyagrum.__version__}: {bn.size()} variables, "
           f"{bn.sizeArcs()} arcs")
 except ImportError:
     bn, HAVE_PYAGRUM = None, False
-    print("pyagrum not installed — every probability below still comes from the "
+    print("pyagrum not installed; every probability below still comes from the "
           "exact NumPy engine, and the network is drawn with matplotlib.")
 
 GRAPHVIZ = HAVE_PYAGRUM and graphviz_available()
@@ -536,7 +536,7 @@ print("P(incorrect answer delivered and accepted) =", study.hazard_probability("
         md(
             """
 That interval is conditional on the operational profile. Change the workload and
-it changes — which is why a failure probability quoted without the workload is
+it changes, which is why a failure probability quoted without the workload is
 not a claim about the system at all.
 """
         ),
@@ -567,7 +567,7 @@ print("\\nnetwork image written")
 ---
 ## Where next
 
-* **Docs** — <http://koorosh-aslansefat.com/HIP_HOPS_LLM/>
+* **Docs:** <http://koorosh-aslansefat.com/HIP_HOPS_LLM/>
 * **Tutorial 7** covers pointing this at your own LangGraph application: what to
   log, how to score intermediate nodes, and how much data you need.
 * HIP-LLM's own API is re-exported here, so
@@ -577,7 +577,28 @@ Repository: {REPO.removesuffix('.git')}
 
 If you use this, please cite both the HIP-LLM paper
 ([10.1016/j.ress.2026.112615](https://doi.org/10.1016/j.ress.2026.112615)) and
-this repository — `CITATION.cff` has both.
+this repository; `CITATION.cff` has both.
+
+## References
+
+* Aghazadeh-Chakherlou, R., Guo, Q., Khastgir, S., Popov, P., Zhang, X., &
+  Zhao, X. (2026). A hierarchical imprecise probability approach to reliability
+  assessment of large language models. *Reliability Engineering & System
+  Safety*, *272*, 112615. https://doi.org/10.1016/j.ress.2026.112615
+* Custers, B., & Aslansefat, K. (2026). Runtime uncertainty monitoring for
+  LLM-based multi-agent systems using Bayesian networks. In *Computer Safety,
+  Reliability, and Security: SAFECOMP 2026 Workshops, 9th International Workshop
+  on Artificial Intelligence Safety Engineering (WAISE 2026)*, Valencia, Spain.
+  Springer. (in press)
+* Donaldson, L., Walker, C., Aslansefat, K., & Papadopoulos, Y. (2026). Bayesian
+  uncertainty propagation for agentic RAG pipelines: A proof-of-concept study on
+  multi-hop question answering. In *Proceedings of the 7th International
+  Conference on Maintenance and Intelligent Asset Management (ICMIAM 2026)*,
+  Huddersfield, UK, 1-3 September 2026. Springer Nature.
+* Papadopoulos, Y., & McDermid, J. A. (1999). Hierarchically performed hazard
+  origin and propagation studies. In *Computer Safety, Reliability and Security
+  (SAFECOMP 1999)* (Lecture Notes in Computer Science, Vol. 1698, pp. 139-152).
+  Springer. https://doi.org/10.1007/3-540-48249-0_13
 """
         ),
     ]

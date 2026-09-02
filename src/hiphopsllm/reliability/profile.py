@@ -26,6 +26,7 @@ import numpy as np
 
 __all__ = [
     "OperationalProfile",
+    "dataset_proportional_profile",
     "empirical_profile",
     "uniform_profile",
     "stratify",
@@ -180,6 +181,37 @@ def empirical_profile(
         {k: v / total for k, v in counts.items()},
         name=name,
         provenance=f"observed frequencies over {total} logged items",
+    )
+
+
+def dataset_proportional_profile(
+    strata: Iterable[str], name: str = "dataset-proportional profile"
+) -> "OperationalProfile":
+    """Weights proportional to the *benchmark's own* composition.
+
+    HIP-LLM names this choice explicitly (paper Section 4.2, Remark 7) rather
+    than letting it happen by default, and so does this. The paper's whole
+    argument is that a benchmark accuracy is a descriptive statistic about the
+    dataset, and becomes a reliability claim only once it is reweighted to the
+    mix of work the system will actually meet. Taking the dataset's own mix as
+    that workload asserts they are the same — sometimes true, never automatic.
+
+    Use :func:`empirical_profile` when the labels come from *production* traffic;
+    the two are computed identically and differ only in what they claim, which
+    is exactly why they are separate functions.
+    """
+    counts = Counter(str(s) for s in strata)
+    if not counts:
+        raise ValueError("no stratum labels were given")
+    total = sum(counts.values())
+    return OperationalProfile(
+        {k: v / total for k, v in counts.items()},
+        name=name,
+        provenance=(
+            f"proportional to the benchmark's own composition over {total} items "
+            "(HIP-LLM Remark 7) — this ASSERTS that the deployed workload has the "
+            "same mix as the dataset, which is a claim, not a measurement"
+        ),
     )
 
 

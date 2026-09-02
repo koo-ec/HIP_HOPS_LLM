@@ -110,12 +110,16 @@ class TestObserveShapes:
         fresh.observe(frame, profile=PROFILE)
         assert len(fresh._observations["react_agent"][0]) == len(frame)
 
-    def test_the_profile_is_inferred_from_the_data_only_when_absent(
-        self, fresh, outcomes
+    def test_a_missing_profile_falls_back_to_the_benchmark_mix_and_says_so(
+        self, fresh, outcomes, capsys
     ):
+        """It must not present the dataset's own composition as a measured
+        operational profile: that conflation is what HIP-LLM exists to remove."""
         fresh.observe(outcomes)
         assert isinstance(fresh.profile, OperationalProfile)
-        assert "observed frequencies" in fresh.profile.provenance
+        assert "ASSERTS" in fresh.profile.provenance
+        assert "not a measurement" in fresh.profile.provenance
+        assert "NO OPERATIONAL PROFILE GIVEN" in capsys.readouterr().out
 
     def test_a_stratum_column_under_another_name(self, fresh, outcomes):
         frame = outcomes.rename(columns={"stratum": "bucket"})
