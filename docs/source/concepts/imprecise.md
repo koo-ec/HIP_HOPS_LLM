@@ -137,7 +137,9 @@ takes about a third of a second.
 
 ## Further reading
 
-R. Aghazadeh-Chakherlou, Q. Guo, S. Khastgir, P. Popov, X. Zhang and X. Zhao,
-"A hierarchical imprecise probability approach to reliability assessment of large
-language models", *Reliability Engineering & System Safety* **272** (2026) 112615.
-<https://doi.org/10.1016/j.ress.2026.112615>
+The model this layer implements:
+
+Aghazadeh-Chakherlou, R., Guo, Q., Khastgir, S., Popov, P., Zhang, X., &
+Zhao, X. (2026). A hierarchical imprecise probability approach to reliability
+assessment of large language models. *Reliability Engineering & System Safety*,
+*272*, 112615. <https://doi.org/10.1016/j.ress.2026.112615>

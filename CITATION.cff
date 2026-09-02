@@ -77,3 +77,53 @@ references:
     end: 152
     doi: 10.1007/3-540-48249-0_13
     notes: The compositional safety-analysis method this package applies.
+  - type: conference-paper
+    title: >-
+      Runtime uncertainty monitoring for LLM-based multi-agent systems using
+      Bayesian networks
+    authors:
+      - family-names: Custers
+        given-names: B.
+      - family-names: Aslansefat
+        given-names: Koorosh
+    collection-title: >-
+      Computer Safety, Reliability, and Security: SAFECOMP 2026 Workshops, 9th
+      International Workshop on Artificial Intelligence Safety Engineering
+      (WAISE 2026)
+    conference:
+      name: >-
+        9th International Workshop on Artificial Intelligence Safety Engineering
+        (WAISE 2026)
+      city: Valencia
+      country: ES
+    publisher:
+      name: Springer
+    year: 2026
+    status: in-press
+  - type: conference-paper
+    title: >-
+      Bayesian uncertainty propagation for agentic RAG pipelines: A
+      proof-of-concept study on multi-hop question answering
+    authors:
+      - family-names: Donaldson
+        given-names: L.
+      - family-names: Walker
+        given-names: C.
+      - family-names: Aslansefat
+        given-names: Koorosh
+      - family-names: Papadopoulos
+        given-names: Yiannis
+    collection-title: >-
+      Proceedings of the 7th International Conference on Maintenance and
+      Intelligent Asset Management (ICMIAM 2026)
+    conference:
+      name: >-
+        7th International Conference on Maintenance and Intelligent Asset
+        Management (ICMIAM 2026)
+      city: Huddersfield
+      country: GB
+      date-start: "2026-09-01"
+      date-end: "2026-09-03"
+    publisher:
+      name: Springer Nature
+    year: 2026

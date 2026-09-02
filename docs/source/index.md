@@ -95,6 +95,27 @@ faq
 changelog
 ```
 
+## References
+
+- Aghazadeh-Chakherlou, R., Guo, Q., Khastgir, S., Popov, P., Zhang, X., &
+  Zhao, X. (2026). A hierarchical imprecise probability approach to reliability
+  assessment of large language models. *Reliability Engineering & System Safety*,
+  *272*, 112615. <https://doi.org/10.1016/j.ress.2026.112615>
+- Custers, B., & Aslansefat, K. (2026). Runtime uncertainty monitoring for
+  LLM-based multi-agent systems using Bayesian networks. In *Computer Safety,
+  Reliability, and Security: SAFECOMP 2026 Workshops, 9th International Workshop
+  on Artificial Intelligence Safety Engineering (WAISE 2026)*, Valencia, Spain.
+  Springer. (in press)
+- Donaldson, L., Walker, C., Aslansefat, K., & Papadopoulos, Y. (2026). Bayesian
+  uncertainty propagation for agentic RAG pipelines: A proof-of-concept study on
+  multi-hop question answering. In *Proceedings of the 7th International
+  Conference on Maintenance and Intelligent Asset Management (ICMIAM 2026)*,
+  Huddersfield, UK, 1-3 September 2026. Springer Nature.
+- Papadopoulos, Y., & McDermid, J. A. (1999). Hierarchically performed hazard
+  origin and propagation studies. In *Computer Safety, Reliability and Security
+  (SAFECOMP 1999)* (Lecture Notes in Computer Science, Vol. 1698, pp. 139-152).
+  Springer. <https://doi.org/10.1007/3-540-48249-0_13>
+
 ## Licence and citation
 
 MIT. If you use this package please cite both the HIP-LLM paper and this

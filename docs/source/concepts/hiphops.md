@@ -161,5 +161,9 @@ study = AgenticReliabilityStudy(
 
 ## Further reading
 
-Y. Papadopoulos and J. McDermid, "Hierarchically Performed Hazard Origin and
-Propagation Studies", *SAFECOMP 1999*, LNCS 1698, 139–152 — the original method.
+The original method:
+
+Papadopoulos, Y., & McDermid, J. A. (1999). Hierarchically performed hazard
+origin and propagation studies. In *Computer Safety, Reliability and Security
+(SAFECOMP 1999)* (Lecture Notes in Computer Science, Vol. 1698, pp. 139-152).
+Springer. <https://doi.org/10.1007/3-540-48249-0_13>
