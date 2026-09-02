@@ -538,7 +538,7 @@ for name, evidence in study.evidence.items():
                 "The synthesised fault tree, and its minimal cut sets",
                 """Nobody drew this tree. It is derived by backward traversal from
 the hazard, through each component's local failure logic, over the architecture
-of [Step 5](#step5) — which is the point of HiP-HOPS: the analysis cannot drift
+of [Step 5](#step5). That is the point of HiP-HOPS: the analysis cannot drift
 from the system it describes, because it is regenerated from it.
 
 Its **minimal cut sets** are the answer to *what combinations of faults are
