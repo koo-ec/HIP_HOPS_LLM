@@ -237,7 +237,8 @@ class AgenticReliabilityStudy:
             or [
                 c
                 for c in frame.columns
-                if c not in {stratum_column, split_column, "item_id", "id"}
+                if c not in {stratum_column, split_column, "item_id", "id",
+                             "run_error"}
                 and _looks_binary(frame[c])
             ]
         )
@@ -250,11 +251,201 @@ class AgenticReliabilityStudy:
         if self.profile is None:
             self.profile = empirical_profile(strata)
         for column in columns:
+            # A blank cell means "this node was not exercised on that item" —
+            # a router sent the run to END before reaching it, say. That is a
+            # *missing observation*, not a success and not a failure, so the row
+            # is dropped for this component only and still counts for the others.
+            values, kept = [], []
+            for outcome, stratum in zip(working[column], strata):
+                if outcome is None or (isinstance(outcome, float) and outcome != outcome):
+                    continue
+                values.append(int(outcome))
+                kept.append(stratum)
+            if not values:
+                raise ValueError(
+                    f"column {column!r} has no observations at all; every run "
+                    "left this node unexercised, so nothing can be estimated "
+                    "for it"
+                )
             self._observations[column] = (
-                [int(v) for v in working[column]],
-                strata,
+                values,
+                kept,
             )
         return self
+
+    # ------------------------------------------------------------ steps 3 + 4
+    def run_and_observe(
+        self,
+        inputs: Sequence[Any],
+        success: Mapping[str, Callable[[Any], Any]],
+        *,
+        stratum: Optional[Callable[[Any], str] | Sequence[str]] = None,
+        profile: Optional[OperationalProfile | Mapping[str, float]] = None,
+        invoke: Optional[Callable[[Any], Any]] = None,
+        calibration_fraction: float = 0.75,
+        on_error: str = "skip",
+        progress: bool = True,
+        calibrate: bool = True,
+    ) -> Any:
+        """Run the graph over ``inputs``, score every node, and calibrate.
+
+        This is the one-cell entry point for a notebook that already builds and
+        runs a LangGraph application: append this and the whole reliability
+        analysis follows from the runs it performs.
+
+        ::
+
+            study = AgenticReliabilityStudy(graph, globals_ns=globals())
+            study.run_and_observe(
+                inputs=[{"smiles": s} for s in SMILES],
+                stratum=lambda item: "large" if len(item["smiles"]) > 40 else "small",
+                success={
+                    "research_agent": lambda s: s.get("browser_status") == "ready",
+                    "pixelrag_agent": lambda s: s.get("capture_status") == "captured",
+                    "safety_agent":   lambda s: bool(s.get("workflow_succeeded")),
+                },
+                profile={"small": 0.6, "large": 0.4},
+            )
+
+        Parameters
+        ----------
+        inputs
+            One graph input per benchmark item.  Each is passed to
+            ``graph.invoke`` (or to ``invoke``).
+        success
+            ``{node_id: predicate}``.  Each predicate receives the **final
+            state** and returns ``True`` (that node did its job), ``False`` (it
+            did not), or ``None``.
+
+            ``None`` means *not exercised* — a router sent the run to ``END``
+            before this node ran — and is recorded as a missing observation
+            rather than a failure.  That distinction matters: scoring an
+            unreached node as failed would blame it for an upstream fault.
+        stratum
+            A callable mapping an input to its stratum label, or a ready-made
+            sequence of labels, one per input.  Defaults to a single stratum,
+            which is honest but gives up the whole point of an operational
+            profile — pass one if the workload is not uniform.
+        profile
+            The operational profile.  Defaults to the observed frequencies of
+            the stratum labels, recorded as such.
+        invoke
+            Custom runner, for a graph that needs streaming or a config.
+            Receives one input and must return the final state.
+        calibration_fraction
+            Fraction of items used to fit basic-event probabilities; the rest
+            are marked ``test`` and left out, so a held-out set survives.
+        on_error
+            What to do when a run raises.  ``"skip"`` (the default) drops the
+            item and reports how many were dropped; ``"record"`` keeps the row
+            with every node unscored and a ``run_error`` message.
+
+            Neither blames a node. A crashed run leaves no state to score
+            against, so marking its nodes as failures would penalise components
+            that had already succeeded before the exception — the same mistake
+            as scoring an unreached node. What is lost either way is visible:
+            the count is printed, and ``"record"`` keeps the message.
+        calibrate
+            Run :meth:`calibrate` when the runs finish.  ``False`` stops after
+            recording the outcomes.
+
+        Returns
+        -------
+        pandas.DataFrame
+            One row per item: ``item_id``, ``stratum``, one column per scored
+            node, and ``split``.  Keep it — it is the measurement, and
+            re-running the graph is the expensive part.
+        """
+        import pandas as pd
+
+        if not inputs:
+            raise ValueError("run_and_observe() needs at least one input")
+        if not success:
+            raise ValueError(
+                "success must map node ids to predicates; without it there is "
+                "nothing to measure. Each predicate takes the final state and "
+                "returns True, False, or None for 'not exercised'."
+            )
+        if on_error not in ("record", "skip"):
+            raise ValueError("on_error must be 'skip' or 'record'")
+
+        runner = invoke or getattr(self.graph, "invoke", None)
+        if runner is None:
+            raise TypeError(
+                "this study was built from a specification, not a runnable "
+                "graph, so there is nothing to run. Pass invoke=... or "
+                "construct the study from a compiled LangGraph."
+            )
+
+        if stratum is None:
+            labels = ["all"] * len(inputs)
+        elif callable(stratum):
+            labels = [str(stratum(item)) for item in inputs]
+        else:
+            labels = [str(s) for s in stratum]
+            if len(labels) != len(inputs):
+                raise ValueError(
+                    f"{len(labels)} stratum labels for {len(inputs)} inputs"
+                )
+
+        n_calibration = max(1, int(round(len(inputs) * calibration_fraction)))
+        rows, skipped = [], []
+        for index, item in enumerate(inputs):
+            error = ""
+            state = None
+            try:
+                state = runner(item)
+            except Exception as exc:  # noqa: BLE001 - a run failing is data
+                error = f"{type(exc).__name__}: {exc}"
+                skipped.append((index, error))
+                if on_error == "skip":
+                    continue
+
+            row = {"item_id": f"item_{index:04d}", "stratum": labels[index]}
+            for node, predicate in success.items():
+                if state is None:
+                    # Nothing to score against; see `on_error` in the docstring.
+                    row[node] = None
+                    continue
+                try:
+                    verdict = predicate(state)
+                except Exception:  # noqa: BLE001 - a predicate that cannot decide
+                    verdict = None
+                row[node] = None if verdict is None else int(bool(verdict))
+            if on_error == "record":
+                row["run_error"] = error
+            row["split"] = "calibration" if index < n_calibration else "test"
+            rows.append(row)
+
+            if progress:
+                scored = {k: row[k] for k in success}
+                print(f"  {index + 1:>3}/{len(inputs)}  {labels[index]:<10} {scored}")
+
+        if not rows:
+            raise RuntimeError(
+                "every run failed and on_error='skip', so nothing was measured"
+            )
+        if skipped:
+            verb = "skipped" if on_error == "skip" else "recorded unscored"
+            share = len(skipped) / len(inputs)
+            print(
+                f"\n{len(skipped)} of {len(inputs)} run(s) raised and were "
+                f"{verb} ({share:.0%}):"
+            )
+            for index, message in skipped[:5]:
+                print(f"  item {index}: {message}")
+            if share > 0.1:
+                print(
+                    "  A tenth or more of the runs crashed. Those failures are "
+                    "real and are NOT in the numbers below, so the estimate is "
+                    "optimistic by an unknown amount — fix them first."
+                )
+
+        outcomes = pd.DataFrame(rows)
+        self.observe(outcomes, profile=profile)
+        if calibrate:
+            self.run()
+        return outcomes
 
     def _fit_system(self, outcomes: Sequence[Any], strata: Sequence[str]) -> None:
         from HIPLLM import OperationalFailureProb, quick_inference_settings

@@ -8,8 +8,10 @@ no outputs, and regenerated whenever they change.
     python scripts/build_notebooks.py
 
 Writes:
-    notebooks/HIP_HOPS_LLM_Colab.ipynb        clone, install, run, plot
-    notebooks/hip_hops_for_agentic_ai.ipynb   the Kaggle notebook, using the package
+    notebooks/HIP_HOPS_LLM_Colab.ipynb          clone, install, run, plot
+    notebooks/hip_hops_for_agentic_ai.ipynb     the Kaggle notebook, using the package
+    notebooks/hiphopsllm_two_cell_addon.ipynb   two cells bolted onto an existing
+                                                LangGraph notebook
 """
 
 from __future__ import annotations
@@ -83,8 +85,10 @@ def notebook(cells: list[dict], title: str) -> dict:
 # calls OpenAI, and renders the network with pyAgrum, so it is long enough to
 # deserve its own file.
 from notebook_colab import cells as _colab_cells  # noqa: E402
+from notebook_kaggle_addon import cells as _addon_cells  # noqa: E402
 
 COLAB = _colab_cells(md, code)
+ADDON = _addon_cells(md, code)
 
 
 # --------------------------------------------------------------------------- #
@@ -592,6 +596,8 @@ def main() -> int:
     for cells, filename, title in (
         (COLAB, "HIP_HOPS_LLM_Colab.ipynb", "HIP-HOPS-LLM on Colab"),
         (KAGGLE, "hip_hops_for_agentic_ai.ipynb", "HiP-HOPS for Agentic AI"),
+        (ADDON, "hiphopsllm_two_cell_addon.ipynb",
+         "Reliability analysis in two cells"),
     ):
         path = NOTEBOOKS / filename
         path.write_text(
