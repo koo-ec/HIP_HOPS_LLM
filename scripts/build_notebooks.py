@@ -597,7 +597,7 @@ def main() -> int:
         (COLAB, "HIP_HOPS_LLM_Colab.ipynb", "HIP-HOPS-LLM on Colab"),
         (KAGGLE, "hip_hops_for_agentic_ai.ipynb", "HiP-HOPS for Agentic AI"),
         (ADDON, "hiphopsllm_two_cell_addon.ipynb",
-         "Reliability analysis in two cells"),
+         "HIP-HOPS-LLM: Reliability Engineering for Agentic AI"),
     ):
         path = NOTEBOOKS / filename
         path.write_text(
