@@ -396,6 +396,12 @@ def source_of_function(fn: Optional[Callable[..., Any]]) -> str:
     """
     if fn is None:
         return ""
+    # LangGraph node payloads are frequently partials or Runnable wrappers, and
+    # inspect.getsource() on one of those returns nothing. Unwrapping first is
+    # what makes node_functions={"worker": partial(worker, ...)} work at all;
+    # without it the component silently gets no source, and therefore no role
+    # hint and no detected resources.
+    fn = _resolve_callable(fn) or fn
     try:
         code = inspect.getsource(fn)
     except (OSError, TypeError):
@@ -480,11 +486,46 @@ def classify_role(
         return Role.LLM_AGENT
     if any(k in name for k in _TOOL_NAMES):
         return Role.TOOL
+    # Last resort. Routers are normally materialised as their own components by
+    # build_system_model, so this only fires with materialise_routers=False, or
+    # for a node whose name and source say nothing at all. A node that chooses
+    # between successors is more usefully a router than an anonymous transform.
+    if has_conditional_out:
+        return Role.ROUTER
     return Role.TRANSFORM
 
 
-_MODEL_VAR = re.compile(r"\b([A-Za-z_][A-Za-z0-9_]*model[A-Za-z0-9_]*)\s*\.\s*generate\s*\(", re.I)
-_TOKENIZER_VAR = re.compile(r"\b([A-Za-z_][A-Za-z0-9_]*tokenizer[A-Za-z0-9_]*)\s*\.", re.I)
+# These match the *variable* a node generates through, so that a shared model
+# reached by name — not by a string literal in the source — is still detected.
+#
+# The earlier patterns required a character before "model"/"tokenizer"
+# (``[A-Za-z_][A-Za-z0-9_]*model``), so they matched ``my_model`` but never
+# ``model`` or ``model_deep`` — the two names the source notebook actually uses.
+# A snapshot shared through such a variable was therefore invisible, which turns
+# a common-cause single point of failure into an apparently redundant
+# architecture: the single most consequential extraction error this package can
+# make. Match any identifier at the call site instead and filter by name.
+_GENERATE_CALL = re.compile(r"\b([A-Za-z_][A-Za-z0-9_]*)\s*\.\s*generate\s*\(", re.I)
+_TOKENIZER_CALL = re.compile(
+    r"\b([A-Za-z_][A-Za-z0-9_]*)\s*\.\s*"
+    r"(?:apply_chat_template|batch_decode|decode|encode|tokenize)\s*\(",
+    re.I,
+)
+
+
+class _NameFilter:
+    """A findall-compatible matcher that keeps only names containing ``needle``."""
+
+    def __init__(self, pattern: "re.Pattern[str]", needle: str) -> None:
+        self._pattern = pattern
+        self._needle = needle.lower()
+
+    def findall(self, text: str) -> List[str]:
+        return [m for m in self._pattern.findall(text) if self._needle in m.lower()]
+
+
+_MODEL_VAR = _NameFilter(_GENERATE_CALL, "model")
+_TOKENIZER_VAR = _NameFilter(_TOKENIZER_CALL, "tokeniz")
 _HF_ID = re.compile(r"[\"']([A-Za-z0-9_.\-]+/[A-Za-z0-9_.\-]+)[\"']")
 
 

@@ -29,6 +29,24 @@ mistake — please do not weaken them to make a change pass.
 | `test_reliability.py::test_the_union_of_calibrated_events_matches_the_measurement` | Union splitting is exact to `1e-9` |
 | `test_public_api.py::TestHIPLLMIsComplete` | Every HIP-LLM symbol stays reachable |
 | `test_learn.py::TestSplitGuard` | CPTs are never fitted on a test split |
+| `test_architecture_internals.py::test_two_nodes_generating_through_the_same_variable_share_a_cause` | A snapshot shared through a variable is still a common-cause group |
+| `test_pipeline_unit.py::test_recalibrating_does_not_compound` | Calibrating twice lands on the same numbers |
+
+## Coverage
+
+CI enforces two floors: **90% overall** and **80% for any module over 20
+statements**. They are floors, not targets — they exist so that a module added
+without tests fails there rather than quietly dragging the suite down.
+
+```bash
+pytest --cov=HIP_HOPS_LLM --cov-report=term-missing
+```
+
+The suite is currently at 94%. Coverage is not the goal, though: a test that
+executes a line without asserting anything about it is worse than no test,
+because it makes the number lie. Prefer asserting a property — cut sets are
+minimal, the union rule is exact, the two inference engines agree — over
+touching a branch.
 
 ## House rules
 

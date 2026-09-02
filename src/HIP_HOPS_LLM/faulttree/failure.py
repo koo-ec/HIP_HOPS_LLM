@@ -241,6 +241,12 @@ class BasicEvent:
     fclass: FClass
     prob: float = 0.05
     prob_interval: Optional[Tuple[float, float]] = None
+    #: The probability this event had *before* any calibration touched it, set
+    #: once by the calibrator. Calibration splits a component's measured
+    #: probability over its events in proportion to their priors; without a
+    #: stable baseline the second calibration would use the first one's output
+    #: as weights and quietly move numbers that were already measured.
+    baseline_prob: Optional[float] = None
     kind: str = "internal"          # internal | ccf | channel | loop_cut | boundary
     rationale: str = ""
     mitigation: str = ""

@@ -54,9 +54,17 @@ First release.
   refuses to calibrate without outcomes or without an operational profile, and
   prints `NOT CALIBRATED` until it has both.
 
+### Testing
+
+628 tests, 94% line coverage, every module above 88%. CI runs them on Python
+3.10–3.13 (Ubuntu) plus Windows and macOS, once more with pyAgrum uninstalled to
+keep that dependency genuinely optional, and enforces a 90% overall / 80%
+per-module coverage floor.
+
 ### Fixed in the underlying analysis code
 
-Three defects found while packaging, each of which failed silently:
+Six defects found while packaging and while writing the unit tests, each of
+which failed silently:
 
 - **A router node declared explicitly lost its incoming edge.** The `node ->
   node::router` connection was emitted only when the router component was
@@ -70,3 +78,28 @@ Three defects found while packaging, each of which failed silently:
 - **`probability_overrides` ignored an unknown basic-event id.** A typo left the
   placeholder in place while the analyst believed it replaced. It now raises and
   lists the ids the model does have, and rejects values outside `[0, 1]`.
+- **Resource detection could never match a variable named `model` or
+  `tokenizer`.** The patterns required at least one character *before* the word,
+  so they matched `my_model` but not `model` or `model_deep` — the names the
+  source notebook actually uses. Two agents generating through the same shared
+  variable therefore produced *no* common-cause group, which is precisely the
+  error that turns a single point of failure into an apparently redundant
+  architecture.
+- **`source_of_function` did not unwrap its argument.** A partial or Runnable
+  wrapper — the usual shape of a LangGraph node payload — yielded no source, and
+  so no role hint and no detected resources, while looking like a node that
+  simply had none. `_resolve_callable` existed for exactly this and was not
+  being called.
+- **Calibrating twice compounded.** The union split weighted events by their
+  *current* probability, so a second `calibrate()` split already-split values and
+  silently moved numbers that were already measured. Events now carry a
+  `baseline_prob` recorded once.
+
+Two smaller inconsistencies, also silent:
+
+- `cross_check()` returned three keys without pyAgrum and six with it, so callers
+  had to branch on the shape. It now always returns the same keys, with a
+  `compared` flag and `agree` as NaN when the comparison could not run.
+- `EvidenceCalibrator(bound=...)` was accepted and ignored on the approximate
+  (Jeffreys) path, which has only one envelope. It now says so in the evidence
+  string it writes.

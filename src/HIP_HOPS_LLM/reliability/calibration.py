@@ -330,8 +330,16 @@ class EvidenceCalibrator:
         if self.exact:
             interval, posterior, method = self._hipllm_interval(correct, s)
         else:
-            interval, posterior, method = self._jeffreys_interval(correct, s), None, (
-                "Jeffreys interval (approximation; not the HIP-LLM posterior)"
+            note = "Jeffreys interval (approximation; not the HIP-LLM posterior"
+            if self.bound != "credible":
+                # The three envelopes are a property of HIP-LLM's hyperparameter
+                # family; the approximation has only one. Saying so beats
+                # accepting the option and ignoring it.
+                note += f"; bound={self.bound!r} does not apply to it"
+            interval, posterior, method = (
+                self._jeffreys_interval(correct, s),
+                None,
+                note + ")",
             )
 
         return ComponentEvidence(
@@ -407,12 +415,20 @@ class EvidenceCalibrator:
                 )
                 continue
             touched_components.add(component_id)
-            weights = [max(e.prob, 1e-9) for e in events]
+            # Weight by the *pre-calibration* prior, recorded once. Using the
+            # current probability would make a second calibration split an
+            # already-split value, silently moving numbers that were already
+            # measured — see test_recalibrating_does_not_compound.
+            for event in events:
+                if event.baseline_prob is None:
+                    event.baseline_prob = float(event.prob)
+            weights = [max(e.baseline_prob, 1e-9) for e in events]
             lo = distribute_union(measurement.interval[0], weights, self.policy)
             hi = distribute_union(measurement.interval[1], weights, self.policy)
             mid = distribute_union(measurement.point, weights, self.policy)
             for event, p_lo, p_hi, p_mid in zip(events, lo, hi, mid):
-                old = float(event.prob)
+                old = float(event.baseline_prob if event.baseline_prob is not None
+                            else event.prob)
                 event.prob = float(p_mid)
                 event.prob_interval = (float(p_lo), float(p_hi))
                 event.evidence = measurement.evidence_string()

@@ -27,9 +27,9 @@ jobs:
           - os: macos-latest
             python: "3.12"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python }}
           cache: pip
@@ -57,8 +57,8 @@ jobs:
     name: pytest without pyAgrum
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
           cache: pip
@@ -81,12 +81,61 @@ jobs:
           MPLBACKEND: Agg
         run: pytest -q --timeout=900
 
+  coverage:
+    # A floor, not a target. It exists so that a module added without tests
+    # fails here rather than quietly dragging the suite down over time.
+    name: coverage floor
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[test]"
+      - name: Measure
+        env:
+          MPLBACKEND: Agg
+          PYTHONIOENCODING: utf-8
+        run: |
+          pytest -q --timeout=1800 \
+            --cov=HIP_HOPS_LLM \
+            --cov-report=term-missing:skip-covered \
+            --cov-fail-under=90
+      - name: Per-module floor
+        env:
+          MPLBACKEND: Agg
+        run: |
+          python - <<'PY'
+          import json, subprocess, sys
+          subprocess.run(
+              [sys.executable, "-m", "pytest", "-q", "--no-header",
+               "--cov=HIP_HOPS_LLM", "--cov-report=json:cov.json"],
+              check=True, capture_output=True,
+          )
+          data = json.load(open("cov.json"))
+          FLOOR = 80.0
+          low = {
+              path.replace("\\", "/").split("HIP_HOPS_LLM/", 1)[-1]:
+                  round(m["summary"]["percent_covered"], 1)
+              for path, m in data["files"].items()
+              if m["summary"]["percent_covered"] < FLOOR
+              and m["summary"]["num_statements"] > 20
+          }
+          if low:
+              print(f"modules below the {FLOOR}% per-module floor: {low}")
+              raise SystemExit(1)
+          print(f"every module of >20 statements is at or above {FLOOR}%")
+          PY
+
   examples:
     name: run the examples
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
           cache: pip
@@ -107,8 +156,8 @@ jobs:
     name: ruff
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - run: pip install ruff
@@ -118,8 +167,8 @@ jobs:
     name: build the distribution
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - run: |
@@ -140,7 +189,7 @@ jobs:
           print(sorted(s.report.trees))
           print('bundled data ships:', len(load_outcomes()), 'rows')
           "
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: dist
           path: dist/

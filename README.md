@@ -179,8 +179,13 @@ These are invariants, not aspirations — each is a test that fails loudly.
 - **CPTs are never fitted on a test split.** `learn_cpt` raises.
 
 ```bash
-pytest
+pytest                                        # 628 tests
+pytest --cov=HIP_HOPS_LLM --cov-report=term   # 94% line coverage
 ```
+
+CI runs the suite on Python 3.10–3.13 (Ubuntu) plus Windows and macOS, once more
+with pyAgrum uninstalled, and enforces a 90% overall / 80% per-module coverage
+floor.
 
 ## Two findings baked in as warnings
 

@@ -127,6 +127,23 @@ class BayesNetView:
         """Draw the network with each node's posterior shown."""
         return self.show(evidence if evidence is not None else self.evidence or {})
 
+    def figure(self, evidence: Optional[Mapping[str, Any]] = None) -> Any:
+        """Return the matplotlib ``Figure`` without displaying it.
+
+        :meth:`show` is for notebooks: inside one it calls ``display()`` and
+        returns ``None``, because returning the figure as well would render it
+        twice.  That leaves no handle for a caller who wants to adjust the
+        figure, embed it in a larger layout, or assert something about it, which
+        is what this is for::
+
+            fig = bn.view().figure()
+            fig.set_size_inches(14, 9)
+            fig.savefig("bn.pdf")
+
+        Always the matplotlib backend, so it never needs Graphviz.
+        """
+        return self._figure(evidence if evidence is not None else self.evidence)
+
     def side_by_side(self, evidence: Optional[Mapping[str, Any]] = None) -> Any:
         """Structure and inference next to each other (pyAgrum only).
 
