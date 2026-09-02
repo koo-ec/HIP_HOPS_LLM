@@ -54,6 +54,11 @@ class TestNotebookRuns:
     def test_every_code_cell_executes(self, path, tmp_path, monkeypatch):
         notebook = json.loads(path.read_text(encoding="utf-8"))
         monkeypatch.chdir(tmp_path)
+        # The Colab notebook makes real, paid API calls when a key is present.
+        # Tests must never spend money or depend on a provider being up, so the
+        # key is cleared and the notebook takes its documented offline path.
+        monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+        monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
 
         namespace: dict = {
             "__name__": "__notebook__",
