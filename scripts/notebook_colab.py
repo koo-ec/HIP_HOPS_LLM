@@ -236,9 +236,11 @@ except Exception as exc:
         ),
         code(
             """
-from IPython.display import Image, display
-
 try:
+    # IPython is present in any notebook, but not necessarily wherever this
+    # notebook is *executed* as a test, so the import belongs inside the guard.
+    from IPython.display import Image, display
+
     if not HAVE_LANGGRAPH:
         raise RuntimeError("no live graph to render")
     display(Image(graph.get_graph().draw_mermaid_png()))
