@@ -179,7 +179,7 @@ These are invariants, not aspirations — each is a test that fails loudly.
 - **CPTs are never fitted on a test split.** `learn_cpt` raises.
 
 ```bash
-pytest                                        # 628 tests
+pytest                                        # 711 tests
 pytest --cov=hiphopsllm --cov-report=term   # 94% line coverage
 ```
 

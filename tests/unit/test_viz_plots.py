@@ -50,6 +50,26 @@ def _subtitle(ax) -> str:
     return ax.get_title(loc="left") or ax.get_title()
 
 
+#: A serial pipeline with an early exit: the router's ``bail`` branch jumps
+#: straight to ``__end__``, skipping every layer in between. That edge is the
+#: one a reader most needs to see and the easiest one to draw invisibly.
+EARLY_EXIT_SPEC = {
+    "name": "early exit",
+    "nodes": {
+        "__start__": {"role": "source"},
+        "first": {"role": "llm_agent"},
+        "second": {"role": "llm_agent"},
+        "__end__": {"role": "sink"},
+    },
+    "edges": [
+        ["__start__", "first"],
+        ["first", "second", "ok", True],
+        ["first", "__end__", "bail", True],
+        ["second", "__end__"],
+    ],
+}
+
+
 class TestDesignTokens:
     def test_every_token_is_a_hex_colour(self):
         for name, value in TOKENS.items():
@@ -198,6 +218,81 @@ class TestPlotArchitecture:
     )
     def test_every_bundled_architecture_draws(self, key):
         assert plot_architecture(extract_architecture(load_example(key))) is not None
+
+
+class TestArchitectureSkipEdges:
+    """An early exit spans several layers. Drawn straight it is a vertical line
+    hidden behind every component it passes, with its branch label landing on
+    top of one of them — so it must be routed around the side instead.
+    """
+
+    @pytest.fixture
+    def drawn(self):
+        return plot_architecture(extract_architecture(EARLY_EXIT_SPEC))
+
+    def _positions(self, ax) -> dict:
+        return {t.get_text(): t.get_position() for t in ax.texts}
+
+    def _node_column(self, ax) -> float:
+        pos = self._positions(ax)
+        return max(
+            pos[name][0]
+            for name in ("__start__", "first", "second", "__end__")
+            if name in pos
+        )
+
+    def test_the_skip_edge_label_is_clear_of_every_component(self, drawn):
+        pos = self._positions(drawn)
+        assert "bail" in pos, "the branch label was not drawn at all"
+        assert pos["bail"][0] > self._node_column(drawn) + 0.5
+
+    def test_the_skip_edge_itself_leaves_the_node_column(self, drawn):
+        lane = max(max(line.get_xdata()) for line in drawn.lines)
+        assert lane > self._node_column(drawn) + 0.5
+
+    def test_the_ordinary_edge_label_stays_on_its_edge(self, drawn):
+        """Only the skipping edge moves; a one-layer edge is still drawn straight."""
+        pos = self._positions(drawn)
+        assert pos["ok"][0] < pos["bail"][0]
+
+    def test_the_view_is_wide_enough_to_show_the_lane(self, drawn):
+        lane = max(max(line.get_xdata()) for line in drawn.lines)
+        assert drawn.get_xlim()[1] > lane
+
+    def test_two_skip_edges_never_share_a_lane(self):
+        """Two early exits drawn on the same lane would be one line, and the
+        second branch label would sit on top of the first."""
+        spec = {
+            "name": "two early exits",
+            "nodes": {
+                "__start__": {"role": "source"},
+                "first": {"role": "llm_agent"},
+                "second": {"role": "llm_agent"},
+                "third": {"role": "llm_agent"},
+                "__end__": {"role": "sink"},
+            },
+            "edges": [
+                ["__start__", "first"],
+                ["first", "second", "ok", True],
+                ["first", "__end__", "bail_1", True],
+                ["second", "third", "ok", True],
+                ["second", "__end__", "bail_2", True],
+                ["third", "__end__"],
+            ],
+        }
+        ax = plot_architecture(extract_architecture(spec))
+        pos = {t.get_text(): t.get_position() for t in ax.texts}
+        assert pos["bail_1"][0] != pos["bail_2"][0]
+
+    def test_a_router_is_not_captioned_with_a_word_already_in_its_name(self, drawn):
+        """`first::router` captioned `router` prints the same word twice and
+        crowds a shape that is narrow where the caption sits."""
+        texts = _texts(drawn)
+        assert "first\n::router" in texts, "the router id was broken mid-word"
+        assert "router" not in texts
+
+    def test_a_role_caption_is_still_drawn_where_it_says_something_new(self, drawn):
+        assert "llm agent" in _texts(drawn)
 
 
 class TestPlotImportance:

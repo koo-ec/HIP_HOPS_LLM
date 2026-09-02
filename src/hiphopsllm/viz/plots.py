@@ -517,8 +517,25 @@ def plot_architecture(
     pos = {nid: (x[nid], -depth[nid] * y_step) for nid in ids}
     box_w, box_h = 1.05, 0.52
 
+    # Two kinds of edge cannot be drawn straight. Feedback edges run backwards,
+    # and an edge that skips a layer would otherwise be a vertical line hidden
+    # behind every component it passes, with its label landing on top of one of
+    # them. Both are routed around the right-hand side instead, each in its own
+    # lane so that two of them never overlap. An early exit to `__end__` is
+    # exactly this case, and it is the edge a reader most needs to see.
+    right = max(p[0] for p in pos.values())
+    skips = [
+        (src, dst, label, conditional)
+        for src, dst, label, conditional in edges
+        if (src, dst) not in back and depth[dst] - depth[src] > 1
+    ]
+    skip_lane = {(e[0], e[1]): right + box_w * (0.72 + 0.30 * i)
+                 for i, e in enumerate(skips)}
+    lane = (max(skip_lane.values()) if skip_lane else right) + box_w * 0.55
+
     if ax is None:
-        span = max(p[0] for p in pos.values()) - min(p[0] for p in pos.values())
+        left = min(p[0] for p in pos.values())
+        span = (lane if back else max([right] + list(skip_lane.values()))) - left
         fig_w = max(6.0, min(40.0, (span + 2 * box_w) * 1.6))
         fig_h = max(3.5, min(40.0, (max(depth.values()) * y_step + 1.8) * 1.15))
         _, ax = plt.subplots(figsize=(fig_w, fig_h))
@@ -526,9 +543,6 @@ def plot_architecture(
     fig.patch.set_facecolor(TOKENS["surface"])
     ax.set_facecolor(TOKENS["surface"])
 
-    # feedback edges are routed around the right-hand side, so they never cross
-    # a component; they are the reason the graph is not yet a fault tree
-    lane = max(p[0] for p in pos.values()) + box_w * 0.85
     for src, dst, label, conditional in edges:
         x0, y0 = pos[src]
         x1, y1 = pos[dst]
@@ -543,6 +557,21 @@ def plot_architecture(
                         zorder=1)
             ax.text(lane + 0.06, (y0 + y1) / 2, "feedback", fontsize=7,
                     color=TOKENS["critical"], ha="left", va="center", rotation=90)
+            continue
+        if (src, dst) in skip_lane:
+            side = skip_lane[(src, dst)]
+            drop = y0 - box_h * 0.62
+            ax.plot([x0, x0, side, side], [y0 - box_h / 2, drop, drop, y1],
+                    color=TOKENS["text_secondary"], lw=1.1, zorder=1, alpha=0.75,
+                    linestyle="dashed" if conditional else "solid",
+                    solid_joinstyle="miter")
+            ax.annotate("", xy=(x1 + box_w / 2, y1), xytext=(side, y1),
+                        arrowprops=dict(arrowstyle="-|>", color=TOKENS["text_secondary"],
+                                        lw=1.1, shrinkA=0, shrinkB=1), zorder=1)
+            if label:
+                ax.text(side + 0.05, (drop + y1) / 2, label, fontsize=7,
+                        color=TOKENS["text_secondary"], ha="left", va="center",
+                        rotation=90)
             continue
         mid = (y0 - box_h / 2 + y1 + box_h / 2) / 2
         ax.plot([x0, x0, x1, x1], [y0 - box_h / 2, mid, mid, y1 + box_h / 2],
@@ -577,18 +606,27 @@ def plot_architecture(
         patch.set_zorder(2)
         ax.add_patch(patch)
 
-        label = _short(comp.id, width=20, max_lines=2)
-        ax.text(cx, cy + 0.055, label, ha="center", va="center", fontsize=7.6,
-                color=TOKENS["text"], zorder=3, linespacing=1.1)
+        # Materialised routers are named `<node>::router`; breaking that name on
+        # the separator keeps the source node readable instead of splitting it
+        # mid-word to fit the wrap width, and the role caption underneath is then
+        # the same word twice, so it is dropped rather than crowding the shape.
+        label = _short(comp.id.replace("::", "\n::"), width=20, max_lines=2)
         caption = comp.role.value.replace("_", " ")
+        if comp.id.rsplit("::", 1)[-1] == comp.role.value:
+            caption = ""
         if show_ports and comp.ports_in:
-            caption += f"  ({len(comp.ports_in)} in)"
-        ax.text(cx, cy - box_h * 0.30, caption, ha="center", va="center", fontsize=6,
-                color=TOKENS["text_secondary"], zorder=3)
+            caption = (caption + f"  ({len(comp.ports_in)} in)").strip()
+        ax.text(cx, cy + (0.055 if caption else 0.0), label, ha="center",
+                va="center", fontsize=7.6, color=TOKENS["text"], zorder=3,
+                linespacing=1.1)
+        if caption:
+            ax.text(cx, cy - box_h * 0.30, caption, ha="center", va="center",
+                    fontsize=6, color=TOKENS["text_secondary"], zorder=3)
 
     xs = [p[0] for p in pos.values()]
     ys = [p[1] for p in pos.values()]
-    ax.set_xlim(min(xs) - box_w * 0.9, (lane if back else max(xs)) + box_w * 0.9)
+    outer = max([max(xs)] + ([lane] if back else []) + list(skip_lane.values()))
+    ax.set_xlim(min(xs) - box_w * 0.9, outer + box_w * 0.9)
     ax.set_ylim(min(ys) - box_h * 1.9, max(ys) + box_h * 1.4)
     ax.set_axis_off()
     fig.suptitle(title or f"Architecture — {system.name}", fontsize=12,

@@ -14,6 +14,12 @@ First release.
 - Feedback-loop elimination by unrolling to depth *k* plus a feedback-cut
   component, so a loop's contribution is preserved rather than deleted.
 - `LangGraphExtractor` for applying one set of conventions across several graphs.
+- `plot_architecture` draws the extracted model rather than the source graph, so
+  the picture and the analysis are the same object. Conditional edges are dashed;
+  feedback edges and any edge that skips a layer — an early exit to `__end__` is
+  the common case — are routed around the side in their own lane, because drawn
+  straight they are a vertical line hidden behind every component they pass, with
+  the branch label landing on top of one of them.
 
 ### Fault trees
 
@@ -56,7 +62,7 @@ First release.
 
 ### Testing
 
-628 tests, 94% line coverage, every module above 88%. CI runs them on Python
+711 tests, 94% line coverage, every module above 88%. CI runs them on Python
 3.10–3.13 (Ubuntu) plus Windows and macOS, once more with pyAgrum uninstalled to
 keep that dependency genuinely optional, and enforces a 90% overall / 80%
 per-module coverage floor.

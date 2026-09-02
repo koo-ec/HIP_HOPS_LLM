@@ -10,6 +10,12 @@ the Bayesian network. Everything above them is a faithful stand-in for the kind
 of notebook this attaches to: a serial research → capture → classify pipeline
 with conditional edges, taken from the SMILES/ECHA hazard-check tutorial.
 
+Two further steps show the working rather than adding to the minimum: Step 5
+draws the agent graph both as LangGraph renders it and as the extractor read it,
+and Step 8 draws the synthesised fault tree and lists its minimal cut sets. The
+Bayesian network is generated from that tree, so seeing the tree is the only way
+to check what the network is a picture of.
+
 The presentation is deliberate. Hosted notebooks render styled ``<div>`` blocks
 but sanitise much other HTML, so the headings are divs and the contents table is
 ordinary anchored Markdown.
@@ -145,8 +151,8 @@ def cells(md, code):
 
 **What this notebook is.** You already have a multi-agent LangGraph notebook that
 works. This shows how to get a quantified reliability analysis of it by appending
-**two cells**: [Step 6](#step6) and [Step 7](#step7). Everything before them
-stands in for *your* notebook.
+**two cells**: [Step 7](#step7) and [Step 9](#step9). Everything before them
+stands in for *your* notebook, and everything after them shows the working.
 
 | | Section | What happens |
 |---|---|---|
@@ -155,11 +161,13 @@ stands in for *your* notebook.
 | 2 | [Your shared state](#step2) | The `TypedDict` your agents pass around |
 | 3 | [Your three agents](#step3) | Research → capture → classify |
 | 4 | [Your graph](#step4) | The compiled LangGraph, with conditional edges |
-| 5 | [Your inputs](#step5) | A stratified set of molecules |
-| **6** | [**Cell A: the operational profile**](#step6) | **Run, score every node and calibrate, in one call** |
-| **7** | [**Cell B: the Bayesian network**](#step7) | **Generate and visualise it** |
-| 8 | [What the network adds](#step8) | Exact inference, diagnosis, pyAgrum |
-| 9 | [Keep the measurement](#step9) | Save the artefacts |
+| 5 | [Your graph, drawn](#step5) | The agent connections, as LangGraph draws them and as the extractor read them |
+| 6 | [Your inputs](#step6) | A stratified set of molecules |
+| **7** | [**Cell A: the operational profile**](#step7) | **Run, score every node and calibrate, in one call** |
+| 8 | [The synthesised fault tree](#step8) | The tree nobody drew, and its minimal cut sets |
+| **9** | [**Cell B: the Bayesian network**](#step9) | **Generate and visualise it** |
+| 10 | [What the network adds](#step10) | Exact inference, diagnosis, pyAgrum |
+| 11 | [Keep the measurement](#step11) | Save the artefacts |
 | | [Applying this to your notebook](#yours) | The three things you change |
 
 <div style="border-left:5px solid #b8860b;background:#fdf9ee;padding:12px 18px;
@@ -358,11 +366,84 @@ except ImportError:
         md(
             _banner(
                 "5",
+                "Your graph, drawn: the connections between the agents",
+                """Two pictures of the same thing, and it matters that they agree.
+The first is LangGraph's own rendering, the diagram you already know. The second
+is what HIP-HOPS-LLM *read out of* that graph, and it is the one every number
+below is derived from.
+
+They are not identical, deliberately. Each `add_conditional_edges` becomes an
+explicit **router component** with failure logic of its own, because a router
+that sends a good run to the wrong branch is a fault, and a picture with no box
+for it has nowhere to put that fault.""",
+                "step5",
+            )
+        ),
+        code(
+            """
+# LangGraph's own picture. `draw_mermaid_png` calls the mermaid.ink service, so
+# it needs network access; when that is unavailable the mermaid source says the
+# same thing, and the drawing in the next cell needs neither.
+try:
+    from IPython.display import Image
+
+    display(Image(graph.get_graph().draw_mermaid_png()))
+except Exception as exc:
+    print(f"LangGraph's PNG renderer is unavailable ({type(exc).__name__}).")
+    try:
+        print(graph.get_graph().draw_mermaid())
+    except Exception:
+        print("__start__ -> research_agent -> pixelrag_agent -> safety_agent -> __end__")
+        print("with early exits from research_agent and pixelrag_agent to __end__")
+"""
+        ),
+        code(
+            """
+import matplotlib.pyplot as plt
+
+from hiphopsllm import extract_architecture, plot_architecture
+
+system = extract_architecture(
+    graph,
+    name="SMILES → ECHA hazard check",
+    globals_ns=globals(),                                # to read the node bodies
+    resource_overrides={"safety_agent": {"llm": "gpt-4o-mini", "runtime": "api"}},
+)
+
+print(f"{len(system.components)} components, {len(system.connections)} connections\\n")
+print(f"  {'component':<28} {'role':<12} shared resources")
+for component in system.components.values():
+    shared = ", ".join(f"{k}={v}" for k, v in sorted(component.resources.items()))
+    print(f"  {component.id:<28} {component.role.value:<12} {shared}")
+
+groups = system.common_cause_groups()
+print("\\nshared resources across components (common-cause candidates):")
+for (kind, value), members in groups.items():
+    print(f"  {kind} = {value}  ->  {', '.join(members)}")
+if not groups:
+    print("  none: no two components share a model snapshot or runtime here")
+
+ax = plot_architecture(system, title="SMILES → ECHA hazard check")
+ax.figure.set_size_inches(10, 6)
+plt.show()
+"""
+        ),
+        md(
+            """
+Read the two conditional edges in that drawing. They are why this is a *serial*
+pipeline with early exits rather than three independent agents, and why the next
+step has to record a node the router skipped as **not measured** rather than as
+failed.
+"""
+        ),
+        md(
+            _banner(
+                "6",
                 "Your inputs",
                 "A reliability claim is conditional on the mix of work the system "
                 "will meet, so the inputs are bucketed into strata whose difficulty "
                 "genuinely differs (here, structural complexity).",
-                "step5",
+                "step6",
             )
         ),
         code(
@@ -383,7 +464,7 @@ print(len(SMILES), "inputs")
         ),
         md(
             _banner(
-                "6",
+                "7",
                 "Cell A: the operational profile, in one call",
                 """`run_and_observe` invokes the graph once per input, scores **each
 node** separately, builds the operational profile, and calibrates the fault trees
@@ -396,7 +477,7 @@ Two things it needs from you, because it cannot invent them:
   job. Return `None` when a node was **not exercised**, because a router sent the
   run to `END` first. That is recorded as a *missing observation*, not a failure:
   scoring an unreached node as failed would blame it for an upstream fault.""",
-                "step6",
+                "step7",
             )
         ),
         code(
@@ -449,21 +530,132 @@ print("per-stratum failure rates, and why the profile matters:\\n")
 for name, evidence in study.evidence.items():
     rates = ",  ".join(f"{k}={v:.3f}" for k, v in evidence.by_stratum.items())
     print(f"  {name:<16} {rates}")
-
-print()
-print("minimal cut sets for H2 (incorrect answer delivered and accepted):")
-for cut in sorted(study.cut_sets("H2"), key=lambda c: (len(c), c)):
-    print(f"  order {len(cut)}:  " + " + ".join(cut))
 """
         ),
         md(
             _banner(
-                "7",
+                "8",
+                "The synthesised fault tree, and its minimal cut sets",
+                """Nobody drew this tree. It is derived by backward traversal from
+the hazard, through each component's local failure logic, over the architecture
+of [Step 5](#step5) — which is the point of HiP-HOPS: the analysis cannot drift
+from the system it describes, because it is regenerated from it.
+
+Its **minimal cut sets** are the answer to *what combinations of faults are
+sufficient to cause the hazard*. An order-1 cut set is a single point of failure;
+an order-2 cut set is a pair that must both occur. The Bayesian network in
+[Step 9](#step9) is generated from this tree, so this is what that network is a
+picture of.""",
+                "step8",
+            )
+        ),
+        code(
+            """
+import matplotlib.pyplot as plt
+
+from hiphopsllm import plot_fault_tree
+
+# H2: an incorrect answer is delivered and accepted. `study.hazards_found()`
+# lists the others; the same code works for any of them.
+tree = study.report.tree("H2")
+
+print(f"{tree.id}  «{tree.name}»")
+print(f"  nodes         {tree.size()}")
+print(f"  depth         {tree.depth()}")
+print(f"  basic events  {len(tree.basic_event_ids())}")
+for warning in tree.warnings:
+    print(f"  warning: {warning}")
+
+# No figsize: the default is a uniform physical scale, so a six-layer tree and
+# a twenty-layer one are equally legible and no label shrinks out of its box.
+plot_fault_tree(tree)
+plt.show()
+"""
+        ),
+        md(
+            """
+The gates carry the argument. An **OR** means either input alone is enough, so
+everything beneath it reaches the top event on its own; an **AND** is the only
+gate in a fault tree that buys redundancy. Read the tree above and note that
+there is no AND gate anywhere in it.
+
+The oval leaves are basic events. Those belonging to components measured in
+[Step 7](#step7) now carry the interval measured there rather than a
+placeholder, and the grey triangles are transfer symbols: the same subtree
+reached by more than one path, drawn once.
+
+`display_fault_tree(tree)` gives the same tree as mermaid where a renderer is
+available, and `to_openpsa_xml(tree)` exports it for a conventional PSA tool.
+"""
+        ),
+        code(
+            """
+import pandas as pd
+
+analysis = study.report.analysis("H2")
+events = analysis.cuts.symbols
+
+rows = [
+    {
+        "order": len(cut),
+        "cut set": "  AND  ".join(sorted(cut)),
+        "components": ", ".join(
+            sorted({events[e].component for e in cut if e in events})
+        ),
+        "P(cut)": analysis.quant.cut_set_probability.get(cut, float("nan")),
+    }
+    for cut in sorted(analysis.cuts.sets, key=lambda c: (len(c), sorted(c)))
+]
+
+if rows:
+    display(pd.DataFrame(rows))
+    orders = sorted({r["order"] for r in rows})
+    print(f"{len(rows)} minimal cut sets, of orders {orders}")
+    print(f"single points of failure: {', '.join(analysis.single_points) or 'none'}")
+    print(f"\\nP(H2) = {analysis.quant.top_probability:.6f}   ({analysis.quant.method})")
+    lower, upper = analysis.quant.top_interval
+    if upper > lower:
+        print(f"        interval [{lower:.6f}, {upper:.6f}] from the "
+              "calibrated per-component envelopes")
+else:
+    print("no cut sets: nothing in this architecture can cause H2")
+"""
+        ),
+        md(
+            """
+**Every cut set is of order 1**, and that is the finding. This pipeline is
+serial, so nothing checks anything: each of those faults reaches the system
+boundary on its own, and no pair of them has to coincide. It is not a defect of
+the analysis; it is the architecture, restated in a form you can argue with.
+
+Because these cut sets are also disjoint, the minimal-cut upper bound happens to
+be exactly the top-event probability here, and `bound_overestimate` in
+[Step 10](#step10) comes out at zero. Add redundancy (a second capture agent, a
+checker on the classifier) and cut sets of order 2 appear, the bound starts to
+over-count, and the exact answer from the Bayesian network stops being optional.
+
+Ranked by **Fussell-Vesely** contribution, the same cut sets say what to fix
+first, which is a different question from which component fails most often.
+"""
+        ),
+        code(
+            """
+if analysis.importance:
+    study.plot_importance("H2")
+    plt.show()
+
+study.plot_cutset_orders()
+plt.show()
+"""
+        ),
+        md(
+            _banner(
+                "9",
                 "Cell B: generate and visualise the Bayesian network",
                 "The network is generated *from* the fault tree, so the two cannot "
                 "disagree. Each node shows its posterior as a labelled bar per "
                 "state, and the caption reports the inference time.",
-                "step7",
+                "step9",
             )
         ),
         code(
@@ -477,19 +669,20 @@ network.show()
 <div style="border-left:5px solid {ACCENT};background:#f4f8f6;padding:14px 20px;
             border-radius:0 6px 6px 0;font-family:Helvetica,Arial,sans-serif;
             font-size:14.5px;line-height:1.65;">
-  <b>That is the whole two-cell addition.</b> Everything below is optional detail:
-  what the network buys you beyond the tree, and how to keep the measurement.
+  <b>That is the whole two-cell addition.</b> Steps 5 and 8 show the working;
+  what follows is optional detail: what the network buys you beyond the tree,
+  and how to keep the measurement.
 </div>
 """
         ),
         md(
             _banner(
-                "8",
+                "10",
                 "What the network adds",
                 "An exact top-event probability where the cut-set bound gives only "
                 "an upper limit, a posterior over causes given evidence, and a "
                 "second inference engine to check the first against.",
-                "step8",
+                "step10",
             )
         ),
         code(
@@ -535,12 +728,12 @@ else:
         ),
         md(
             _banner(
-                "9",
+                "11",
                 "Keep the measurement",
                 "Re-running the graph is the expensive part. The outcomes table is "
                 "the measurement; the artefacts hold the trees, the cut sets, the "
                 "FMEA and the calibration provenance.",
-                "step9",
+                "step11",
             )
         ),
         code(
@@ -559,7 +752,7 @@ for path in study.save("artifacts"):
                font-weight:bold;">Applying this to your own notebook</span>
 </div>
 
-Copy the two cells from [Step 6](#step6) and [Step 7](#step7), and change three
+Copy the two cells from [Step 7](#step7) and [Step 9](#step9), and change three
 things:
 
 1. **`inputs`**: your own list of graph inputs.
@@ -567,9 +760,9 @@ things:
 3. **`success`**: how each node's outcome is read from the final state,
    returning `None` where a node was not exercised.
 
-Everything else follows: the architecture is read from your compiled graph, the
-fault trees are synthesised from it, and the Bayesian network is generated from
-those.
+Everything else follows: the architecture is read from your compiled graph
+([Step 5](#step5)), the fault trees are synthesised from it ([Step 8](#step8)),
+and the Bayesian network is generated from those.
 
 * **Documentation:** [koorosh-aslansefat.com/HIP_HOPS_LLM](http://koorosh-aslansefat.com/HIP_HOPS_LLM/)
 * **Repository:** [{REPO.removesuffix('.git')}]({REPO.removesuffix('.git')})
