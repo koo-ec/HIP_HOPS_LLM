@@ -100,7 +100,9 @@ Repository: {REPO.removesuffix('.git')}
     code(
         f"""
 !git clone --depth=1 {REPO} {CLONE_DIR} 2>&1 | tail -2
-%pip install -q -e "{CLONE_DIR}[bayes,graph]" 2>&1 | tail -3
+# Install a wheel into the running kernel. An editable install only adds a .pth
+# file, which this already-started Colab kernel does not process automatically.
+%pip install -q "./{CLONE_DIR}[bayes,graph]"
 print("installed")
 """
     ),
@@ -418,7 +420,9 @@ What it does, in the HiP-HOPS phases:
     code(
         f"""
 !git clone --depth=1 {REPO} {CLONE_DIR} 2>&1 | tail -2
-%pip install -q -e "{CLONE_DIR}[bayes,graph]" 2>&1 | tail -3
+# Install a wheel into the running kernel. Hosted kernels do not automatically
+# process the .pth file created by an editable install after startup.
+%pip install -q "./{CLONE_DIR}[bayes,graph]"
 
 import importlib, os, platform, sys
 

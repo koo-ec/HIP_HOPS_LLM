@@ -106,3 +106,16 @@ def test_the_notebooks_are_up_to_date_with_their_generator(tmp_path):
         f"{stale} differ from what scripts/build_notebooks.py produces; "
         "commit the regenerated notebooks"
     )
+
+
+def test_hosted_notebooks_use_an_immediately_importable_install():
+    """A running kernel does not re-process the .pth file from ``pip -e``."""
+    for path in _notebooks():
+        notebook = json.loads(path.read_text(encoding="utf-8"))
+        source = "\n".join(
+            "".join(cell["source"])
+            for cell in notebook["cells"]
+            if cell["cell_type"] == "code"
+        )
+        assert '%pip install -q "./hiphopsllm-repo[bayes,graph]"' in source
+        assert '%pip install -q -e "hiphopsllm-repo[bayes,graph]"' not in source

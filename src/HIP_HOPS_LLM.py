@@ -1,4 +1,4 @@
-"""Alias so ``import HIP_HOPS_LLM`` resolves to :mod:`hiphopsllm`.
+"""Compatibility alias so ``import HIP_HOPS_LLM`` resolves to :mod:`hiphopsllm`.
 
 The canonical import name is ``hiphopsllm``. The repository and the distribution
 are called ``HIP-HOPS-LLM``, so this makes the obvious guess work — and makes it
@@ -10,7 +10,7 @@ the *same module object*, not a second copy::
 Submodules resolve through the alias too, so ``HIP_HOPS_LLM.bayes.network``
 works.
 
-Only this one alias ships. A second, lower-case ``hip_hops_llm`` would be a
+Only this alias file ships. A second, lower-case ``hip_hops_llm`` would be a
 different file on Linux and the *same* file on Windows and macOS, whose
 filesystems are case-insensitive — so the pair cannot be checked out reliably.
 """

@@ -9,6 +9,7 @@ that promise true after either side changes.
 from __future__ import annotations
 
 import importlib
+import pathlib
 import pkgutil
 
 import pytest
@@ -173,8 +174,17 @@ class TestNamespaceHygiene:
     def test_only_one_alias_ships(self):
         """A second, lower-case alias would be a different file on Linux and the
         same file on Windows and macOS, so the pair cannot be checked out."""
-        with pytest.raises(ModuleNotFoundError):
-            importlib.import_module("hip_hops_llm")
+        source_dir = pathlib.Path(hiphopsllm.__file__).resolve().parent.parent
+        names = {path.name for path in source_dir.iterdir()}
+        assert "HIP_HOPS_LLM.py" in names
+        assert "hip_hops_llm.py" not in names
+
+        # Case-insensitive filesystems resolve both spellings to the one file;
+        # a case-sensitive filesystem must reject the unshipped spelling.
+        lower_case_path = source_dir / "hip_hops_llm.py"
+        if not lower_case_path.exists():
+            with pytest.raises(ModuleNotFoundError):
+                importlib.import_module("hip_hops_llm")
 
 
 class TestExamplesShip:

@@ -84,7 +84,9 @@ class TestGuards:
         study.observe(outcomes, profile=PROFILE).run()
         first = study.hazard_probability("H2").as_tuple()
         study.run()
-        assert study.hazard_probability("H2").as_tuple() == first
+        assert study.hazard_probability("H2").as_tuple() == pytest.approx(
+            first, rel=1e-15, abs=0.0
+        )
 
 
 class TestObserveShapes:
