@@ -460,14 +460,21 @@ for key, value in network.cross_check().items():
         ),
         code(
             """
-import pyagrum
-
 from hiphopsllm import graphviz_available
 
-bn = network.net                      # a real pyagrum.BayesNet
-print(f"pyagrum {pyagrum.__version__} — {bn.size()} variables, {bn.sizeArcs()} arcs")
+try:
+    import pyagrum
 
-GRAPHVIZ = graphviz_available()
+    bn = network.net                  # a real pyagrum.BayesNet
+    HAVE_PYAGRUM = True
+    print(f"pyagrum {pyagrum.__version__} — {bn.size()} variables, "
+          f"{bn.sizeArcs()} arcs")
+except ImportError:
+    bn, HAVE_PYAGRUM = None, False
+    print("pyagrum not installed — every probability below still comes from the "
+          "exact NumPy engine, and the network is drawn with matplotlib.")
+
+GRAPHVIZ = HAVE_PYAGRUM and graphviz_available()
 print("Graphviz on PATH:", GRAPHVIZ)
 
 if GRAPHVIZ:
@@ -475,7 +482,6 @@ if GRAPHVIZ:
 
     gnb.showBN(bn, size="10")
 else:
-    print("drawing with matplotlib instead")
     network.view().show()
 """
         ),
