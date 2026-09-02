@@ -9,7 +9,7 @@ One row per benchmark item, a stratum label, and a `1`/`0` correctness column pe
 component you want to calibrate. `1` means correct.
 
 ```python
-from HIP_HOPS_LLM import load_outcomes
+from hiphopsllm import load_outcomes
 
 outcomes = load_outcomes()
 outcomes.head(3)
@@ -31,7 +31,7 @@ decorative.
 ## Calibrate
 
 ```python
-from HIP_HOPS_LLM import AgenticReliabilityStudy, load_example
+from hiphopsllm import AgenticReliabilityStudy, load_example
 
 study = AgenticReliabilityStudy(load_example("parallel_aggregator"))
 study.observe(outcomes, profile={"short": 0.30, "medium": 0.50, "long": 0.20})

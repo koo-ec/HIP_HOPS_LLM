@@ -16,7 +16,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 import pytest  # noqa: E402
 
-from HIP_HOPS_LLM import (  # noqa: E402
+from hiphopsllm import (  # noqa: E402
     AgenticReliabilityStudy,
     extract_architecture,
     load_example,
@@ -25,8 +25,8 @@ from HIP_HOPS_LLM import (  # noqa: E402
     plot_fault_tree,
     plot_importance,
 )
-from HIP_HOPS_LLM.faulttree.synthesis import expand_to_tree  # noqa: E402
-from HIP_HOPS_LLM.viz.plots import TOKENS  # noqa: E402
+from hiphopsllm.faulttree.synthesis import expand_to_tree  # noqa: E402
+from hiphopsllm.viz.plots import TOKENS  # noqa: E402
 
 
 @pytest.fixture(autouse=True)

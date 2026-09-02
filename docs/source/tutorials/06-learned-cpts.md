@@ -13,8 +13,8 @@ When per-node outcomes have been logged, stop assuming and estimate.
 explicitly:
 
 ```python
-from HIP_HOPS_LLM import load_outcomes
-from HIP_HOPS_LLM.bayes.learn import learn_gate
+from hiphopsllm import load_outcomes
+from hiphopsllm.bayes.learn import learn_gate
 
 outcomes = load_outcomes()
 calibration = outcomes[outcomes["split"] == "calibration"].copy()
@@ -92,8 +92,8 @@ learned table predicts far more, because row 0 says the judge fails on its own.
 ## Fit a whole network
 
 ```python
-from HIP_HOPS_LLM import BayesianNetwork
-from HIP_HOPS_LLM.bayes.learn import fit_cpts
+from hiphopsllm import BayesianNetwork
+from hiphopsllm.bayes.learn import fit_cpts
 
 cpts, fits = fit_cpts(
     outcomes[outcomes["split"] == "calibration"],

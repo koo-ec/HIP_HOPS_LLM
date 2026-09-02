@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import pandas as pd
 
-from HIP_HOPS_LLM import EXAMPLES, AgenticReliabilityStudy, load_example
+from hiphopsllm import EXAMPLES, AgenticReliabilityStudy, load_example
 
 print("--- three architectures, same failure library ---")
 rows = []

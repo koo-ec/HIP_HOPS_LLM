@@ -13,7 +13,7 @@ author = "Koorosh Aslansefat"
 copyright = f"{date.today().year}, {author}"
 
 try:
-    from HIP_HOPS_LLM import __version__ as release
+    from hiphopsllm import __version__ as release
 except Exception:  # pragma: no cover - docs must build without the package
     release = "0.1.0"
 version = ".".join(release.split(".")[:2])

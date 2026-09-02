@@ -1,14 +1,14 @@
-# `HIP_HOPS_LLM.faulttree`
+# `hiphopsllm.faulttree`
 
 ```{eval-rst}
-.. automodule:: HIP_HOPS_LLM.faulttree
+.. automodule:: hiphopsllm.faulttree
    :no-members:
 ```
 
 ## Failure logic
 
 ```{eval-rst}
-.. automodule:: HIP_HOPS_LLM.faulttree.failure
+.. automodule:: hiphopsllm.faulttree.failure
    :members:
    :undoc-members:
    :show-inheritance:
@@ -17,7 +17,7 @@
 ## Synthesis
 
 ```{eval-rst}
-.. automodule:: HIP_HOPS_LLM.faulttree.synthesis
+.. automodule:: hiphopsllm.faulttree.synthesis
    :members:
    :undoc-members:
    :show-inheritance:
@@ -26,7 +26,7 @@
 ## Analysis
 
 ```{eval-rst}
-.. automodule:: HIP_HOPS_LLM.faulttree.analysis
+.. automodule:: hiphopsllm.faulttree.analysis
    :members:
    :undoc-members:
    :show-inheritance:
@@ -35,6 +35,6 @@
 ## Export
 
 ```{eval-rst}
-.. automodule:: HIP_HOPS_LLM.faulttree.export
+.. automodule:: hiphopsllm.faulttree.export
    :members:
 ```

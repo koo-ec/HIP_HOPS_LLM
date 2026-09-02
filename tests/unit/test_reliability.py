@@ -5,7 +5,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from HIP_HOPS_LLM import (
+from hiphopsllm import (
     EvidenceCalibrator,
     OperationalProfile,
     calibrate_failure_model,

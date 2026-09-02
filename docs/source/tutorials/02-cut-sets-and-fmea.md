@@ -4,7 +4,7 @@ The structural result is available before any measurement exists, and it is ofte
 the more actionable half. This tutorial reads it.
 
 ```python
-from HIP_HOPS_LLM import AgenticReliabilityStudy, load_example
+from hiphopsllm import AgenticReliabilityStudy, load_example
 
 study = AgenticReliabilityStudy(load_example("react_calculator"),
                                 name="ReAct + calculator")

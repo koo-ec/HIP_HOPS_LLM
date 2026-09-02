@@ -1,7 +1,7 @@
 # API reference
 
 Every public class and function, grouped by layer. The top-level package
-re-exports all of it, so `from HIP_HOPS_LLM import X` works for anything listed
+re-exports all of it, so `from hiphopsllm import X` works for anything listed
 here.
 
 | Layer | What it does |
@@ -18,7 +18,7 @@ here.
 ## The 30-second version
 
 ```python
-from HIP_HOPS_LLM import AgenticReliabilityStudy
+from hiphopsllm import AgenticReliabilityStudy
 
 study = AgenticReliabilityStudy(graph, globals_ns=globals())
 study.observe(outcomes, profile={"short": 0.3, "long": 0.7}).run()

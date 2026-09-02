@@ -1,14 +1,14 @@
-# `HIP_HOPS_LLM.reliability`
+# `hiphopsllm.reliability`
 
 ```{eval-rst}
-.. automodule:: HIP_HOPS_LLM.reliability
+.. automodule:: hiphopsllm.reliability
    :no-members:
 ```
 
 ## Operational profiles
 
 ```{eval-rst}
-.. automodule:: HIP_HOPS_LLM.reliability.profile
+.. automodule:: hiphopsllm.reliability.profile
    :members:
    :undoc-members:
    :show-inheritance:
@@ -17,7 +17,7 @@
 ## Evidence calibration
 
 ```{eval-rst}
-.. automodule:: HIP_HOPS_LLM.reliability.calibration
+.. automodule:: hiphopsllm.reliability.calibration
    :members:
    :undoc-members:
    :show-inheritance:
@@ -26,7 +26,7 @@
 ## HIP-LLM, re-exported
 
 ```{eval-rst}
-.. automodule:: HIP_HOPS_LLM.reliability.hipllm
+.. automodule:: hiphopsllm.reliability.hipllm
    :no-members:
 ```
 

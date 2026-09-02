@@ -15,7 +15,7 @@ top-event probability is an *interval* derived from measurement rather than a
 number derived from judgement.
 
 ```python
-from HIP_HOPS_LLM import AgenticReliabilityStudy, load_example, load_outcomes
+from hiphopsllm import AgenticReliabilityStudy, load_example, load_outcomes
 
 study = AgenticReliabilityStudy(load_example("parallel_aggregator"))
 study.observe(load_outcomes(), profile={"short": 0.3, "medium": 0.5, "long": 0.2})
@@ -108,7 +108,7 @@ enumeration in NumPy alone, which is what the package's own cross-check uses.
 ## The whole API in ten lines
 
 ```python
-from HIP_HOPS_LLM import AgenticReliabilityStudy
+from hiphopsllm import AgenticReliabilityStudy
 
 study = AgenticReliabilityStudy(graph, globals_ns=globals())   # 1. your LangGraph
 study.observe(outcomes_table, profile={"short": .3, "long": .7})  # 2. what you measured
@@ -125,7 +125,7 @@ HIP-LLM's own API is re-exported unchanged, so it needs one import line, not
 three:
 
 ```python
-from HIP_HOPS_LLM import OperationalFailureProb, quick_inference_settings
+from hiphopsllm import OperationalFailureProb, quick_inference_settings
 
 estimator = OperationalFailureProb(
     profile={"short": 0.30, "long": 0.70},
@@ -180,7 +180,7 @@ These are invariants, not aspirations — each is a test that fails loudly.
 
 ```bash
 pytest                                        # 628 tests
-pytest --cov=HIP_HOPS_LLM --cov-report=term   # 94% line coverage
+pytest --cov=hiphopsllm --cov-report=term   # 94% line coverage
 ```
 
 CI runs the suite on Python 3.10–3.13 (Ubuntu) plus Windows and macOS, once more

@@ -11,7 +11,7 @@ pip install "HIP-HOPS-LLM[all] @ git+https://github.com/koo-ec/HIP_HOPS_LLM.git"
 ## 1. Analyse an architecture
 
 ```python
-from HIP_HOPS_LLM import AgenticReliabilityStudy, load_example
+from hiphopsllm import AgenticReliabilityStudy, load_example
 
 study = AgenticReliabilityStudy(
     load_example("parallel_aggregator"),
@@ -84,7 +84,7 @@ The bundled table has one row per benchmark item, a stratum label, and a `1`/`0`
 correctness column per agent. `1` means the agent answered that item correctly.
 
 ```python
-from HIP_HOPS_LLM import load_outcomes
+from hiphopsllm import load_outcomes
 
 outcomes = load_outcomes()
 outcomes.head(3)

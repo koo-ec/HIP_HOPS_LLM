@@ -14,7 +14,7 @@ import xml.etree.ElementTree as ET
 
 import pytest
 
-from HIP_HOPS_LLM import (
+from hiphopsllm import (
     Hazard,
     default_hazards,
     extract_architecture,
@@ -26,8 +26,8 @@ from HIP_HOPS_LLM import (
     to_mermaid,
     to_openpsa_xml,
 )
-from HIP_HOPS_LLM.faulttree.failure import annotate_system
-from HIP_HOPS_LLM.faulttree.synthesis import (
+from hiphopsllm.faulttree.failure import annotate_system
+from hiphopsllm.faulttree.synthesis import (
     _tag,
     describe_deviation,
     expand_to_tree,
@@ -196,7 +196,7 @@ class TestHazards:
         assert {h.severity for h in default_hazards(model)} <= allowed
 
     def test_a_custom_hazard_is_synthesised(self, annotated):
-        from HIP_HOPS_LLM import Deviation, FClass
+        from hiphopsllm import Deviation, FClass
 
         model, fmodel = annotated
         custom = Hazard(
@@ -217,7 +217,7 @@ class TestHazards:
         assert trees["HX"].hazard.severity == "critical"
 
     def test_a_hazard_over_several_deviations_is_an_or(self, annotated):
-        from HIP_HOPS_LLM import Deviation, FClass
+        from hiphopsllm import Deviation, FClass
 
         model, fmodel = annotated
         port = model.components["__end__"].ports_in[0]
@@ -237,7 +237,7 @@ class TestHazards:
         assert Hazard(id="H9", name="a thing", deviations=[]).label == "H9: a thing"
 
     def test_describe_deviation_is_human_readable(self, annotated):
-        from HIP_HOPS_LLM import Deviation, FClass
+        from hiphopsllm import Deviation, FClass
 
         model, _ = annotated
         text = describe_deviation(

@@ -18,7 +18,7 @@ matplotlib.use("Agg")
 
 import pytest  # noqa: E402
 
-from HIP_HOPS_LLM import (  # noqa: E402
+from hiphopsllm import (  # noqa: E402
     SafetyReport,
     analyse_langgraph,
     load_example,
@@ -239,7 +239,7 @@ class TestConstruction:
         assert isinstance(report, SafetyReport)
 
     def test_the_source_system_keeps_its_cycles(self, looped_report):
-        from HIP_HOPS_LLM import find_cycles, is_acyclic
+        from hiphopsllm import find_cycles, is_acyclic
 
         assert find_cycles(looped_report.source_system), (
             "source_system must be the architecture as extracted, loops included"

@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import pandas as pd
 
-from HIP_HOPS_LLM import AgenticReliabilityStudy, load_example
+from hiphopsllm import AgenticReliabilityStudy, load_example
 
 study = AgenticReliabilityStudy(
     load_example("react_calculator"), name="ReAct + calculator"

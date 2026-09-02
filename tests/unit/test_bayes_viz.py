@@ -8,6 +8,8 @@ Windows install.
 
 from __future__ import annotations
 
+import re
+
 import matplotlib
 
 matplotlib.use("Agg")
@@ -15,8 +17,8 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 import pytest  # noqa: E402
 
-from HIP_HOPS_LLM.bayes import viz as viz_module  # noqa: E402
-from HIP_HOPS_LLM.bayes.viz import (  # noqa: E402
+from hiphopsllm.bayes import viz as viz_module  # noqa: E402
+from hiphopsllm.bayes.viz import (  # noqa: E402
     PALETTE,
     BayesNetView,
     _blend,
@@ -32,7 +34,7 @@ def _close_figures():
 
 @pytest.fixture
 def network(study):
-    from HIP_HOPS_LLM import BayesianNetwork
+    from hiphopsllm import BayesianNetwork
 
     return BayesianNetwork.from_fault_tree(
         study.report.tree("H2"), study.report.failure_model, name="H2"
@@ -44,6 +46,19 @@ def no_graphviz(monkeypatch):
     """Force the matplotlib branch, whatever this machine actually has."""
     monkeypatch.setattr(viz_module, "graphviz_available", lambda: False)
     return True
+
+
+def collection(ax, gid):
+    """The collection the backend drew under ``gid``, or ``None``.
+
+    The node interiors are collections rather than loose patches, so that
+    ``ax.patches`` still holds one artist per variable; these tests reach them
+    the same way.
+    """
+    for drawn in ax.collections:
+        if drawn.get_gid() == gid:
+            return drawn
+    return None
 
 
 class TestGraphvizDetection:
@@ -242,6 +257,126 @@ class TestMatplotlibBackend:
 
     def test_side_by_side_falls_back_rather_than_raising(self, network, no_graphviz):
         BayesNetView(network).side_by_side()          # must not raise
+
+
+class TestInferenceBoxes:
+    """The matplotlib backend draws pyAgrum-style inference histograms.
+
+    Each node is a titled box holding one labelled bar per state.  The
+    properties worth pinning are that no state goes undrawn, that no bar is
+    readable by length alone, and that the two extreme cases --- a state at 100%
+    and a state at 0% --- are both still rendered.
+    """
+
+    def test_a_bar_is_drawn_for_every_state_of_every_node(self, network, no_graphviz):
+        ax = BayesNetView(network).figure().axes[0]
+        bars = collection(ax, "bayesnet-bars")
+        assert bars is not None, "the bars must be drawn"
+        assert len(bars.get_paths()) == 2 * len(network.cpts.order)
+
+    def test_a_title_strip_is_drawn_for_every_node(self, network, no_graphviz):
+        ax = BayesNetView(network).figure().axes[0]
+        strips = collection(ax, "bayesnet-headers")
+        assert strips is not None and len(strips.get_paths()) == len(
+            network.cpts.order
+        )
+
+    def test_the_two_bars_of_a_node_fill_exactly_one_track(self, network, no_graphviz):
+        """``P(OK) + P(Fail) = 1``, so every node's pair of bars must come to the
+        same total length --- which is the drawing checking its own arithmetic."""
+        bars = collection(BayesNetView(network).figure().axes[0], "bayesnet-bars")
+        paths = bars.get_paths()
+        totals = [
+            paths[i].get_extents().width + paths[i + 1].get_extents().width
+            for i in range(0, len(paths), 2)
+        ]
+        assert max(totals) - min(totals) < 1e-9
+
+    def test_every_bar_carries_its_percentage_as_text(self, network, no_graphviz):
+        """Colour and length are never the only signal; the number is printed."""
+        ax = BayesNetView(network).figure().axes[0]
+        drawn = " ".join(t.get_text() for t in ax.texts)
+        for var in network.cpts.order:
+            for probability in network.posterior(var):
+                assert f"{probability * 100:.2f}%" in drawn, f"{var} is unlabelled"
+
+    def test_a_node_at_certainty_renders_both_of_its_states(
+        self, network, no_graphviz
+    ):
+        """An observed node sits at 100%/0%; the 0% row must still be there, with
+        an empty bar and an honest label rather than nothing at all."""
+        event = network.basic_events[0]
+        ax = BayesNetView(network, evidence={event: "Fail"}).figure().axes[0]
+        drawn = " ".join(t.get_text() for t in ax.texts)
+        assert "100.00%" in drawn and "0.00%" in drawn
+        bars = collection(ax, "bayesnet-bars")
+        assert len(bars.get_paths()) == 2 * len(network.cpts.order)
+        widths = [p.get_extents().width for p in bars.get_paths()]
+        assert min(widths) < 1e-12, "the 0% state must draw an empty bar"
+
+    def test_the_caption_reports_the_inference_time(self, network, no_graphviz):
+        ax = BayesNetView(network).figure().axes[0]
+        drawn = " ".join(t.get_text() for t in ax.texts)
+        assert re.search(r"Inference in \d+\.\d\dms", drawn), drawn
+
+    def test_the_title_strip_still_obeys_max_label(self, network, no_graphviz):
+        ax = BayesNetView(network, max_label=12).figure().axes[0]
+        elided = [t.get_text() for t in ax.texts if t.get_text().endswith("…")]
+        assert elided, "a long variable name must be elided in the header strip"
+        assert all(len(text) <= 12 for text in elided)
+
+    def test_show_probabilities_false_gives_the_compact_box(
+        self, network, no_graphviz
+    ):
+        ax = BayesNetView(network, show_probabilities=False).figure().axes[0]
+        assert collection(ax, "bayesnet-bars") is None
+        assert len(ax.patches) == len(network.cpts.order)
+        assert "%" not in " ".join(t.get_text() for t in ax.texts)
+
+    def test_evidence_is_still_outlined_over_the_new_box(self, network, no_graphviz):
+        """The white interior must not swallow the green observed outline."""
+        import matplotlib.colors as mcolors
+
+        event = network.basic_events[0]
+        ax = BayesNetView(network, evidence={event: "Fail"}).figure().axes[0]
+        expected = mcolors.to_rgba(PALETTE["evidence"])
+        outlined = [
+            p
+            for p in ax.patches
+            if all(abs(a - b) < 1e-6 for a, b in zip(p.get_edgecolor(), expected))
+        ]
+        assert len(outlined) == 1
+        assert outlined[0].get_linewidth() > 1.5, "the outline must be the thicker one"
+
+
+class TestAnnotations:
+    def test_annotation_lines_are_drawn_above_every_node(self, network, no_graphviz):
+        view = BayesNetView(network, annotations=["headline", "sub-headline"])
+        ax = view.figure().axes[0]
+        drawn = {t.get_text(): t for t in ax.texts}
+        assert "headline" in drawn and "sub-headline" in drawn
+        heights = sorted(t.get_position()[1] for t in ax.texts)
+        assert drawn["headline"].get_position()[1] == heights[-1]
+        assert drawn["sub-headline"].get_position()[1] == heights[-2]
+
+    def test_the_first_line_is_green_and_the_rest_are_muted(
+        self, network, no_graphviz
+    ):
+        import matplotlib.colors as mcolors
+
+        view = BayesNetView(network, annotations=["one", "two", "three"])
+        drawn = {t.get_text(): t for t in view.figure().axes[0].texts}
+        assert mcolors.to_hex(drawn["one"].get_color()) == PALETTE["note"]
+        for text in ("two", "three"):
+            assert mcolors.to_hex(drawn[text].get_color()) == PALETTE["note_muted"]
+
+    def test_no_annotation_is_dropped(self, network, no_graphviz):
+        """Silently losing the third line would lose whatever it said."""
+        notes = [f"line {i}" for i in range(4)]
+        ax = BayesNetView(network, annotations=notes).figure().axes[0]
+        drawn = " ".join(t.get_text() for t in ax.texts)
+        for note in notes:
+            assert note in drawn
 
 
 class TestFileOutputs:

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from HIP_HOPS_LLM import BayesianNetwork, Envelope, fault_tree_to_bayesnet
+from hiphopsllm import BayesianNetwork, Envelope, fault_tree_to_bayesnet
 
 pyagrum = pytest.importorskip("pyagrum", reason="pyAgrum is optional")
 
@@ -170,7 +170,7 @@ class TestWithoutPyagrum:
 
     def test_exact_matches_a_hand_computed_or(self):
         """Two independent events under an OR: P = 1 - (1-a)(1-b)."""
-        from HIP_HOPS_LLM.bayes.cpt import CPT, CPTSet, deterministic_gate_cpt, prior_cpt
+        from hiphopsllm.bayes.cpt import CPT, CPTSet, deterministic_gate_cpt, prior_cpt
 
         cs = CPTSet(name="or2")
         cs.add(CPT(variable="a", parents=(), table=prior_cpt(0.1)))
@@ -188,7 +188,7 @@ class TestWithoutPyagrum:
         assert bn.p_fail(engine="pyagrum") == pytest.approx(1 - 0.9 * 0.8)
 
     def test_and_of_two_events(self):
-        from HIP_HOPS_LLM.bayes.cpt import CPT, CPTSet, deterministic_gate_cpt, prior_cpt
+        from hiphopsllm.bayes.cpt import CPT, CPTSet, deterministic_gate_cpt, prior_cpt
 
         cs = CPTSet(name="and2")
         cs.add(CPT(variable="a", parents=(), table=prior_cpt(0.1)))
@@ -205,7 +205,7 @@ class TestWithoutPyagrum:
 
     def test_a_shared_cause_is_not_double_counted(self):
         """Both branches depend on one event; the exact answer is 0.1, not 0.19."""
-        from HIP_HOPS_LLM.bayes.cpt import CPT, CPTSet, deterministic_gate_cpt, prior_cpt
+        from hiphopsllm.bayes.cpt import CPT, CPTSet, deterministic_gate_cpt, prior_cpt
 
         cs = CPTSet(name="shared")
         cs.add(CPT(variable="c", parents=(), table=prior_cpt(0.1)))

@@ -23,7 +23,7 @@ about an LLM component, and it is a CPT away.
 Convention
 ----------
 Index ``0`` is ``OK`` and index ``1`` is ``Fail``, throughout, matching
-:mod:`HIP_HOPS_LLM.bayes.network`.  (The HIP-MAS study code uses the opposite
+:mod:`hiphopsllm.bayes.network`.  (The HIP-MAS study code uses the opposite
 order; :func:`CPTSet.to_hipmas_order` converts.)
 """
 
@@ -178,7 +178,7 @@ def _check_fan_in(n_parents: int) -> None:
         raise ValueError(
             f"a gate with {n_parents} inputs would need a 2**{n_parents}-row conditional "
             f"table. Tables are built up to {MAX_GATE_INPUTS} inputs; for wider gates use "
-            "the minimal cut sets, or raise HIP_HOPS_LLM.bayes.cpt.MAX_GATE_INPUTS "
+            "the minimal cut sets, or raise hiphopsllm.bayes.cpt.MAX_GATE_INPUTS "
             "deliberately."
         )
 
@@ -252,7 +252,7 @@ class CPTSet:
 
     ``order`` lists variables parents-first, so the set can be handed to any
     Bayesian-network library --- or to the exact enumeration reference in
-    :mod:`HIP_HOPS_LLM.bayes.network` --- without a further sort.
+    :mod:`hiphopsllm.bayes.network` --- without a further sort.
     """
 
     name: str
@@ -387,7 +387,7 @@ class CPTBuilder:
         of :attr:`BasicEvent.prob_interval` when one is present.  Because a
         coherent (monotone) fault tree's top-event probability is non-decreasing
         in every basic-event probability, building at both ends brackets the true
-        value --- which is how :class:`HIP_HOPS_LLM.bayes.network.BayesianNetwork`
+        value --- which is how :class:`hiphopsllm.bayes.network.BayesianNetwork`
         reports an imprecise result.
     soft_gates
         Replace deterministic OR gates with noisy-OR.  ``False`` (the default)

@@ -22,6 +22,11 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 NOTEBOOKS = ROOT / "notebooks"
 
 REPO = "https://github.com/koo-ec/HIP_HOPS_LLM.git"
+#: Where the clone lands. Deliberately *not* an importable name: a
+#: directory called ``hiphopsllm`` next to the notebook would shadow the
+#: installed package as an empty namespace package, and the import would
+#: succeed while having no attributes at all.
+CLONE_DIR = "hiphopsllm-repo"
 
 
 _COUNTER = {"n": 0}
@@ -94,8 +99,8 @@ Repository: {REPO.removesuffix('.git')}
     md("---\n## 1. Install"),
     code(
         f"""
-!git clone --depth=1 {REPO} 2>&1 | tail -2
-%pip install -q -e "HIP_HOPS_LLM[bayes,graph]" 2>&1 | tail -3
+!git clone --depth=1 {REPO} {CLONE_DIR} 2>&1 | tail -2
+%pip install -q -e "{CLONE_DIR}[bayes,graph]" 2>&1 | tail -3
 print("installed")
 """
     ),
@@ -111,7 +116,7 @@ for name in ("numpy", "pandas", "matplotlib", "scipy", "pyagrum", "langgraph"):
     except ImportError:
         print(f"{name:<12} not installed (optional here)")
 
-import HIP_HOPS_LLM as H
+import hiphopsllm as H
 
 print(f"\\nHIP-HOPS-LLM {H.__version__} — {len(H.__all__)} public names")
 print("Graphviz available:", H.graphviz_available())
@@ -138,7 +143,7 @@ and a calibrated Bayesian network at the end.
     ),
     code(
         """
-from HIP_HOPS_LLM import AgenticReliabilityStudy, load_example, load_outcomes
+from hiphopsllm import AgenticReliabilityStudy, load_example, load_outcomes
 
 study = AgenticReliabilityStudy(
     load_example("parallel_aggregator"),
@@ -356,7 +361,7 @@ for path in study.save("artifacts"):
 # study.observe(my_outcomes, profile=my_profile).run()
 # study.hazard_probability("H2")
 
-from HIP_HOPS_LLM import describe_examples
+from hiphopsllm import describe_examples
 
 print(describe_examples())
 """
@@ -370,7 +375,7 @@ print(describe_examples())
 * **Tutorial 7** covers pointing this at a real LangGraph application, including
   what to log and how much of it you need.
 * **HIP-LLM's own API** is re-exported here, so
-  `from HIP_HOPS_LLM import OperationalFailureProb` works.
+  `from hiphopsllm import OperationalFailureProb` works.
 
 If you use this, please cite both the HIP-LLM paper
 ([10.1016/j.ress.2026.112615](https://doi.org/10.1016/j.ress.2026.112615)) and
@@ -412,8 +417,8 @@ What it does, in the HiP-HOPS phases:
     md("---\n## 0. Install"),
     code(
         f"""
-!git clone --depth=1 {REPO} 2>&1 | tail -2
-%pip install -q -e "HIP_HOPS_LLM[bayes,graph]" 2>&1 | tail -3
+!git clone --depth=1 {REPO} {CLONE_DIR} 2>&1 | tail -2
+%pip install -q -e "{CLONE_DIR}[bayes,graph]" 2>&1 | tail -3
 
 import importlib, os, platform, sys
 
@@ -435,8 +440,8 @@ print("\\noutput directory:", OUTPUT_DIR)
 import matplotlib.pyplot as plt
 import pandas as pd
 
-import HIP_HOPS_LLM as hh
-from HIP_HOPS_LLM import (
+import hiphopsllm as hh
+from hiphopsllm import (
     AgenticReliabilityStudy,
     LangGraphExtractor,
     Role,
@@ -784,7 +789,7 @@ hierarchical imprecise posterior gives each component a measured **interval**.
     ),
     code(
         """
-from HIP_HOPS_LLM import load_outcomes
+from hiphopsllm import load_outcomes
 
 outcomes = load_outcomes()           # synthetic, bundled; substitute your own
 study_2c = AgenticReliabilityStudy(

@@ -21,7 +21,7 @@ family of posteriors, one per configuration — and the reported bounds are the
 envelope over that family.
 
 ```python
-from HIP_HOPS_LLM import OperationalFailureProb, quick_inference_settings
+from hiphopsllm import OperationalFailureProb, quick_inference_settings
 
 estimator = OperationalFailureProb(
     profile={"short": 0.30, "long": 0.70},

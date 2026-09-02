@@ -8,7 +8,7 @@ top-event probability is an *interval* derived from measurement rather than a
 number derived from judgement.
 
 ```python
-from HIP_HOPS_LLM import AgenticReliabilityStudy, load_example, load_outcomes
+from hiphopsllm import AgenticReliabilityStudy, load_example, load_outcomes
 
 study = AgenticReliabilityStudy(load_example("parallel_aggregator"))
 study.observe(load_outcomes(), profile={"short": 0.3, "medium": 0.5, "long": 0.2})

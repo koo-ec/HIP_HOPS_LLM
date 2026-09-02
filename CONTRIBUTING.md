@@ -39,7 +39,7 @@ statements**. They are floors, not targets — they exist so that a module added
 without tests fails there rather than quietly dragging the suite down.
 
 ```bash
-pytest --cov=HIP_HOPS_LLM --cov-report=term-missing
+pytest --cov=hiphopsllm --cov-report=term-missing
 ```
 
 The suite is currently at 94%. Coverage is not the goal, though: a test that

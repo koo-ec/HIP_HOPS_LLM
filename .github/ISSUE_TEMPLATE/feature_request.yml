@@ -1,0 +1,46 @@
+name: Feature request
+description: Something the package should be able to do.
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: The analysis you cannot do today
+      description: >-
+        Describe the reliability question, not only the API. Knowing what you
+        are trying to conclude usually changes what the right feature is.
+      placeholder: |
+        My aggregator is a three-way majority vote with a tie-break, which is
+        neither AND, OR nor k-of-n, so I cannot quantify H2 correctly.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What you have in mind
+      render: python
+    validations:
+      required: false
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: What you tried instead
+      description: >-
+        Gate overrides, a learned CPT, a custom Hazard, an extra_logic
+        archetype — and why each did not fit.
+
+  - type: dropdown
+    id: layer
+    attributes:
+      label: Which layer would change
+      options:
+        - architecture (extraction, roles, resources, loops)
+        - faulttree (annotation, synthesis, cut sets, FMEA)
+        - reliability (operational profiles, calibration)
+        - bayes (CPTs, inference, learned tables)
+        - viz (plots, network drawing)
+        - pipeline / AgenticReliabilityStudy
+        - documentation or examples
+        - not sure

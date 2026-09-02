@@ -1,7 +1,7 @@
 # 4. Fault tree to Bayesian network
 
 ```python
-from HIP_HOPS_LLM import AgenticReliabilityStudy, load_example, load_outcomes
+from hiphopsllm import AgenticReliabilityStudy, load_example, load_outcomes
 
 study = AgenticReliabilityStudy(load_example("parallel_aggregator"))
 study.observe(load_outcomes(), profile={"short": 0.3, "medium": 0.5, "long": 0.2})
@@ -212,16 +212,21 @@ The backend is chosen by whether the Graphviz `dot` binary is genuinely callable
 yourself:
 
 ```python
-from HIP_HOPS_LLM import graphviz_available
+from hiphopsllm import graphviz_available
 
 graphviz_available()                        # varies by environment
 network.view().resolved_backend             # 'pyagrum' or 'matplotlib'
 ```
 
 The matplotlib backend lays the network out in longest-path layers with a
-barycentre pass to reduce edge crossings, shades each node by its posterior,
-outlines evidence nodes in green, and says in the caption that Graphviz was
-absent. Force either backend with `backend="pyagrum"` or `backend="matplotlib"`.
+barycentre pass to reduce edge crossings, and draws each node the way pyAgrum's
+`showInference` does: a titled box holding one bar per state, each bar labelled
+with its percentage, over a title strip shaded by the node's posterior. Evidence
+nodes are outlined in green, the caption reports the measured inference time and
+says whether Graphviz was absent, and `show_probabilities=False` collapses the
+nodes to compact labelled boxes. Pass `annotations=[...]` for one or more lines
+of explanatory text above the graph. Force either backend with
+`backend="pyagrum"` or `backend="matplotlib"`.
 
 ## Next
 

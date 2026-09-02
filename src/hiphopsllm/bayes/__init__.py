@@ -12,7 +12,7 @@ second *from* the first --- instead of authoring both --- buys three things:
 Start with :func:`fault_tree_to_cpts` if you want the tables, and
 :class:`BayesianNetwork` if you want answers::
 
-    from HIP_HOPS_LLM.bayes import BayesianNetwork
+    from hiphopsllm.bayes import BayesianNetwork
 
     bn = BayesianNetwork.from_fault_tree(report.tree("H2"), report.failure_model)
     bn.p_fail()                                   # exact P(top event)

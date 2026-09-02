@@ -17,7 +17,7 @@ connect, in order, and keeps every intermediate result addressable:
 
 End to end::
 
-    from HIP_HOPS_LLM import AgenticReliabilityStudy, load_example, load_outcomes
+    from hiphopsllm import AgenticReliabilityStudy, load_example, load_outcomes
 
     study = AgenticReliabilityStudy(load_example("parallel_aggregator"))
     study.observe(load_outcomes(), stratum_column="stratum",
@@ -64,8 +64,8 @@ class AgenticReliabilityStudy:
     graph
         A compiled LangGraph, the drawable from ``graph.get_graph()``, mermaid
         text, a graph specification dict (see
-        :func:`~HIP_HOPS_LLM.io.examples.load_example`), or a
-        :class:`~HIP_HOPS_LLM.architecture.model.SystemModel`.
+        :func:`~hiphopsllm.io.examples.load_example`), or a
+        :class:`~hiphopsllm.architecture.model.SystemModel`.
     name
         What the report calls this system.
     profile

@@ -43,7 +43,7 @@ jobs:
         run: |
           python -c "import sys, numpy, pandas, scipy; print(sys.version); print('numpy', numpy.__version__); print('pandas', pandas.__version__)"
           python -c "import pyagrum; print('pyagrum', pyagrum.__version__)"
-          python -c "from HIP_HOPS_LLM import graphviz_available; print('graphviz', graphviz_available())"
+          python -c "from hiphopsllm import graphviz_available; print('graphviz', graphviz_available())"
 
       - name: Test
         env:
@@ -101,7 +101,7 @@ jobs:
           PYTHONIOENCODING: utf-8
         run: |
           pytest -q --timeout=1800 \
-            --cov=HIP_HOPS_LLM \
+            --cov=hiphopsllm \
             --cov-report=term-missing:skip-covered \
             --cov-fail-under=90
       - name: Per-module floor
@@ -112,13 +112,13 @@ jobs:
           import json, subprocess, sys
           subprocess.run(
               [sys.executable, "-m", "pytest", "-q", "--no-header",
-               "--cov=HIP_HOPS_LLM", "--cov-report=json:cov.json"],
+               "--cov=hiphopsllm", "--cov-report=json:cov.json"],
               check=True, capture_output=True,
           )
           data = json.load(open("cov.json"))
           FLOOR = 80.0
           low = {
-              path.replace("\\", "/").split("HIP_HOPS_LLM/", 1)[-1]:
+              path.replace("\\", "/").split("hiphopsllm/", 1)[-1]:
                   round(m["summary"]["percent_covered"], 1)
               for path, m in data["files"].items()
               if m["summary"]["percent_covered"] < FLOOR
@@ -181,8 +181,8 @@ jobs:
           python -m venv /tmp/fresh
           /tmp/fresh/bin/pip install dist/*.whl
           /tmp/fresh/bin/python -c "
-          import HIP_HOPS_LLM as H
-          from HIP_HOPS_LLM import load_example, load_outcomes, AgenticReliabilityStudy
+          import hiphopsllm as H
+          from hiphopsllm import load_example, load_outcomes, AgenticReliabilityStudy
           print(H.__version__, len(H.__all__), 'exports')
           s = AgenticReliabilityStudy(load_example('parallel_aggregator'))
           s.analyse()

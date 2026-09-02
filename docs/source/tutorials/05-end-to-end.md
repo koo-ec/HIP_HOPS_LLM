@@ -3,7 +3,7 @@
 Everything from the first four tutorials, as one object.
 
 ```python
-from HIP_HOPS_LLM import AgenticReliabilityStudy, load_example, load_outcomes
+from hiphopsllm import AgenticReliabilityStudy, load_example, load_outcomes
 
 study = AgenticReliabilityStudy(load_example("parallel_aggregator"))
 study.observe(load_outcomes(), profile={"short": 0.3, "medium": 0.5, "long": 0.2})
@@ -36,7 +36,7 @@ architectures:
 
 ```python
 import pandas as pd
-from HIP_HOPS_LLM import EXAMPLES
+from hiphopsllm import EXAMPLES
 
 rows = []
 for key in EXAMPLES:

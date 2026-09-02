@@ -7,7 +7,7 @@ import itertools
 import numpy as np
 import pytest
 
-from HIP_HOPS_LLM.bayes.cpt import (
+from hiphopsllm.bayes.cpt import (
     FAIL,
     MAX_GATE_INPUTS,
     OK,
@@ -190,7 +190,7 @@ class TestConversion:
         """A basic event with no probability anywhere must be named in the notes."""
         import copy
 
-        from HIP_HOPS_LLM.faulttree.failure import FailureModel
+        from hiphopsllm.faulttree.failure import FailureModel
 
         bare = copy.deepcopy(tree)
         bare.events = {}

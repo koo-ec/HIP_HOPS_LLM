@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from HIP_HOPS_LLM import AgenticReliabilityStudy, load_example, load_outcomes
+from hiphopsllm import AgenticReliabilityStudy, load_example, load_outcomes
 
 PROFILE = {"short": 0.30, "medium": 0.50, "long": 0.20}
 

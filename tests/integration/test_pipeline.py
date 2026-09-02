@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from HIP_HOPS_LLM import (
+from hiphopsllm import (
     EXAMPLES,
     AgenticReliabilityStudy,
     StudyNotReady,

@@ -5,7 +5,7 @@ router, and a feedback loop — and turn it into fault trees without drawing
 anything.
 
 ```python
-from HIP_HOPS_LLM import extract_architecture, load_example
+from hiphopsllm import extract_architecture, load_example
 import pandas as pd
 
 model = extract_architecture(load_example("react_calculator"), name="ReAct + calculator")
@@ -65,7 +65,7 @@ extract_architecture(graph, globals_ns=globals())
 Declare what the source does not name:
 
 ```python
-from HIP_HOPS_LLM import LangGraphExtractor
+from hiphopsllm import LangGraphExtractor
 
 extractor = LangGraphExtractor(globals_ns=globals()).with_resources(
     critic={"llm": "gpt-4o-2024-11-20"},
@@ -76,7 +76,7 @@ extractor = LangGraphExtractor(globals_ns=globals()).with_resources(
 ## The loop
 
 ```python
-from HIP_HOPS_LLM import find_cycles, make_acyclic
+from hiphopsllm import find_cycles, make_acyclic
 
 find_cycles(model)
 # [['coder', 'generator', 'generator::router']]
@@ -109,7 +109,7 @@ when they do not.
 ## Synthesis
 
 ```python
-from HIP_HOPS_LLM import AgenticReliabilityStudy
+from hiphopsllm import AgenticReliabilityStudy
 
 study = AgenticReliabilityStudy(load_example("react_calculator"),
                                 name="ReAct + calculator", unroll=1)
@@ -147,7 +147,7 @@ study.report.display("H2")             # inline in a notebook
 Exports:
 
 ```python
-from HIP_HOPS_LLM import to_dot, to_json, to_openpsa_xml
+from hiphopsllm import to_dot, to_json, to_openpsa_xml
 
 tree = study.report.tree("H2")
 to_dot(tree)                           # Graphviz

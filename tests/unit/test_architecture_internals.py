@@ -12,8 +12,8 @@ import functools
 
 import pytest
 
-from HIP_HOPS_LLM import Role, SystemModel, extract_architecture, parse_mermaid
-from HIP_HOPS_LLM.architecture.model import (
+from hiphopsllm import Role, SystemModel, extract_architecture, parse_mermaid
+from hiphopsllm.architecture.model import (
     _model_id_of,
     _raw_from_drawable,
     _resolve_callable,

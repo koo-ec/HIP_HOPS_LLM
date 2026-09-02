@@ -37,7 +37,7 @@ reliability number.
 
 **The re-export is asserted complete.** A test walks `HIPLLM.__all__` and
 `hip_llm.__all__` and fails if any symbol is not reachable through
-`HIP_HOPS_LLM.reliability.hipllm`, so an upstream addition that is not carried
+`hiphopsllm.reliability.hipllm`, so an upstream addition that is not carried
 over is caught rather than quietly missing.
 
 ## Licence
@@ -70,7 +70,7 @@ import hip_llm                                  # unchanged
 and both are reachable through this package's namespace:
 
 ```python
-from HIP_HOPS_LLM import OperationalFailureProb, quick_inference_settings
+from hiphopsllm import OperationalFailureProb, quick_inference_settings
 ```
 
 One name is deliberately not passed through unchanged. HIP-LLM's

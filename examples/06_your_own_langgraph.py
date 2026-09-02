@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import re
 
-from HIP_HOPS_LLM import AgenticReliabilityStudy
+from hiphopsllm import AgenticReliabilityStudy
 
 
 # --- the node functions. Only their *source* is read; they are never called. ---

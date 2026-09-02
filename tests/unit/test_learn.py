@@ -6,8 +6,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from HIP_HOPS_LLM.bayes.cpt import FAIL
-from HIP_HOPS_LLM.bayes.learn import (
+from hiphopsllm.bayes.cpt import FAIL
+from hiphopsllm.bayes.learn import (
     CPTLearningError,
     fit_cpts,
     learn_cpt,
@@ -143,7 +143,7 @@ class TestFitCPTs:
         assert cpts["a"].prior_fail < 0.5
 
     def test_the_fitted_network_answers_queries(self, outcomes):
-        from HIP_HOPS_LLM import BayesianNetwork
+        from hiphopsllm import BayesianNetwork
 
         cpts, _ = fit_cpts(
             outcomes[outcomes["split"] == "calibration"],

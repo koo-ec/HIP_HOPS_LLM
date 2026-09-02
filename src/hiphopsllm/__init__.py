@@ -21,7 +21,7 @@ inference, diagnosis and drawing.
 
 The whole pipeline, from graph to picture::
 
-    from HIP_HOPS_LLM import AgenticReliabilityStudy, load_example, load_outcomes
+    from hiphopsllm import AgenticReliabilityStudy, load_example, load_outcomes
 
     study = AgenticReliabilityStudy(load_example("parallel_aggregator"))
     study.observe(load_outcomes(), profile={"short": 0.3, "medium": 0.5, "long": 0.2})
@@ -31,16 +31,16 @@ The whole pipeline, from graph to picture::
 
 HIP-LLM's own API is re-exported unchanged, so its usage is one import line::
 
-    from HIP_HOPS_LLM import OperationalFailureProb, quick_inference_settings
+    from hiphopsllm import OperationalFailureProb, quick_inference_settings
 
 Layers, if you want them separately:
 
 ============================================  ==========================================
-:mod:`HIP_HOPS_LLM.architecture`              LangGraph → components, ports, connections
-:mod:`HIP_HOPS_LLM.faulttree`                 failure logic → fault trees → cut sets, FMEA
-:mod:`HIP_HOPS_LLM.reliability`               operational profiles, HIP-LLM, calibration
-:mod:`HIP_HOPS_LLM.bayes`                     fault tree → CPTs → Bayesian network
-:mod:`HIP_HOPS_LLM.viz`                       matplotlib rendering
+:mod:`hiphopsllm.architecture`              LangGraph → components, ports, connections
+:mod:`hiphopsllm.faulttree`                 failure logic → fault trees → cut sets, FMEA
+:mod:`hiphopsllm.reliability`               operational profiles, HIP-LLM, calibration
+:mod:`hiphopsllm.bayes`                     fault tree → CPTs → Bayesian network
+:mod:`hiphopsllm.viz`                       matplotlib rendering
 ============================================  ==========================================
 """
 

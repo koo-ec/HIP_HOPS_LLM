@@ -13,7 +13,7 @@ components.
 | `L` | Late | Latency or token budget exceeded |
 
 ```python
-from HIP_HOPS_LLM import FClass
+from hiphopsllm import FClass
 
 FClass.VALUE_SUBTLE.value    # 'VS'
 FClass.VALUE_SUBTLE.title    # 'Value (subtle, undetectable)'
@@ -47,7 +47,7 @@ redundancy, an external oracle, or a human is.
 ## The archetype library
 
 Each component role gets its local failure logic from a builder in
-`HIP_HOPS_LLM.faulttree.failure`. Abridged — the module has the events,
+`hiphopsllm.faulttree.failure`. Abridged — the module has the events,
 rationales and mitigations in full.
 
 **LLM agent** — trusts its input, so `VS` passes straight through:
@@ -106,7 +106,7 @@ A correctness benchmark measures correctness. When `EvidenceCalibrator` writes
 measured intervals into a model, it touches only the value classes:
 
 ```python
-from HIP_HOPS_LLM.reliability.calibration import VALUE_CLASSES
+from hiphopsllm.reliability.calibration import VALUE_CLASSES
 
 VALUE_CLASSES     # (FClass.VALUE_SUBTLE, FClass.VALUE_COARSE)
 ```
@@ -124,7 +124,7 @@ To calibrate those, measure them. Time each node, record a `1`/`0` for "within
 budget", and calibrate a second time against the latency class:
 
 ```python
-from HIP_HOPS_LLM import EvidenceCalibrator, FClass
+from hiphopsllm import EvidenceCalibrator, FClass
 
 latency = EvidenceCalibrator(profile=profile, classes=(FClass.LATE,))
 latency.apply(study.failure_model, latency.fit_many(within_budget_by_agent))

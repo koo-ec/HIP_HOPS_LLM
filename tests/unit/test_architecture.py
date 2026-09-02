@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 
-from HIP_HOPS_LLM import (
+from hiphopsllm import (
     LangGraphExtractor,
     Role,
     SystemModel,
@@ -171,7 +171,7 @@ class TestExtractorClass:
 
 
 def test_every_bundled_example_extracts():
-    from HIP_HOPS_LLM import EXAMPLES
+    from hiphopsllm import EXAMPLES
 
     for key in EXAMPLES:
         model = extract_architecture(load_example(key), name=key)

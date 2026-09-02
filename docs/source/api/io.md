@@ -1,7 +1,7 @@
-# `HIP_HOPS_LLM.io`
+# `hiphopsllm.io`
 
 ```{eval-rst}
-.. automodule:: HIP_HOPS_LLM.io.examples
+.. automodule:: hiphopsllm.io.examples
    :members:
    :undoc-members:
 ```

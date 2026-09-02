@@ -51,7 +51,7 @@ P_RESCUE = 0.05
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 TARGETS = (
     ROOT / "data" / "examples" / "agent_outcomes.csv",
-    ROOT / "src" / "HIP_HOPS_LLM" / "data" / "agent_outcomes.csv",
+    ROOT / "src" / "hiphopsllm" / "data" / "agent_outcomes.csv",
 )
 COLUMNS = ["item_id", "stratum", "react_agent", "cot_agent", "aggregator", "split"]
 

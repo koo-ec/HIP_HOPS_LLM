@@ -18,11 +18,11 @@ working exactly as before).  This module makes them reachable through one import
 as well, so an analysis that spans the fault tree and the reliability model does
 not need three import lines::
 
-    from HIP_HOPS_LLM import OperationalFailureProb, quick_inference_settings
+    from hiphopsllm import OperationalFailureProb, quick_inference_settings
 
 One name is deliberately *not* passed through unchanged.  HIP-LLM's
 ``OperationalProfile`` is a schema with parallel ``labels``/``weights`` arrays;
-this package's :class:`HIP_HOPS_LLM.reliability.profile.OperationalProfile` is a
+this package's :class:`hiphopsllm.reliability.profile.OperationalProfile` is a
 mapping-shaped class that converts to it.  The HIP-LLM one is available here as
 :data:`HIPLLMOperationalProfile`.
 """
@@ -67,7 +67,7 @@ from hip_llm import (
 )
 from hip_llm.schemas import OperationalProfile as HIPLLMOperationalProfile
 
-# The engine's modules, so ``HIP_HOPS_LLM.reliability.hipllm.envelopes`` works.
+# The engine's modules, so ``hiphopsllm.reliability.hipllm.envelopes`` works.
 from hip_llm import (  # noqa: F401
     api_clients,
     baselines,

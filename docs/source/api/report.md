@@ -1,7 +1,7 @@
-# `HIP_HOPS_LLM.report`
+# `hiphopsllm.report`
 
 ```{eval-rst}
-.. automodule:: HIP_HOPS_LLM.report
+.. automodule:: hiphopsllm.report
    :members:
    :undoc-members:
    :show-inheritance:

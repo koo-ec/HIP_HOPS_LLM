@@ -13,30 +13,30 @@ import pkgutil
 
 import pytest
 
-import HIP_HOPS_LLM
+import hiphopsllm
 
 
 class TestTopLevelExports:
     def test_every_name_in_all_exists(self):
-        missing = [n for n in HIP_HOPS_LLM.__all__ if not hasattr(HIP_HOPS_LLM, n)]
+        missing = [n for n in hiphopsllm.__all__ if not hasattr(hiphopsllm, n)]
         assert not missing, f"__all__ names nothing: {missing}"
 
     def test_star_import_works(self):
         namespace: dict = {}
-        exec("from HIP_HOPS_LLM import *", namespace)
-        for name in HIP_HOPS_LLM.__all__:
+        exec("from hiphopsllm import *", namespace)
+        for name in hiphopsllm.__all__:
             assert name in namespace
 
     def test_all_is_sorted_within_its_groups_and_unique(self):
-        assert len(set(HIP_HOPS_LLM.__all__)) == len(HIP_HOPS_LLM.__all__)
+        assert len(set(hiphopsllm.__all__)) == len(hiphopsllm.__all__)
 
     def test_the_version_is_readable(self):
-        assert HIP_HOPS_LLM.__version__
+        assert hiphopsllm.__version__
 
     def test_every_submodule_imports(self):
         failures = []
         for info in pkgutil.walk_packages(
-            HIP_HOPS_LLM.__path__, prefix="HIP_HOPS_LLM."
+            hiphopsllm.__path__, prefix="hiphopsllm."
         ):
             try:
                 importlib.import_module(info.name)
@@ -52,7 +52,7 @@ class TestHIPLLMIsComplete:
     def test_every_hipllm_symbol_is_re_exported(self):
         import HIPLLM
 
-        from HIP_HOPS_LLM.reliability import hipllm as shim
+        from hiphopsllm.reliability import hipllm as shim
 
         renamed = {"__version__": "HIPLLM_VERSION"}
         missing = [
@@ -62,13 +62,13 @@ class TestHIPLLMIsComplete:
         ]
         assert not missing, (
             "HIP-LLM's public API is not fully re-exported; missing: "
-            f"{missing}. Add them to HIP_HOPS_LLM.reliability.hipllm."
+            f"{missing}. Add them to hiphopsllm.reliability.hipllm."
         )
 
     def test_every_hip_llm_engine_symbol_is_re_exported(self):
         import hip_llm
 
-        from HIP_HOPS_LLM.reliability import hipllm as shim
+        from hiphopsllm.reliability import hipllm as shim
 
         renamed = {"OperationalProfile": "HIPLLMOperationalProfile"}
         missing = [
@@ -81,7 +81,7 @@ class TestHIPLLMIsComplete:
     def test_the_re_exported_objects_are_the_same_objects(self):
         import HIPLLM
 
-        from HIP_HOPS_LLM.reliability import hipllm as shim
+        from hiphopsllm.reliability import hipllm as shim
 
         for name in HIPLLM.__all__:
             if name.startswith("__"):
@@ -91,7 +91,7 @@ class TestHIPLLMIsComplete:
             )
 
     def test_every_engine_module_is_reachable(self):
-        from HIP_HOPS_LLM.reliability import hipllm as shim
+        from hiphopsllm.reliability import hipllm as shim
 
         for name in (
             "posterior",
@@ -113,7 +113,7 @@ class TestHIPLLMIsComplete:
 
     def test_the_users_own_snippet_runs_through_this_package(self):
         """The example from the request, with only the import line changed."""
-        from HIP_HOPS_LLM import OperationalFailureProb, quick_inference_settings
+        from hiphopsllm import OperationalFailureProb, quick_inference_settings
 
         outcomes = [1, 1, 0, 1, 0, 0, 1, 0]
         strata = ["short"] * 4 + ["long"] * 4
@@ -142,28 +142,44 @@ class TestNamespaceHygiene:
     def test_the_two_operational_profiles_are_distinguishable(self):
         from hip_llm.schemas import OperationalProfile as EngineProfile
 
-        from HIP_HOPS_LLM import OperationalProfile
-        from HIP_HOPS_LLM.reliability.hipllm import HIPLLMOperationalProfile
+        from hiphopsllm import OperationalProfile
+        from hiphopsllm.reliability.hipllm import HIPLLMOperationalProfile
 
         assert OperationalProfile is not EngineProfile
         assert HIPLLMOperationalProfile is EngineProfile
 
     def test_conversion_between_them_round_trips(self):
-        from HIP_HOPS_LLM import OperationalProfile
+        from hiphopsllm import OperationalProfile
 
         original = OperationalProfile({"a": 0.25, "b": 0.75})
         assert OperationalProfile.coerce(original.to_hipllm()).weights == (
             original.weights
         )
 
-    def test_the_lower_case_alias_module_resolves(self):
-        alias = importlib.import_module("hip_hops_llm")
-        assert alias.AgenticReliabilityStudy is HIP_HOPS_LLM.AgenticReliabilityStudy
+    def test_the_compatibility_alias_resolves_to_the_same_module(self):
+        """`HIP_HOPS_LLM` matches the repository and distribution name, so it is
+        the obvious guess; it must be the same object, not a second copy."""
+        alias = importlib.import_module("HIP_HOPS_LLM")
+        assert alias.AgenticReliabilityStudy is hiphopsllm.AgenticReliabilityStudy
+        assert alias.__version__ == hiphopsllm.__version__
+        assert set(alias.__all__) == set(hiphopsllm.__all__)
+
+    def test_submodules_resolve_through_the_alias(self):
+        assert (
+            importlib.import_module("HIP_HOPS_LLM.bayes.network").BayesianNetwork
+            is importlib.import_module("hiphopsllm.bayes.network").BayesianNetwork
+        )
+
+    def test_only_one_alias_ships(self):
+        """A second, lower-case alias would be a different file on Linux and the
+        same file on Windows and macOS, so the pair cannot be checked out."""
+        with pytest.raises(ModuleNotFoundError):
+            importlib.import_module("hip_hops_llm")
 
 
 class TestExamplesShip:
     def test_every_declared_example_loads(self):
-        from HIP_HOPS_LLM import EXAMPLES, load_example
+        from hiphopsllm import EXAMPLES, load_example
 
         for key in EXAMPLES:
             spec = load_example(key)
@@ -171,13 +187,13 @@ class TestExamplesShip:
             assert spec.get("provenance"), f"{key} does not say where it came from"
 
     def test_an_unknown_example_lists_the_available_ones(self):
-        from HIP_HOPS_LLM import load_example
+        from hiphopsllm import load_example
 
         with pytest.raises(KeyError, match="available"):
             load_example("nope")
 
     def test_the_outcome_table_has_the_expected_shape(self):
-        from HIP_HOPS_LLM import load_outcomes
+        from hiphopsllm import load_outcomes
 
         frame = load_outcomes()
         assert set(frame.columns) >= {
@@ -192,12 +208,12 @@ class TestExamplesShip:
         assert set(frame["react_agent"]) <= {0, 1}
 
     def test_outcomes_load_without_pandas_too(self):
-        from HIP_HOPS_LLM import load_outcomes
+        from hiphopsllm import load_outcomes
 
         rows = load_outcomes(as_frame=False)
         assert isinstance(rows, list) and rows and isinstance(rows[0], dict)
 
     def test_the_catalogue_renders(self):
-        from HIP_HOPS_LLM import describe_examples
+        from hiphopsllm import describe_examples
 
         assert "parallel_aggregator" in describe_examples()

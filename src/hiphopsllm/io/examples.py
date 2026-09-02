@@ -15,7 +15,7 @@ from typing import Any, Dict
 
 __all__ = ["EXAMPLES", "ExampleSpec", "load_example", "load_outcomes", "describe_examples"]
 
-_PACKAGE = "HIP_HOPS_LLM.data"
+_PACKAGE = "hiphopsllm.data"
 
 
 @dataclass(frozen=True)
@@ -68,7 +68,7 @@ def load_example(key: str = "parallel_aggregator") -> Dict[str, Any]:
 
     The result goes straight into anything that accepts a graph::
 
-        from HIP_HOPS_LLM import AgenticReliabilityStudy, load_example
+        from hiphopsllm import AgenticReliabilityStudy, load_example
 
         study = AgenticReliabilityStudy(load_example("parallel_aggregator"))
     """

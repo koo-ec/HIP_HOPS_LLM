@@ -6,7 +6,7 @@ import itertools
 
 import pytest
 
-from HIP_HOPS_LLM import (
+from hiphopsllm import (
     AND,
     OR,
     AgenticReliabilityStudy,
@@ -96,13 +96,13 @@ class TestAnnotation:
 
 class TestBooleanAlgebra:
     def test_or_flattens_and_dedups(self):
-        from HIP_HOPS_LLM.faulttree.failure import BasicEventRef
+        from hiphopsllm.faulttree.failure import BasicEventRef
 
         a, b = BasicEventRef("a"), BasicEventRef("b")
         assert str(OR(a, OR(a, b))) == str(OR(a, b))
 
     def test_and_of_one_term_is_that_term(self):
-        from HIP_HOPS_LLM.faulttree.failure import BasicEventRef
+        from hiphopsllm.faulttree.failure import BasicEventRef
 
         a = BasicEventRef("a")
         assert AND(a) is a or str(AND(a)) == "a"

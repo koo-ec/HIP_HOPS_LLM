@@ -29,7 +29,7 @@ pyAgrum draws through Graphviz, which is a separate **native binary**, not a
 Python package. `pip install pydot` does not provide it.
 
 ```python
-from HIP_HOPS_LLM import graphviz_available
+from hiphopsllm import graphviz_available
 
 graphviz_available()      # runs `dot -V`, so it tells you the truth
 ```
@@ -58,9 +58,23 @@ The suite includes HIP-LLM's own tests, run against the vendored copy — see
 ## Colab
 
 ```text
-!git clone --depth=1 https://github.com/koo-ec/HIP_HOPS_LLM.git
-%pip install -q -e "HIP_HOPS_LLM[bayes,graph]"
+!git clone --depth=1 https://github.com/koo-ec/HIP_HOPS_LLM.git hiphopsllm-repo
+%pip install -q -e "hiphopsllm-repo[bayes,graph]"
 ```
+
+:::{warning}
+Do not let the clone directory share a name with an importable module. In a
+notebook the working directory precedes `site-packages` on `sys.path`, so a
+directory called `hiphopsllm` (or `HIP_HOPS_LLM`, if you use the alias) is found
+first and imported as an **empty namespace package**. The import then succeeds
+and the module has no attributes at all:
+
+```text
+AttributeError: module 'HIP_HOPS_LLM' has no attribute '__version__'
+```
+
+Cloning into `hiphopsllm-repo`, as above, avoids it entirely.
+:::
 
 `[all]` also works, but it pulls the docs and release toolchains into the
 runtime, and on Colab that upgrades `rich` past what some preinstalled packages

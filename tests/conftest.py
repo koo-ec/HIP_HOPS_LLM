@@ -12,7 +12,7 @@ import pytest
 
 matplotlib.use("Agg")
 
-from HIP_HOPS_LLM import (  # noqa: E402
+from hiphopsllm import (  # noqa: E402
     AgenticReliabilityStudy,
     load_example,
     load_outcomes,

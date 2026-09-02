@@ -230,7 +230,7 @@ def fit_cpts(
 
     ``structure`` maps each variable to its parents, and must be given in a
     topological order (parents before children) --- the same order a
-    :class:`~HIP_HOPS_LLM.bayes.cpt.CPTSet` keeps.
+    :class:`~hiphopsllm.bayes.cpt.CPTSet` keeps.
 
     ``outcomes_are_failures`` states the polarity of the columns explicitly.
     Benchmark data usually records *correctness*; pass ``False`` and the columns

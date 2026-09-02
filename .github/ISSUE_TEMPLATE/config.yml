@@ -1,0 +1,13 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question about HIP-LLM itself
+    url: https://github.com/koo-ec/HIP_LLM/issues
+    about: >-
+      The reliability model (OperationalFailureProb, hyperposteriors, envelopes)
+      lives upstream. This repository vendors it; bugs in it are fixed there.
+  - name: Documentation
+    url: http://koorosh-aslansefat.com/HIP_HOPS_LLM/
+    about: Tutorials, concepts and the full API reference.
+  - name: Security vulnerability
+    url: https://github.com/koo-ec/HIP_HOPS_LLM/security/advisories/new
+    about: Report privately, not as a public issue. See SECURITY.md.

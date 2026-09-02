@@ -1,27 +1,43 @@
-"""PEP 8 alias for :mod:`HIP_HOPS_LLM`.
+"""Alias so ``import HIP_HOPS_LLM`` resolves to :mod:`hiphopsllm`.
 
-The canonical import name matches the repository and the distribution
-(``HIP_HOPS_LLM``), which is what appears throughout the documentation.  Some
-projects prefer lower-case module names, so this alias exists::
+The canonical import name is ``hiphopsllm``. The repository and the distribution
+are called ``HIP-HOPS-LLM``, so this makes the obvious guess work — and makes it
+the *same module object*, not a second copy::
 
-    import hip_hops_llm as hh
-    study = hh.AgenticReliabilityStudy(graph)
+    import HIP_HOPS_LLM, hiphopsllm
+    HIP_HOPS_LLM.AgenticReliabilityStudy is hiphopsllm.AgenticReliabilityStudy
 
-It is the same module object, not a copy: ``hip_hops_llm.X is HIP_HOPS_LLM.X``.
+Submodules resolve through the alias too, so ``HIP_HOPS_LLM.bayes.network``
+works.
+
+Only this one alias ships. A second, lower-case ``hip_hops_llm`` would be a
+different file on Linux and the *same* file on Windows and macOS, whose
+filesystems are case-insensitive — so the pair cannot be checked out reliably.
 """
 
 from __future__ import annotations
 
 import sys as _sys
 
-import HIP_HOPS_LLM as _pkg
-from HIP_HOPS_LLM import *  # noqa: F401,F403
-from HIP_HOPS_LLM import __version__  # noqa: F401
+import hiphopsllm as _pkg
+from hiphopsllm import *  # noqa: F401,F403
+from hiphopsllm import __version__  # noqa: F401
 
 __all__ = list(_pkg.__all__)
 
-# Make submodules reachable as hip_hops_llm.bayes, hip_hops_llm.faulttree, ...
-for _name in ("architecture", "bayes", "faulttree", "io", "reliability", "viz"):
-    _sys.modules[f"{__name__}.{_name}"] = getattr(_pkg, _name, None) or __import__(
-        f"HIP_HOPS_LLM.{_name}", fromlist=["_"]
-    )
+for _dotted in (
+    "architecture", "bayes", "faulttree", "io", "reliability", "viz",
+    "architecture.model", "architecture.acyclic", "architecture.extract",
+    "bayes.cpt", "bayes.network", "bayes.learn", "bayes.viz",
+    "faulttree.failure", "faulttree.synthesis", "faulttree.analysis",
+    "faulttree.export",
+    "reliability.profile", "reliability.calibration", "reliability.hipllm",
+    "io.examples", "viz.plots", "pipeline", "report",
+):
+    try:
+        _sys.modules[f"{__name__}.{_dotted}"] = __import__(
+            f"hiphopsllm.{_dotted}", fromlist=["_"]
+        )
+    except ImportError:  # pragma: no cover - optional dependency paths
+        continue
+del _dotted

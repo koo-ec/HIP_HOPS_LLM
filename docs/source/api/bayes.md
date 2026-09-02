@@ -1,14 +1,14 @@
-# `HIP_HOPS_LLM.bayes`
+# `hiphopsllm.bayes`
 
 ```{eval-rst}
-.. automodule:: HIP_HOPS_LLM.bayes
+.. automodule:: hiphopsllm.bayes
    :no-members:
 ```
 
 ## Conditional probability tables
 
 ```{eval-rst}
-.. automodule:: HIP_HOPS_LLM.bayes.cpt
+.. automodule:: hiphopsllm.bayes.cpt
    :members:
    :undoc-members:
    :show-inheritance:
@@ -17,7 +17,7 @@
 ## Networks and inference
 
 ```{eval-rst}
-.. automodule:: HIP_HOPS_LLM.bayes.network
+.. automodule:: hiphopsllm.bayes.network
    :members:
    :undoc-members:
    :show-inheritance:
@@ -26,7 +26,7 @@
 ## Learning tables from data
 
 ```{eval-rst}
-.. automodule:: HIP_HOPS_LLM.bayes.learn
+.. automodule:: hiphopsllm.bayes.learn
    :members:
    :undoc-members:
    :show-inheritance:
@@ -35,7 +35,7 @@
 ## Drawing
 
 ```{eval-rst}
-.. automodule:: HIP_HOPS_LLM.bayes.viz
+.. automodule:: hiphopsllm.bayes.viz
    :members:
    :undoc-members:
    :show-inheritance:

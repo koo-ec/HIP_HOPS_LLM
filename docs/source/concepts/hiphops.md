@@ -150,7 +150,7 @@ example it does, and it is an order-1 cut set:
 Supply your own hazards when the boundary is somewhere else:
 
 ```python
-from HIP_HOPS_LLM import Hazard, FClass
+from hiphopsllm import Hazard, FClass
 
 study = AgenticReliabilityStudy(
     graph,

@@ -1,0 +1,77 @@
+name: Bug report
+description: Something the package does that it should not, or does not do that it should.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        Reliability numbers that are quietly wrong are the failure mode this
+        package exists to prevent, so a report that a number *looks* wrong is
+        just as welcome as a traceback.
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you observed, and what you expected instead.
+      placeholder: |
+        study.system.common_cause_groups() returned {} although both agents call
+        the same model. I expected them to be grouped.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Minimal reproduction
+      description: >-
+        The smallest code that shows it. A graph specification dict is usually
+        enough (see load_example() for the shape) and needs no LangGraph.
+      render: python
+      placeholder: |
+        from hiphopsllm import AgenticReliabilityStudy
+
+        spec = {"name": "t", "nodes": {}, "edges": []}
+        study = AgenticReliabilityStudy(spec)
+        study.analyse()
+        print(study.system.common_cause_groups())
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Paste the output of the snippet below.
+      render: text
+      placeholder: |
+        python -c "import platform,sys,hiphopsllm as H; print(sys.version, platform.platform()); print(H.__version__, H.graphviz_available())"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: layer
+    attributes:
+      label: Which layer
+      options:
+        - architecture (extraction, roles, resources, loops)
+        - faulttree (annotation, synthesis, cut sets, FMEA)
+        - reliability (operational profiles, calibration, HIP-LLM)
+        - bayes (CPTs, inference, learned tables)
+        - viz (plots, network drawing)
+        - pipeline / AgenticReliabilityStudy
+        - packaging, docs or CI
+        - not sure
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: >-
+            If a probability looks wrong, I checked whether study.summary() says
+            NOT CALIBRATED — uncalibrated values are deliberately pessimistic
+            placeholders, not measurements.
+        - label: >-
+            If a common-cause group is missing, I checked
+            study.system.common_cause_groups() and read the FAQ entry on it.

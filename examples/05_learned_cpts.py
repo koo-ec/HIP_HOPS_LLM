@@ -7,8 +7,8 @@ from __future__ import annotations
 
 import pandas as pd
 
-from HIP_HOPS_LLM import BayesianNetwork, load_outcomes
-from HIP_HOPS_LLM.bayes.learn import fit_cpts, learn_gate
+from hiphopsllm import BayesianNetwork, load_outcomes
+from hiphopsllm.bayes.learn import fit_cpts, learn_gate
 
 outcomes = load_outcomes()
 calibration = outcomes[outcomes["split"] == "calibration"].copy()

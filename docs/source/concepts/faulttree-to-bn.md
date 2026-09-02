@@ -13,7 +13,7 @@ the other removes that failure mode entirely.
 ## The conversion
 
 ```python
-from HIP_HOPS_LLM import fault_tree_to_cpts
+from hiphopsllm import fault_tree_to_cpts
 
 cpts = fault_tree_to_cpts(study.report.tree("H2"), study.failure_model)
 print(cpts.summary())
@@ -47,7 +47,7 @@ uses the opposite order; `cpts.to_hipmas_order()` converts.)
 | `NOISY_OR` | each failed input propagates with probability `pᵢ`, plus a leak | when propagation is probabilistic, not certain |
 
 ```python
-from HIP_HOPS_LLM import deterministic_gate_cpt, k_of_n_cpt, noisy_or_cpt
+from hiphopsllm import deterministic_gate_cpt, k_of_n_cpt, noisy_or_cpt
 
 deterministic_gate_cpt(3, "OR")
 k_of_n_cpt(3, 2)                       # two-of-three majority
@@ -162,7 +162,7 @@ lot:
 > failure by **+0.386** while the learned-CPT model was within **0.005**.
 
 ```python
-from HIP_HOPS_LLM import learn_gate
+from hiphopsllm import learn_gate
 
 learned, distance = learn_gate(observations, "aggregator", ["react", "cot"])
 distance    # {'and': 0.31, 'or': 0.44, 'nearest': 'and'}
@@ -172,7 +172,7 @@ distance    # {'and': 0.31, 'or': 0.44, 'nearest': 'and'}
 
 **Gate fan-in.** A deterministic table has `2ⁿ` rows, so gates are built up to
 18 inputs and refuse beyond that with a message pointing at the cut sets. Raise
-`HIP_HOPS_LLM.bayes.cpt.MAX_GATE_INPUTS` deliberately if you mean it.
+`hiphopsllm.bayes.cpt.MAX_GATE_INPUTS` deliberately if you mean it.
 
 **Exact enumeration.** Sums `2ᵏ` terms over `k` basic events; it refuses above 24
 and suggests `engine="pyagrum"`, which uses junction-tree propagation and scales

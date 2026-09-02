@@ -1,6 +1,6 @@
-# `HIP_HOPS_LLM.viz`
+# `hiphopsllm.viz`
 
 ```{eval-rst}
-.. automodule:: HIP_HOPS_LLM.viz.plots
+.. automodule:: hiphopsllm.viz.plots
    :members:
 ```

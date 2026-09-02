@@ -14,7 +14,7 @@ with the probability of each. Everything downstream is conditional on it.
 ## Building one
 
 ```python
-from HIP_HOPS_LLM import OperationalProfile, empirical_profile, uniform_profile
+from hiphopsllm import OperationalProfile, empirical_profile, uniform_profile
 
 # declared
 profile = OperationalProfile({"short": 0.30, "medium": 0.50, "long": 0.20})
@@ -54,7 +54,7 @@ For question answering, decomposition length works well, and HIP-LLM ships the
 StrategyQA stratifier that produced it:
 
 ```python
-from HIP_HOPS_LLM import decomposition_stratum, load_strategyqa
+from hiphopsllm import decomposition_stratum, load_strategyqa
 
 items = load_strategyqa("train")
 strata = [decomposition_stratum(item) for item in items]
@@ -71,7 +71,7 @@ For your own workload, `stratify` takes a callable and checks the labels against
 the profile:
 
 ```python
-from HIP_HOPS_LLM import stratify
+from hiphopsllm import stratify
 
 labels = stratify(
     requests,
@@ -114,8 +114,8 @@ HIP-LLM's schema keeps parallel `labels`/`weights` arrays; this package's class 
 mapping-shaped and more convenient. They convert both ways:
 
 ```python
-from HIP_HOPS_LLM import OperationalProfile
-from HIP_HOPS_LLM.reliability.hipllm import HIPLLMOperationalProfile
+from hiphopsllm import OperationalProfile
+from hiphopsllm.reliability.hipllm import HIPLLMOperationalProfile
 
 engine_profile = profile.to_hipllm()               # -> hip_llm.schemas version
 OperationalProfile.coerce(engine_profile)          # -> back again

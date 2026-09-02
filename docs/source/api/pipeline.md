@@ -1,7 +1,7 @@
-# `HIP_HOPS_LLM.pipeline`
+# `hiphopsllm.pipeline`
 
 ```{eval-rst}
-.. automodule:: HIP_HOPS_LLM.pipeline
+.. automodule:: hiphopsllm.pipeline
    :members:
    :undoc-members:
    :show-inheritance:

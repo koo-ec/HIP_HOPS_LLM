@@ -15,7 +15,7 @@ import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 import pytest  # noqa: E402
 
-from HIP_HOPS_LLM import (  # noqa: E402
+from hiphopsllm import (  # noqa: E402
     AgenticReliabilityStudy,
     OperationalProfile,
     StudyNotReady,

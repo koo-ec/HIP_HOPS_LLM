@@ -6,7 +6,7 @@ real LangGraph application.
 ## The minimum
 
 ```python
-from HIP_HOPS_LLM import AgenticReliabilityStudy
+from hiphopsllm import AgenticReliabilityStudy
 
 study = AgenticReliabilityStudy(graph, name="my workflow", globals_ns=globals())
 print(study.analyse().summary())
@@ -86,7 +86,7 @@ architecture.
 **Were the loops found?**
 
 ```python
-from HIP_HOPS_LLM import find_cycles
+from hiphopsllm import find_cycles
 
 find_cycles(study.system)
 print(study.report.cycle_report.summary())
@@ -100,7 +100,7 @@ contains `eval` or `exec`. If your system boundary is elsewhere — a tool that
 writes to a database, an agent that sends email — declare it:
 
 ```python
-from HIP_HOPS_LLM import FClass, Hazard, default_hazards
+from hiphopsllm import FClass, Hazard, default_hazards
 
 hazards = default_hazards(study.system) + [
     Hazard(
@@ -154,7 +154,7 @@ items gave widths around 0.14 in the bundled example; roughly quadruple the data
 to halve that. Check before you commit compute:
 
 ```python
-from HIP_HOPS_LLM import EvidenceCalibrator
+from hiphopsllm import EvidenceCalibrator
 
 pilot = EvidenceCalibrator(profile=profile, exact=False)
 pilot.fit_component("worker", pilot_outcomes, pilot_strata).width
@@ -190,7 +190,7 @@ study.observe(outcomes, profile=profile,
 
 ```python
 import pandas as pd
-from HIP_HOPS_LLM import AgenticReliabilityStudy, empirical_profile
+from hiphopsllm import AgenticReliabilityStudy, empirical_profile
 
 profile = empirical_profile(production_stratum_labels)   # from logs, not guessed
 

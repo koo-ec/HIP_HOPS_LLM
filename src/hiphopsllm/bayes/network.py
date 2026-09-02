@@ -1,6 +1,6 @@
 """Bayesian networks over agentic fault trees.
 
-:class:`BayesianNetwork` wraps a :class:`~HIP_HOPS_LLM.bayes.cpt.CPTSet` and does
+:class:`BayesianNetwork` wraps a :class:`~hiphopsllm.bayes.cpt.CPTSet` and does
 four things a fault tree on its own cannot.
 
 * **Exact top-event probability.**  The minimal cut upper bound over-estimates
@@ -85,7 +85,7 @@ class BayesianNetwork:
     """A discrete two-state Bayesian network built from a fault tree.
 
     Construct it with :meth:`from_fault_tree`, or directly from a
-    :class:`~HIP_HOPS_LLM.bayes.cpt.CPTSet` that was fitted from data.
+    :class:`~hiphopsllm.bayes.cpt.CPTSet` that was fitted from data.
     """
 
     cpts: CPTSet
@@ -450,7 +450,7 @@ class BayesianNetwork:
 
     # -- display ------------------------------------------------------------- #
     def view(self, **kwargs: Any):
-        """A :class:`~HIP_HOPS_LLM.bayes.viz.BayesNetView` over this network."""
+        """A :class:`~hiphopsllm.bayes.viz.BayesNetView` over this network."""
         from .viz import BayesNetView
 
         return BayesNetView(self, **kwargs)
@@ -520,7 +520,7 @@ class ImpreciseBayesianNetwork:
 
     This is where HIP-LLM's imprecise posterior meets the fault tree: the
     interval on each basic event comes from
-    :class:`~HIP_HOPS_LLM.reliability.calibration.EvidenceCalibrator`, which
+    :class:`~hiphopsllm.reliability.calibration.EvidenceCalibrator`, which
     derives it from observed outcomes under an operational profile rather than
     from engineering judgement.
     """

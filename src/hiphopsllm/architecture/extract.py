@@ -1,6 +1,6 @@
 """A configurable, reusable extractor for LangGraph architectures.
 
-:func:`~HIP_HOPS_LLM.architecture.model.extract_architecture` is a function that
+:func:`~hiphopsllm.architecture.model.extract_architecture` is a function that
 takes ten keyword arguments.  That is fine for a single call in a notebook, but
 awkward when the same conventions --- the same role overrides, the same shared
 model snapshots, the same unroll depth --- have to be applied to several graphs

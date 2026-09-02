@@ -103,15 +103,15 @@ all = [
 
 [tool.setuptools]
 package-dir = { "" = "src" }
-# The PEP 8 alias module; see src/hip_hops_llm.py.
-py-modules = ["hip_hops_llm"]
+# The compatibility import-name alias; see src/HIP_HOPS_LLM.py.
+py-modules = ["HIP_HOPS_LLM"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["HIP_HOPS_LLM*", "HIPLLM*", "hip_llm*"]
+include = ["hiphopsllm*", "HIPLLM*", "hip_llm*"]
 
 [tool.setuptools.package-data]
-"HIP_HOPS_LLM.data" = ["*.json", "*.csv"]
+"hiphopsllm.data" = ["*.json", "*.csv"]
 
 [tool.pytest.ini_options]
 minversion = "8.0"

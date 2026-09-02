@@ -1,0 +1,58 @@
+name: Reproducibility report
+description: A documented number, figure or example does not reproduce.
+labels: ["reproducibility"]
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        Every number in the documentation was produced by running the code, and
+        the test suite pins the invariants behind them. If one does not
+        reproduce, either the docs are stale or something is genuinely wrong —
+        both are worth knowing about.
+
+  - type: input
+    id: where
+    attributes:
+      label: Where the number appears
+      placeholder: docs/source/quickstart.md, section 4 — "P(H2) = [0.172738, 0.291474]"
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected_actual
+    attributes:
+      label: Documented value, and what you got
+      render: text
+      placeholder: |
+        documented: [0.172738, 0.291474]
+        observed:   [0.180112, 0.302447]
+    validations:
+      required: true
+
+  - type: textarea
+    id: command
+    attributes:
+      label: What you ran
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      render: text
+      description: Python, OS, and the versions of numpy, scipy, pandas and pyagrum.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: pytest passes on my machine
+        - label: >-
+            I am comparing against the same operational profile — every
+            probability in the docs is conditional on one, and changing it
+            changes the answer by design.

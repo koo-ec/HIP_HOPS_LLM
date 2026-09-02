@@ -19,6 +19,28 @@ network.cross_check()    # {'agree': 1.0, 'compared': 1.0, …}
 pyAgrum scales further — exact enumeration refuses above 24 basic events per tree
 — so install it for large systems.
 
+## `module 'HIP_HOPS_LLM' has no attribute '__version__'`
+
+You have a *directory* named like the module sitting next to your notebook —
+typically because you cloned the repository as `HIP_HOPS_LLM` and the notebook's
+working directory precedes `site-packages` on `sys.path`. Python finds the
+directory first and imports it as an empty namespace package, so the import
+succeeds and the module has nothing in it.
+
+Clone into a name nothing imports:
+
+```text
+!git clone --depth=1 https://github.com/koo-ec/HIP_HOPS_LLM.git hiphopsllm-repo
+%pip install -q -e "hiphopsllm-repo[bayes,graph]"
+```
+
+To confirm the diagnosis:
+
+```python
+import hiphopsllm
+print(hiphopsllm.__file__)      # should be under site-packages or src/, not ./
+```
+
 ## Do I need LangGraph?
 
 Only to analyse a live compiled graph. The extractor also accepts mermaid text
@@ -95,7 +117,7 @@ are deliberately left on placeholders and reported as such. Measure them
 separately and calibrate against the relevant class:
 
 ```python
-from HIP_HOPS_LLM import EvidenceCalibrator, FClass
+from hiphopsllm import EvidenceCalibrator, FClass
 
 latency = EvidenceCalibrator(profile=profile, classes=(FClass.LATE,))
 latency.apply(study.failure_model, latency.fit_many(within_budget_by_agent))
