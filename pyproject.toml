@@ -67,6 +67,12 @@ test = [
   "pytest-cov>=5.0",
   "pyagrum>=1.13",
   "nbformat>=5.10",
+  # The notebook tests execute notebooks that build real LangGraph apps, and
+  # IPython display calls. Testing them without these exercises a fallback path
+  # rather than the one a reader will actually run.
+  "langgraph>=0.2",
+  "langchain-core>=0.3",
+  "ipython>=8.0",
 ]
 live = ["openai>=1.40", "anthropic>=0.40", "datasets>=2.20"]
 docs = [

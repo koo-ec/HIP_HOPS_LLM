@@ -135,28 +135,67 @@ def safety_agent(state: AgentState) -> AgentState:
         md("---\n## 4. Your graph"),
         code(
             """
-from langgraph.graph import END, START, StateGraph
+try:
+    from langgraph.graph import END, START, StateGraph
 
-builder = StateGraph(AgentState)
-builder.add_node("research_agent", research_agent)
-builder.add_node("pixelrag_agent", pixelrag_agent)
-builder.add_node("safety_agent", safety_agent)
+    builder = StateGraph(AgentState)
+    builder.add_node("research_agent", research_agent)
+    builder.add_node("pixelrag_agent", pixelrag_agent)
+    builder.add_node("safety_agent", safety_agent)
 
-builder.add_edge(START, "research_agent")
-builder.add_conditional_edges(
-    "research_agent",
-    lambda state: state.get("browser_status") == "ready",
-    {True: "pixelrag_agent", False: END},
-)
-builder.add_conditional_edges(
-    "pixelrag_agent",
-    lambda state: state.get("capture_status") == "captured",
-    {True: "safety_agent", False: END},
-)
-builder.add_edge("safety_agent", END)
+    builder.add_edge(START, "research_agent")
+    builder.add_conditional_edges(
+        "research_agent",
+        lambda state: state.get("browser_status") == "ready",
+        {True: "pixelrag_agent", False: END},
+    )
+    builder.add_conditional_edges(
+        "pixelrag_agent",
+        lambda state: state.get("capture_status") == "captured",
+        {True: "safety_agent", False: END},
+    )
+    builder.add_edge("safety_agent", END)
 
-graph = builder.compile()
-print("Agents: research_agent -> pixelrag_agent -> safety_agent")
+    graph = builder.compile()
+    run_one = graph.invoke
+    print("Agents: research_agent -> pixelrag_agent -> safety_agent")
+
+except ImportError:
+    # Without langgraph the *analysis* still works: it needs the architecture
+    # and a way to run one item, and both can be given directly. The recorded
+    # specification is the same graph, and `run_one` chains the same three
+    # functions through the same conditions.
+    graph = {
+        "name": "SMILES to ECHA hazard check",
+        "nodes": {
+            "__start__": {"role": "source"},
+            "research_agent": {"role": "tool"},
+            "pixelrag_agent": {"role": "tool"},
+            "safety_agent": {"role": "llm_agent",
+                             "resources": {"llm": "gpt-4o-mini"}},
+            "__end__": {"role": "sink"},
+        },
+        "edges": [
+            ["__start__", "research_agent"],
+            ["research_agent", "pixelrag_agent", "ready", True],
+            ["research_agent", "__end__", "unresolved", True],
+            ["pixelrag_agent", "safety_agent", "captured", True],
+            ["pixelrag_agent", "__end__", "missed", True],
+            ["safety_agent", "__end__"],
+        ],
+    }
+
+    def run_one(item):
+        state = dict(item)
+        state.update(research_agent(state))
+        if state.get("browser_status") == "ready":
+            state.update(pixelrag_agent(state))
+            if state.get("capture_status") == "captured":
+                state.update(safety_agent(state))
+        return state
+
+    print("langgraph not installed — using the recorded architecture and a "
+          "plain-Python runner. The analysis below is unchanged.")
 """
         ),
         md("---\n## 5. Your inputs"),
@@ -220,6 +259,7 @@ outcomes = study.run_and_observe(
         ),
     },
     profile={"simple": 0.35, "complex": 0.65},   # the workload you expect
+    invoke=run_one,
     progress=False,
 )
 
