@@ -214,8 +214,8 @@ yourself:
 ```python
 from HIP_HOPS_LLM import graphviz_available
 
-graphviz_available()                        # False on a stock Kaggle image
-network.view().resolved_backend             # 'matplotlib'
+graphviz_available()                        # varies by environment
+network.view().resolved_backend             # 'pyagrum' or 'matplotlib'
 ```
 
 The matplotlib backend lays the network out in longest-path layers with a

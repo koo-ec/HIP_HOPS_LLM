@@ -24,10 +24,11 @@ Open it in Colab directly from GitHub:
 About two minutes end to end, most of it the install. No GPU, no API key, no data
 of your own.
 
-Colab has no Graphviz binary, so `graphviz_available()` returns `False` and the
-Bayesian networks are drawn with matplotlib. That is by design — add
-`!apt-get -qq install graphviz` in the first cell if you want pyAgrum's
-rendering.
+Whether Colab has the Graphviz binary varies with the image, so the notebook
+prints `graphviz_available()` rather than assuming. When it is absent the
+Bayesian networks are drawn with matplotlib and the caption says so; when it is
+present pyAgrum renders them. Either way a picture appears. Add
+`!apt-get -qq install graphviz` in the first cell to force the pyAgrum path.
 
 ## `hip_hops_for_agentic_ai.ipynb`
 

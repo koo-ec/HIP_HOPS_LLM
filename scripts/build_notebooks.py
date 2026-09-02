@@ -119,10 +119,12 @@ print("Graphviz available:", H.graphviz_available())
     ),
     md(
         """
-Colab has no Graphviz binary, so `graphviz_available()` is `False`. Nothing
-breaks: the package draws Bayesian networks with matplotlib instead and says so
-in the caption. Install it with `!apt-get -qq install graphviz` if you want
-pyAgrum's richer rendering.
+That last line matters for the pictures further down. Graphviz is a native
+binary, not a Python package, and whether a Colab image has it varies — so the
+package tests for it (`dot -V`) rather than assuming. With it, pyAgrum renders
+the Bayesian networks; without it, they are drawn with matplotlib and the caption
+says so. Either way `bn.show()` produces a picture. `!apt-get -qq install
+graphviz` forces the pyAgrum path.
 """
     ),
     md(

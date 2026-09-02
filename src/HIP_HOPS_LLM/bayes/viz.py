@@ -1,10 +1,13 @@
 """Drawing Bayesian networks, with pyAgrum where it works and without it where it does not.
 
-pyAgrum renders through Graphviz, and Graphviz is a separate native binary that
-is frequently absent --- it is absent on a stock Kaggle image and on many Windows
-installs, and pyAgrum's own import prints a warning saying so.  A visualisation
-layer that only works when ``dot`` is on the PATH is a visualisation layer that
-silently produces nothing exactly when a reader most needs the picture.
+pyAgrum renders through Graphviz, and Graphviz is a separate native binary, not a
+Python package --- ``pip install pydot`` does not provide it.  Whether it is
+present varies by environment and by the day: it ships on a current Colab image
+and not on many Windows installs, and pyAgrum's own import prints a warning when
+it is missing.  A visualisation layer that only works when ``dot`` is on the PATH
+is a visualisation layer that silently produces nothing exactly when a reader
+most needs the picture, so this one does not assume either way ---
+:func:`graphviz_available` runs ``dot -V`` and the backend follows the answer.
 
 :class:`BayesNetView` therefore has two backends and one behaviour:
 

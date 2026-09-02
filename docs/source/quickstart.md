@@ -196,9 +196,13 @@ network.show()
 ```
 
 pyAgrum renders this where the Graphviz `dot` binary is installed. Where it is
-not — a stock Kaggle image, most Windows installs — the package draws the same
-network with matplotlib instead, shaded by posterior, and says so in the caption.
-`bn.show()` always produces a picture.
+not, the package draws the same network with matplotlib instead, shaded by
+posterior, and says so in the caption. `bn.show()` always produces a picture.
+
+Whether Graphviz is there varies by environment — it ships on a current Colab
+image and not on many Windows installs — so the package tests for it rather than
+assuming: `graphviz_available()` runs `dot -V`, because `import pydot` succeeding
+proves nothing.
 
 ```python
 network.view().to_png("bn_h2.png")     # matplotlib, no Graphviz needed
