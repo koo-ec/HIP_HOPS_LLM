@@ -64,11 +64,10 @@ tutorial — and the analysis is **two cells** appended to the end:
 * **Step 9** generates the Bayesian network from those trees and draws it.
 
 Three further steps show the working rather than adding to that minimum:
-**Step 5** draws the agent graph twice, as LangGraph renders it and as the
-extractor read it (each conditional edge materialised as its own router
-component); **Step 8** draws the synthesised fault tree and lists its minimal cut
-sets, which is what the network of Step 9 is a picture of; and **Step 10** cross-
-checks the exact answer against the cut-set bound and against pyAgrum.
+**Step 5** draws the agent graph as LangGraph renders it; **Step 8** draws the
+synthesised fault tree and lists its minimal cut sets, which is what the network
+of Step 9 is a picture of; and **Step 10** cross-checks the exact answer against
+the cut-set bound and against pyAgrum.
 
 The whole thing runs in about a minute, most of it the install: no GPU, no API
 key, and no data of your own, because the stand-in agents are deterministic.

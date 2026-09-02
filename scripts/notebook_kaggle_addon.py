@@ -11,10 +11,10 @@ of notebook this attaches to: a serial research → capture → classify pipelin
 with conditional edges, taken from the SMILES/ECHA hazard-check tutorial.
 
 Two further steps show the working rather than adding to the minimum: Step 5
-draws the agent graph both as LangGraph renders it and as the extractor read it,
-and Step 8 draws the synthesised fault tree and lists its minimal cut sets. The
-Bayesian network is generated from that tree, so seeing the tree is the only way
-to check what the network is a picture of.
+draws the agent graph as LangGraph renders it, and Step 8 draws the synthesised
+fault tree and lists its minimal cut sets. The Bayesian network is generated from
+that tree, so seeing the tree is the only way to check what the network is a
+picture of.
 
 The presentation is deliberate. Hosted notebooks render styled ``<div>`` blocks
 but sanitise much other HTML, so the headings are divs and the contents table is
@@ -161,7 +161,7 @@ stands in for *your* notebook, and everything after them shows the working.
 | 2 | [Your shared state](#step2) | The `TypedDict` your agents pass around |
 | 3 | [Your three agents](#step3) | Research → capture → classify |
 | 4 | [Your graph](#step4) | The compiled LangGraph, with conditional edges |
-| 5 | [Your graph, drawn](#step5) | The agent connections, as LangGraph draws them and as the extractor read them |
+| 5 | [Your graph, drawn](#step5) | The connections between the agents, as LangGraph draws them |
 | 6 | [Your inputs](#step6) | A stratified set of molecules |
 | **7** | [**Cell A: the operational profile**](#step7) | **Run, score every node and calibrate, in one call** |
 | 8 | [The synthesised fault tree](#step8) | The tree nobody drew, and its minimal cut sets |
@@ -218,7 +218,7 @@ print("Graphviz available:", H.graphviz_available())
             _banner(
                 "2",
                 "Your shared state",
-                "Everything from here to Step 5 stands in for the notebook you "
+                "Everything from here to Step 6 stands in for the notebook you "
                 "already have. Replace it with yours and nothing below changes.",
                 "step2",
             )
@@ -367,13 +367,13 @@ except ImportError:
             _banner(
                 "5",
                 "Your graph, drawn: the connections between the agents",
-                """Two pictures of the same thing, and it matters that they agree.
-The first is LangGraph's own rendering, the diagram you already know. The second
-is what HIP-HOPS-LLM *read out of* that graph, and it is the one every number
-below is derived from.
+                """LangGraph's own rendering of the application, so the pipeline the
+analysis is about is on the page before any of it starts.
 
-They are not identical, deliberately. Each `add_conditional_edges` becomes an
-explicit **router component** with failure logic of its own, because a router
+What the analysis reads is this graph, not a description of it. One thing it adds
+along the way: each `add_conditional_edges` becomes an explicit **router
+component** with failure logic of its own, which is why names like
+`research_agent::router` appear in the fault tree in [Step 8](#step8). A router
 that sends a good run to the wrong branch is a fault, and a picture with no box
 for it has nowhere to put that fault.""",
                 "step5",
@@ -381,9 +381,9 @@ for it has nowhere to put that fault.""",
         ),
         code(
             """
-# LangGraph's own picture. `draw_mermaid_png` calls the mermaid.ink service, so
-# it needs network access; when that is unavailable the mermaid source says the
-# same thing, and the drawing in the next cell needs neither.
+# `draw_mermaid_png` calls the mermaid.ink service, so it needs network access.
+# When that is unavailable the mermaid source says the same thing, and nothing
+# below depends on either: the analysis reads the graph object, not a picture.
 try:
     from IPython.display import Image
 
@@ -395,37 +395,6 @@ except Exception as exc:
     except Exception:
         print("__start__ -> research_agent -> pixelrag_agent -> safety_agent -> __end__")
         print("with early exits from research_agent and pixelrag_agent to __end__")
-"""
-        ),
-        code(
-            """
-import matplotlib.pyplot as plt
-
-from hiphopsllm import extract_architecture, plot_architecture
-
-system = extract_architecture(
-    graph,
-    name="SMILES → ECHA hazard check",
-    globals_ns=globals(),                                # to read the node bodies
-    resource_overrides={"safety_agent": {"llm": "gpt-4o-mini", "runtime": "api"}},
-)
-
-print(f"{len(system.components)} components, {len(system.connections)} connections\\n")
-print(f"  {'component':<28} {'role':<12} shared resources")
-for component in system.components.values():
-    shared = ", ".join(f"{k}={v}" for k, v in sorted(component.resources.items()))
-    print(f"  {component.id:<28} {component.role.value:<12} {shared}")
-
-groups = system.common_cause_groups()
-print("\\nshared resources across components (common-cause candidates):")
-for (kind, value), members in groups.items():
-    print(f"  {kind} = {value}  ->  {', '.join(members)}")
-if not groups:
-    print("  none: no two components share a model snapshot or runtime here")
-
-ax = plot_architecture(system, title="SMILES → ECHA hazard check")
-ax.figure.set_size_inches(10, 6)
-plt.show()
 """
         ),
         md(
@@ -538,8 +507,9 @@ for name, evidence in study.evidence.items():
                 "The synthesised fault tree, and its minimal cut sets",
                 """Nobody drew this tree. It is derived by backward traversal from
 the hazard, through each component's local failure logic, over the architecture
-of [Step 5](#step5). That is the point of HiP-HOPS: the analysis cannot drift
-from the system it describes, because it is regenerated from it.
+read out of the graph in [Step 5](#step5). That is the point of HiP-HOPS: the
+analysis cannot drift from the system it describes, because it is regenerated
+from it.
 
 Its **minimal cut sets** are the answer to *what combinations of faults are
 sufficient to cause the hazard*. An order-1 cut set is a single point of failure;
@@ -760,9 +730,9 @@ things:
 3. **`success`**: how each node's outcome is read from the final state,
    returning `None` where a node was not exercised.
 
-Everything else follows: the architecture is read from your compiled graph
-([Step 5](#step5)), the fault trees are synthesised from it ([Step 8](#step8)),
-and the Bayesian network is generated from those.
+Everything else follows: the architecture is read from your compiled graph, the
+fault trees are synthesised from it ([Step 8](#step8)), and the Bayesian network
+is generated from those.
 
 * **Documentation:** [koorosh-aslansefat.com/HIP_HOPS_LLM](http://koorosh-aslansefat.com/HIP_HOPS_LLM/)
 * **Repository:** [{REPO.removesuffix('.git')}]({REPO.removesuffix('.git')})
