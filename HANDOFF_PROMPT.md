@@ -12,7 +12,7 @@ imprecise-probability reliability model, for LLM-based agentic systems.
 
 - Repository: https://github.com/koo-ec/HIP_HOPS_LLM (MIT, Python 3.10-3.13)
 - Documentation: http://koorosh-aslansefat.com/HIP_HOPS_LLM/
-- Import name `hiphopsllm` (alias `HIP_HOPS_LLM`), version 0.1.0, 101 public names
+- Import name `hiphopsllm` (alias `HIP_HOPS_LLM`), version 0.1.0, 107 public names
 - Install: `pip install "HIP-HOPS-LLM[bayes,graph] @ git+https://github.com/koo-ec/HIP_HOPS_LLM.git"`
   (extras: `bayes` = pyAgrum, `graph` = LangGraph, plus `test`, `live`, `docs`,
   `dev`, `all`)
@@ -140,6 +140,14 @@ enumeration, cross-checked to ~1e-16.
 **Plots** - `plot_fault_tree`, `plot_architecture`, `plot_importance`,
 `plot_cutset_orders`, `display_fault_tree`. All return an `ax`; all have a
 matplotlib path that works without Graphviz.
+
+**Getting systems in** - `load_example`, `load_outcomes` for the three bundled
+architectures, and `load_n8n` / `n8n_to_spec` / `analyse_n8n` / `n8n_study` for
+an n8n JSON export. The n8n path folds a model sub-node into `resources["llm"]`
+(so two agents on one model are a common-cause group), reverses `ai_tool` edges
+into an invocation plus a cut loop, and adds a commission hazard for any tool
+that acts on the world. `N8nWorkflow.ledger_frame()` shows every decision with
+its reason.
 
 ## Notebooks (generated, never hand-edited)
 
