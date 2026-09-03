@@ -103,6 +103,29 @@ intersphinx_mapping = {
     "scipy": ("https://docs.scipy.org/doc/scipy/", None),
 }
 
+# Do not let another project's website decide whether our docs deploy. An
+# unreachable inventory is a network condition, not a defect in this repository,
+# but under -W it failed the build and the published site silently went stale --
+# which is what happened when docs.scipy.org timed out.
+#
+# The warning intersphinx emits for this is untyped, so `suppress_warnings`
+# cannot reach it; it has to be filtered on the logger that emits it. Losing an
+# inventory only costs the outbound links into that project's documentation.
+intersphinx_timeout = 15
+
+
+def _ignore_unreachable_inventories() -> None:
+    import logging as _logging
+
+    class _Outage(_logging.Filter):
+        def filter(self, record: _logging.LogRecord) -> bool:
+            return "failed to reach any of the inventories" not in record.getMessage()
+
+    _logging.getLogger("sphinx.sphinx.ext.intersphinx").addFilter(_Outage())
+
+
+_ignore_unreachable_inventories()
+
 # Nitpicky mode is off: it flags every cross-reference into the vendored HIP-LLM
 # packages (documented upstream, not here) and every forward reference in a
 # one-line summary. CI still builds with -W, so a real warning fails the build.

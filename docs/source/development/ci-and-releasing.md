@@ -43,6 +43,14 @@ cd docs && make html          # or: python -m sphinx -b html -W docs/source _bui
 `-W` turns warnings into errors, which is what CI uses. A broken cross-reference
 is a broken promise to the reader, so it fails the build.
 
+One exception, in `conf.py`: an **unreachable intersphinx inventory** is filtered
+out. That warning means another project's documentation site is down, not that
+anything here is wrong, and under `-W` it failed the build and let the published
+site go stale - which is what happened when `docs.scipy.org` timed out. The
+warning is untyped, so `suppress_warnings` cannot reach it and it is filtered on
+the logger that emits it. The filter matches that one message only; a missing
+module or a broken link still fails the build.
+
 Every number in `docs/` was produced by running the code. If you change something
 that appears in a code block's output, re-run it and paste the new output rather
 than editing it by hand.
