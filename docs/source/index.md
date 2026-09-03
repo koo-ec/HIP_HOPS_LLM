@@ -48,8 +48,9 @@ LangGraph app ──▶ architecture ──▶ fault trees ──▶ cut sets, F
 |---|---|
 | New here | [**Quickstart**](quickstart.md) — the whole pipeline in ten minutes, no LangGraph or GPU required. |
 | After the ideas first | [**Concepts**](concepts/index.md) — what HiP-HOPS does for agent graphs, why the probabilities are intervals, and why a fault tree *is* a Bayesian network. |
-| Learning by doing | [**Tutorials**](tutorials/index.md) — seven worked examples, each one runnable. |
+| Learning by doing | [**Tutorials**](tutorials/index.md) — eight worked examples, each one runnable. |
 | Looking something up | [**API reference**](api/index.md) — every public class and function. |
+| Going to change the code | [**Development**](development/index.md) — the codebase map, the extension points, and the tests you must not weaken. |
 
 ```{toctree}
 :maxdepth: 2
@@ -83,6 +84,7 @@ tutorials/04-fault-tree-to-bayesnet
 tutorials/05-end-to-end
 tutorials/06-learned-cpts
 tutorials/07-your-own-graph
+tutorials/08-n8n-workflows
 ```
 
 ```{toctree}
@@ -93,6 +95,18 @@ api/index
 vendoring
 faq
 changelog
+```
+
+```{toctree}
+:maxdepth: 2
+:caption: Development
+
+development/index
+development/codebase
+development/extending
+development/testing
+development/notebooks
+development/ci-and-releasing
 ```
 
 ## References

@@ -62,7 +62,7 @@ First release.
 
 ### Testing
 
-711 tests, 94% line coverage, every module above 88%. CI runs them on Python
+736 tests, 94% line coverage, every module above 88%. CI runs them on Python
 3.10–3.13 (Ubuntu) plus Windows and macOS, once more with pyAgrum uninstalled to
 keep that dependency genuinely optional, and enforces a 90% overall / 80%
 per-module coverage floor.

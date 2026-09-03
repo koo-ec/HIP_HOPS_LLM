@@ -1,5 +1,5 @@
 """
-hipgraph.analysis — minimal cut sets, quantification and FMEA
+hiphopsllm.faulttree.analysis — minimal cut sets, quantification and FMEA
 (HiP-HOPS *Phase 3*: "analyse the synthesised trees").
 
 Three products are derived from each synthesised tree:

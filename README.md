@@ -148,8 +148,9 @@ repository:
 |---|---|
 | [Quickstart](docs/source/quickstart.md) | Ten minutes, no LangGraph needed |
 | [Concepts](docs/source/concepts/) | HiP-HOPS for agents · imprecise probability · fault trees as Bayesian networks |
-| [Tutorials](docs/source/tutorials/) | Six worked examples, from one graph to a calibrated network |
+| [Tutorials](docs/source/tutorials/) | Eight worked examples, from one graph to a calibrated network |
 | [API reference](docs/source/api/) | Every public class and function |
+| [Development](docs/source/development/) | The codebase map, the extension points, the tests you must not weaken, and how the notebooks are generated |
 | [Vendoring](docs/source/vendoring.md) | What HIP-LLM code is included, from which commit, under which licence |
 
 Runnable scripts are in [`examples/`](examples/) and notebooks in
@@ -179,7 +180,7 @@ These are invariants, not aspirations — each is a test that fails loudly.
 - **CPTs are never fitted on a test split.** `learn_cpt` raises.
 
 ```bash
-pytest                                        # 711 tests
+pytest                                        # 736 tests
 pytest --cov=hiphopsllm --cov-report=term   # 94% line coverage
 ```
 

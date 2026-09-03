@@ -1,5 +1,5 @@
 """
-hipgraph.acyclic — turning a cyclic agent graph into a loop-free analysis model.
+hiphopsllm.architecture.acyclic — turning a cyclic agent graph into a loop-free analysis model.
 
 Fault trees are, by definition, acyclic: a top event is refined into causes, and
 no event may be its own cause.  Agentic LangGraph applications are *not* acyclic

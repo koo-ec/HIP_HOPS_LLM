@@ -70,7 +70,7 @@ def to_mermaid(tree: FaultTree, direction: str = "TB", show_gate: bool = True) -
 
     Gates are drawn as their own nodes between an event and its causes, which is
     as close to the conventional AND/OR symbols as mermaid gets; the matplotlib
-    renderer (`hipgraph.plot`) draws the real symbols. Shared sub-trees (the
+    renderer (:mod:`hiphopsllm.viz.plots`) draws the real symbols. Shared sub-trees (the
     equivalent of a transfer gate) appear once and are referenced by several
     parents, outlined so a shared cause is visible as such.
     """

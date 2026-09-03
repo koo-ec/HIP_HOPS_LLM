@@ -1,10 +1,10 @@
 """
-hipgraph.api — the notebook-facing entry point.
+hiphopsllm.report — the notebook-facing entry point.
 
 One call takes the object the notebook already renders and returns a complete
 safety analysis::
 
-    from hipgraph import analyse_langgraph
+    from hiphopsllm import analyse_langgraph
 
     report = analyse_langgraph(
         graph,                       # the compiled LangGraph
@@ -135,7 +135,7 @@ class SafetyReport:
     def bayesnet(self, hazard_id: str = "H2") -> Any:
         """Equivalent pyAgrum network for one hazard (exact inference, evidence).
 
-        Requires pyagrum. See :mod:`hipgraph.bayes`.
+        Requires pyagrum. See :mod:`hiphopsllm.bayes`.
         """
         from .bayes import fault_tree_to_bayesnet
 

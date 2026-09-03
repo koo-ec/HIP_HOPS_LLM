@@ -1,5 +1,5 @@
 """
-hipgraph.arch — architecture meta-model and extraction from a LangGraph graph.
+hiphopsllm.architecture.model — architecture meta-model and extraction from a LangGraph graph.
 
 This is *Phase 0* of the HiP-HOPS process ("model the architecture").  HiP-HOPS
 analyses a hierarchical model of components connected through ports; before any

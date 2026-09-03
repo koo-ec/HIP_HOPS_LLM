@@ -1,5 +1,5 @@
 """
-hipgraph.plot — matplotlib rendering, for environments without internet.
+hiphopsllm.viz.plots — matplotlib rendering, for environments without internet.
 
 `draw_mermaid_png()` posts the diagram to mermaid.ink, so it needs network
 access. A Kaggle notebook usually has none, and a fault tree that cannot be

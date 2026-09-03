@@ -1,5 +1,16 @@
 # Contributing
 
+The full developer documentation lives on the docs site under
+**[Development](http://koorosh-aslansefat.com/HIP_HOPS_LLM/development/index.html)**:
+
+- [The codebase](http://koorosh-aslansefat.com/HIP_HOPS_LLM/development/codebase.html) — the module map, the data flow, and the five files to read first
+- [Extending the package](http://koorosh-aslansefat.com/HIP_HOPS_LLM/development/extending.html) — archetypes, hazards, gates, exporters, stratifiers, n8n rules, plots
+- [Testing](http://koorosh-aslansefat.com/HIP_HOPS_LLM/development/testing.html) — the layout, the fixtures, and the invariants
+- [Notebooks](http://koorosh-aslansefat.com/HIP_HOPS_LLM/development/notebooks.html) — they are generated; never edit an `.ipynb` by hand
+- [CI, docs and releasing](http://koorosh-aslansefat.com/HIP_HOPS_LLM/development/ci-and-releasing.html) — the seven jobs, the release checklist, re-vendoring
+
+This file is the short version.
+
 ## Setup
 
 ```bash
@@ -72,7 +83,7 @@ are excluded from ruff for the same reason.
 
 ## Adding a component archetype
 
-1. Write the annotation builder in `src/HIP_HOPS_LLM/faulttree/failure.py`,
+1. Write the annotation builder in `src/hiphopsllm/faulttree/failure.py`,
    giving each basic event a `rationale` and a `mitigation` appropriate to its
    *class* — the FMEA is generated from those.
 2. Add the role to `Role` in `architecture/model.py` and teach `classify_role`

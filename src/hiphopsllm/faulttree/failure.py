@@ -1,5 +1,5 @@
 """
-hipgraph.failure — deviations, Boolean failure expressions and the annotation
+hiphopsllm.faulttree.failure — deviations, Boolean failure expressions and the annotation
 library (HiP-HOPS *Phase 1*: "annotate components with local failure logic").
 
 In HiP-HOPS every component carries an **IF-FMEA** table: for each *output

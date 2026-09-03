@@ -160,7 +160,18 @@ from .bayes import (
 # --------------------------------------------------------------------------- #
 # Rendering, examples and the top-level pipeline
 # --------------------------------------------------------------------------- #
-from .io import EXAMPLES, describe_examples, load_example, load_outcomes
+from .io import (
+    EXAMPLES,
+    N8nBlock,
+    N8nWorkflow,
+    analyse_n8n,
+    describe_examples,
+    load_example,
+    load_n8n,
+    load_outcomes,
+    n8n_study,
+    n8n_to_spec,
+)
 from .pipeline import AgenticReliabilityStudy, StudyNotReady
 from .report import SafetyReport, analyse_langgraph, display_fault_tree, map_uncertainty
 from .viz import (
@@ -193,6 +204,13 @@ __all__ = [
     "describe_examples",
     "load_example",
     "load_outcomes",
+    # n8n import
+    "N8nBlock",
+    "N8nWorkflow",
+    "analyse_n8n",
+    "load_n8n",
+    "n8n_study",
+    "n8n_to_spec",
     # architecture
     "Component",
     "Connection",

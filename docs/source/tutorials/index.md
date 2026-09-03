@@ -1,7 +1,8 @@
 # Tutorials
 
-Seven walkthroughs, in order. Each runs against bundled data, so you can work
-through the whole sequence with nothing installed but the package.
+Eight walkthroughs. The first seven are in order and run against bundled
+data, so you can work through the sequence with nothing installed but the
+package; the eighth stands alone and covers a different kind of input.
 
 | | | |
 |---|---|---|
@@ -12,6 +13,7 @@ through the whole sequence with nothing installed but the package.
 | 5 | [End to end in ten lines](05-end-to-end.md) | The whole pipeline, and comparing two architectures |
 | 6 | [Learned CPTs](06-learned-cpts.md) | Fitting a gate from data instead of assuming it |
 | 7 | [Your own graph](07-your-own-graph.md) | Pointing all of this at a real LangGraph application |
+| 8 | [Analysing an n8n workflow](08-n8n-workflows.md) | The same analysis, from an n8n JSON export instead |
 
 Runnable scripts for each are in [`examples/`](https://github.com/koo-ec/HIP_HOPS_LLM/tree/main/examples).
 
@@ -25,4 +27,5 @@ Runnable scripts for each are in [`examples/`](https://github.com/koo-ec/HIP_HOP
 05-end-to-end
 06-learned-cpts
 07-your-own-graph
+08-n8n-workflows
 ```

@@ -167,7 +167,7 @@ em-dashes.
 
 ## State
 
-711 tests, 94% line coverage, CI floors at 90% overall and 80% per module. CI
+736 tests, 94% line coverage, CI floors at 90% overall and 80% per module. CI
 runs Python 3.10-3.13 on Ubuntu plus Windows and macOS, and once more with
 pyAgrum uninstalled so that dependency stays genuinely optional.
 

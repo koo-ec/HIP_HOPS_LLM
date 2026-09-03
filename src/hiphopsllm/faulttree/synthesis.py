@@ -1,5 +1,5 @@
 """
-hipgraph.synth — fault tree synthesis (HiP-HOPS *Phase 2*).
+hiphopsllm.faulttree.synthesis — fault tree synthesis (HiP-HOPS *Phase 2*).
 
 HiP-HOPS does not ask the analyst to draw fault trees.  It *synthesises* them:
 starting from a system-level hazard expressed as a deviation at the system
@@ -520,7 +520,7 @@ def simplify_tree(
 
     **The Boolean function is unchanged**: every reduction is an identity of
     Boolean algebra, so the minimal cut sets before and after are identical.
-    ``test_hipgraph.py`` checks exactly that. The unreduced tree remains
+    ``test_synthesis_internals.py`` checks exactly that. The unreduced tree remains
     available (``report.raw_trees``) when the full propagation chain is wanted.
     """
     nodes: Dict[str, FTNode] = {
