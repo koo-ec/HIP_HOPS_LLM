@@ -69,7 +69,19 @@ exclude_patterns += ["api/HIPLLM*", "api/hip_llm*"]
 html_theme = "furo"
 html_static_path = ["_static"]
 html_title = f"HIP-HOPS-LLM {version}"
+public_docs_url = "https://koorosh-aslansefat.com/HIP_HOPS_LLM/"
+html_context = {"public_docs_url": public_docs_url}
 html_theme_options = {
+    "light_css_variables": {
+        "color-brand-primary": "#008f86",
+        "color-brand-content": "#007a72",
+        "font-stack": '"Inter", system-ui, sans-serif',
+        "font-stack--monospace": '"JetBrains Mono", Consolas, monospace',
+    },
+    "dark_css_variables": {
+        "color-brand-primary": "#2dd4bf",
+        "color-brand-content": "#2dd4bf",
+    },
     "source_repository": "https://github.com/koo-ec/HIP_HOPS_LLM/",
     "source_branch": "main",
     "source_directory": "docs/source/",
@@ -93,6 +105,7 @@ html_theme_options = {
     ],
 }
 html_css_files = ["custom.css"]
+html_js_files = ["ask-ai.js"]
 
 # -- intersphinx -------------------------------------------------------------
 intersphinx_mapping = {

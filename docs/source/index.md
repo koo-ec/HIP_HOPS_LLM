@@ -7,14 +7,30 @@ synthesised fault trees, minimal cut sets, an FMEA, and a Bayesian network whose
 top-event probability is an *interval* derived from measurement rather than a
 number derived from judgement.
 
-```python
-from hiphopsllm import AgenticReliabilityStudy, load_example, load_outcomes
+```{container} hero-actions
+[Quickstart](quickstart.md)
+[Explore the concepts](concepts/index.md)
+[API reference](api/index.md)
+```
 
-study = AgenticReliabilityStudy(load_example("parallel_aggregator"))
-study.observe(load_outcomes(), profile={"short": 0.3, "medium": 0.5, "long": 0.2})
-study.run()
-print(study.summary())
-study.bayesnet("H2").show()
+## From system design to safety analysis
+
+Connect a hierarchical system design to its failure behaviour and a Bayesian
+network. Analyse how failures in AI agents and non-AI components propagate to
+system-level hazards, then use observed outcomes and an operational profile to
+calibrate the probabilities.
+
+```{figure} _static/system-safety-workflow.png
+:alt: Three levels of system design, each containing agentic AI and non-AI components, connect to safety analysis using functional failure analysis, interface-focused FMEAs and local component failure behaviour. A synthesised Bayesian network links component failures to level failures and system safety, with basic-event probabilities derived from operational-profile reliability.
+:figclass: workflow-figure
+:target: _static/system-safety-workflow.png
+
+The main idea: system architecture and failure analysis provide the structure;
+operational-profile reliability provides the evidence for Bayesian inference.
+FFA denotes Functional Failure Analysis; IF-FMEAs denotes Interface Focused
+FMEAs; IF-FMEAs\* denotes local component failure behaviour. The percentages in
+this conceptual illustration are illustrative, not results produced by the package.
+Select the diagram to view it at full size.
 ```
 
 ## Two methods, joined at the leaves
@@ -42,6 +58,24 @@ LangGraph app ──▶ architecture ──▶ fault trees ──▶ cut sets, F
                                                               exact P, diagnosis, plot
 ```
 
+## Try the complete workflow
+
+Start with a bundled agent architecture and observed outcomes. Run the analysis,
+inspect the summary, and display the Bayesian network for a hazard:
+
+```python
+from hiphopsllm import AgenticReliabilityStudy, load_example, load_outcomes
+
+study = AgenticReliabilityStudy(load_example("parallel_aggregator"))
+study.observe(load_outcomes(), profile={"short": 0.3, "medium": 0.5, "long": 0.2})
+study.run()
+print(study.summary())
+study.bayesnet("H2").show()
+```
+
+See the [quickstart](quickstart.md) for a walkthrough, or follow the
+[installation guide](install.md) to set up the package.
+
 ## Where to start
 
 | If you are… | Go to |
@@ -55,6 +89,7 @@ LangGraph app ──▶ architecture ──▶ fault trees ──▶ cut sets, F
 ```{toctree}
 :maxdepth: 2
 :caption: Getting started
+:hidden:
 
 quickstart
 install
@@ -63,6 +98,7 @@ install
 ```{toctree}
 :maxdepth: 2
 :caption: Concepts
+:hidden:
 
 concepts/index
 concepts/hiphops
@@ -75,6 +111,7 @@ concepts/operational-profiles
 ```{toctree}
 :maxdepth: 2
 :caption: Tutorials
+:hidden:
 
 tutorials/index
 tutorials/01-langgraph-to-fault-tree
@@ -90,6 +127,7 @@ tutorials/08-n8n-workflows
 ```{toctree}
 :maxdepth: 2
 :caption: Reference
+:hidden:
 
 api/index
 vendoring
@@ -100,6 +138,7 @@ changelog
 ```{toctree}
 :maxdepth: 2
 :caption: Development
+:hidden:
 
 development/index
 development/codebase

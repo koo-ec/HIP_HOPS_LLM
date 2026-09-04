@@ -1,0 +1,52 @@
+{% extends "!page.html" %}
+
+{% block extrahead %}
+{{ super() }}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+<header class="academic-header" data-home="{{ 'true' if pagename == master_doc else 'false' }}">
+  <div class="academic-header__inner">
+    <a class="academic-brand" href="{{ pathto(master_doc) }}">
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><path d="M3 4v15c3 0 6 1 9 3 3-2 6-3 9-3V4c-3 0-6 1-9 3-3-2-6-3-9-3Z"/></svg>
+      <span>HIP-HOPS-LLM</span>
+    </a>
+    <span class="academic-header__author">by <a href="https://koorosh-aslansefat.com/">Koorosh Aslansefat</a></span>
+    <div class="academic-header__tools">
+      <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+        <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+        <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+        <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+        <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+      </button>
+      <form class="academic-search" action="{{ pathto('search') }}" method="get" role="search">
+        <label class="visually-hidden" for="academic-search">Search documentation</label>
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10" cy="10" r="7"/><path d="m15 15 6 6"/></svg>
+        <input id="academic-search" type="search" name="q" placeholder="Search docs" autocomplete="off">
+      </form>
+      <a class="academic-repo" href="https://github.com/koo-ec/HIP_HOPS_LLM">GitHub <span aria-hidden="true">↗</span></a>
+    </div>
+  </div>
+  <nav class="academic-topnav" aria-label="Primary navigation">
+    <div class="academic-topnav__inner">
+      {% for label, target, section in [
+        ('Home', 'index', 'index'),
+        ('Quickstart', 'quickstart', 'quickstart'),
+        ('Installation', 'install', 'install'),
+        ('Concepts', 'concepts/index', 'concepts/'),
+        ('Tutorials', 'tutorials/index', 'tutorials/'),
+        ('API reference', 'api/index', 'api/'),
+        ('Development', 'development/index', 'development/'),
+        ('FAQ', 'faq', 'faq')
+      ] %}
+      <a href="{{ pathto(target) }}"{% if pagename == section or (section.endswith('/') and pagename.startswith(section)) %} class="is-active"{% endif %}{% if pagename == target %} aria-current="page"{% endif %}>{{ label }}</a>
+      {% endfor %}
+    </div>
+  </nav>
+</header>
+{{ super() }}
+{% include "ask-ai.html" %}
+{% endblock %}
