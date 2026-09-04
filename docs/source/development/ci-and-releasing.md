@@ -51,9 +51,37 @@ warning is untyped, so `suppress_warnings` cannot reach it and it is filtered on
 the logger that emits it. The filter matches that one message only; a missing
 module or a broken link still fails the build.
 
-Every number in `docs/` was produced by running the code. If you change something
+Numbers in documented code output are produced by running the code. If you change something
 that appears in a code block's output, re-run it and paste the new output rather
 than editing it by hand.
+
+### Appearance and Ask AI
+
+The documentation retains Sphinx and Furo, with the teal palette, Inter text,
+JetBrains Mono code and horizontal navigation used on
+[Koorosh Aslansefat's personal website](https://koorosh-aslansefat.com/).
+Light and dark colours are defined in `conf.py` and `_static/custom.css`.
+Fonts load from Google Fonts, with system-font fallbacks.
+
+`_templates/page.html` adds the shared header and navigation. Links use Sphinx's
+`pathto` helper so nested documentation pages and Read the Docs version prefixes
+resolve correctly. The homepage diagram is the supplied conceptual illustration
+at `_static/system-safety-workflow.png`; its percentages are labelled as
+illustrative, rather than package output.
+
+The **Ask AI** button opens a chooser for ChatGPT, Claude, Gemini, Perplexity and
+Microsoft Copilot. Provider links live in `_templates/ask-ai.html`.
+`_static/ask-ai.js` builds a prompt from the current page title, documentation URL
+and repository URL. Choosing a provider copies that prompt and opens the service
+in a new tab; the reader pastes it to begin. The prompt is also available to view
+and copy manually if clipboard access is unavailable. No API key, embedded model
+or backend is required, and opening the chooser sends no request to an AI service.
+
+Hosted pages preserve their current documentation version in the prompt. Local
+previews use `public_docs_url` in `conf.py` so an assistant is never given a
+localhost URL. If the public documentation moves, update that setting. After
+changing the chooser, check keyboard opening and closing, clipboard fallback,
+mobile layout, all five destinations and a nested documentation page.
 
 ## `publish.yml` - PyPI
 

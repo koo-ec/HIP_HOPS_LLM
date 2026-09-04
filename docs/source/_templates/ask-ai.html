@@ -1,0 +1,36 @@
+<div class="ask-ai" data-page="{{ pagename|e }}" data-page-title="{{ title|striptags|e }}"
+     data-docs-home="{{ pathto(master_doc)|e }}" data-public-home="{{ public_docs_url|e }}">
+  <section id="ask-ai-panel" class="ask-ai__panel" aria-labelledby="ask-ai-title" hidden>
+    <div class="ask-ai__heading">
+      <div><p class="ask-ai__eyebrow">EXPLORE THE DOCUMENTATION</p><h2 id="ask-ai-title">Ask AI</h2></div>
+      <button class="ask-ai__close" type="button" aria-label="Close Ask AI">×</button>
+    </div>
+    <p class="ask-ai__intro">Choose an assistant to copy this page's prompt and open a new tab. Paste it there to start.</p>
+    <ul class="ask-ai__providers">
+      {% for name, mark, url, provider in [
+        ('ChatGPT', 'AI', 'https://chatgpt.com/', 'chatgpt'),
+        ('Claude', 'C', 'https://claude.ai/new', 'claude'),
+        ('Gemini', 'G', 'https://gemini.google.com/app', 'gemini'),
+        ('Perplexity', 'P', 'https://www.perplexity.ai/', 'perplexity'),
+        ('Microsoft Copilot', 'Co', 'https://copilot.microsoft.com/', 'copilot')
+      ] %}
+      <li><a href="{{ url }}" target="_blank" rel="noopener noreferrer" data-provider="{{ provider }}">
+        <span class="ask-ai__mark ask-ai__mark--{{ provider }}" aria-hidden="true">{{ mark }}</span>
+        <span>{{ name }}</span><span class="ask-ai__external" aria-hidden="true">↗</span>
+        <span class="visually-hidden">(opens in a new tab)</span>
+      </a></li>
+      {% endfor %}
+    </ul>
+    <details class="ask-ai__context">
+      <summary>View or copy the prompt</summary>
+      <label class="visually-hidden" for="ask-ai-prompt">Prompt with documentation context</label>
+      <textarea id="ask-ai-prompt" readonly rows="6" spellcheck="false"></textarea>
+      <button class="ask-ai__copy" type="button">Copy prompt</button>
+    </details>
+    <p class="ask-ai__status" role="status" aria-live="polite"></p>
+    <p class="ask-ai__note">Uses your chosen AI service. Check answers against the documentation.</p>
+  </section>
+  <button class="ask-ai__trigger" type="button" aria-expanded="false" aria-controls="ask-ai-panel" hidden>
+    <span>Ask AI</span><span class="ask-ai__dot" aria-hidden="true"></span>
+  </button>
+</div>
